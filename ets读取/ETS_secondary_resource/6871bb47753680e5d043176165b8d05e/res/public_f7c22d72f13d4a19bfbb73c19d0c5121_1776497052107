@@ -1,0 +1,16 @@
+<xml_result>
+
+  <simple_expression_ufk lan="en" region="guangdong_zk" region_version="1" type="study" version="V4.1.0R6.81.20.35M5.81.35.0">
+    <rec_paper>
+      <rec_paper beg_pos="270" content="rec_paper" end_pos="585" except_info="0" is_rejected="false" keywords="over five hundred years|more than five hundred years|over rice hundred years|more than rice hundred years|rice" phone_score="4.173574" reject_type="0" total_score="4.994085" word_hit_of_each_kw="1.00|0.60|0.75|0.40|0.00">
+        <sentence content="over five hundred years " index="0">
+          <word beg_pos="286" content="over" end_pos="333"/>
+          <word beg_pos="333" content="five" end_pos="379"/>
+          <word beg_pos="379" content="hundred" end_pos="445"/>
+          <word beg_pos="445" content="years" end_pos="530"/>
+        </sentence>
+      </rec_paper>
+    </rec_paper>
+  </simple_expression_ufk>
+
+</xml_result>

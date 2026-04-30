@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>学情图谱详情</title>
+    <meta name="keywords" content="E听说,科大讯飞,易听说,英文口语,英语听说,99abc">
+    <meta name="description" content="讯飞E听说是由科大讯飞（股票代码：002230）旗下企业广州讯飞易听说网络科技有限公司设计研发，产品版本囊括：广东高考、广州中考、深圳中考、沈阳中考、青岛中考、威海中考等，能有效帮助考生快速提升英语听说考试成绩。">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" /> -->
+    <script src="js/flexible.js"></script>
+    <script src="js/polyfill.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/preStyle.css">
+    <link rel="stylesheet" type="text/css" href="css/learning-figure-detail.css">
+</head>
+
+<body>
+    <div id='app'>
+        <!-- 正在加载中 -->
+        <div class='loading' v-if='isShowLoading'>
+            <div class='loading-content'>
+                <img src="images/loading.gif">
+                <div class='text'>玩命加载中...</div>
+            </div>
+        </div>
+        <!-- 请求失败 -->
+        <div id='loading-fail' class='loading hidePreScore'>
+            <div class='loading-content'>
+                <img src="images/loading-fail.png">
+                <div class='text'>点击重新加载</div>
+                <div class='tip'>呜哇~哇~信号飞走了~</div>
+            </div>
+        </div>
+        <div class='container hidePreScore'>
+            <!-- <div class='all-bar scrolling'> -->
+            <div class='all-bar scrolling' :class="{'hidden':growingLineHidden}">
+                <div class='time-status-bar'></div>
+                <div class='head-operate-container scroll'>
+                    <div class='opera-icon'></div>
+                    <div class="out-on-off scroll-top">
+                        学情图谱
+                    </div>
+                    <!-- <img src="images/detail-help.png" class='opera-icon' @click='goHelp'> -->
+                    <div class='opera-icon'></div>
+                </div>
+            </div>
+            <div class='scroll-container'>
+                <div class='tab' :class="{'hidden':growingLineHidden}">
+                    <div class='tabs-active-bar' :style='tabBarStyle'></div>
+                    <div class='item' data-index='0' :class='tabIndex == 0 ? "active" : ""' v-if="vacants[0]" @click.stop.prevent='tabAddress'>听</div>
+                    <div class='item' data-index='1' :class='tabIndex == 1 ? "active" : ""' v-if="vacants[1]" @click.stop.prevent='tabAddress'>说</div>
+                    <div class='item' data-index='2' :class='tabIndex == 2 ? "active" : ""' v-if="vacants[2]" @click.stop.prevent='tabAddress'>读</div>
+                    <div class='item' data-index='3' :class='tabIndex == 3 ? "active" : ""' v-if="vacants[3]" @click.stop.prevent='tabAddress'>写</div>
+                    <div class='item' data-index='4' :class='tabIndex == 4 ? "active" : ""' v-if="vacants[4]" @click.stop.prevent='tabAddress'>看</div>
+                </div>
+                <div class="tag-desc tab-tag-desc" v-if="tabLabelText">{{tabLabelText}}</div>
+                <div class='content'>
+                    <div v-if='vacants[tabIndex]'>
+                        <div class='no-data-growing' v-if='score[tabIndex]'>你练习太少，还没有成长轨迹</div>
+                        <!-- 成长轨迹图表 -->
+                        <div class='growing-line' :class="{'hidden':score[tabIndex]!=''}">
+                            <!-- <div class='growing-line' :class="{'hidden':growingLineHidden}" v-else> -->
+                            <div class='echart-title'>{{title}}能力成长轨迹</div>
+                            <div class='growing-container1'></div>
+                        </div>
+                        <!-- 能力标签得分率 -->
+                        <div class='ability-container'>
+                            <div class='title'>
+                                <span class='name'>{{title}}能力标签得分率</span>
+                                <!-- <span class='line'></span> -->
+                                <!-- <img src="images/detail-help.png" class='detail-help' @click='goHelp'> -->
+                                <span class="detail-help-a" @click='goHelp'>什么是能力标签</span>
+                            </div>
+                            <div class='ability-items'>
+                                <div class='item-container' v-if="isOpenTag(item)" v-for='(item, index) in data.tags' :id="item.id">
+                                    <div :class="{'hidden':growingLineHidden}">
+                                        <div class='item' @click.stop.prevent="goNextTag($event,item, true)">
+                                            <canvas class="small-canvas" :class='"canvas"+index' width='220' height='220'></canvas>
+                                            <div class='text'>
+                                                {{getItemScore(item)}}<span class='unit'>%</span>
+                                            </div>
+                                        </div>
+                                    <div class='note' @click.stop.prevent="goNextTag($event,item, true)">{{item.name | subStr}}<span v-if="item.child" class="note-arrow"></span></div>
+                                    </div>
+                                    <div class="child-tag-contain" v-if="item.child && item.id==nowParentTagId[0]" :id="item.id">
+                                        <child-tag :tag="item" :gettitle="getTagLevelTitle" :isopentag="isOpenTag" canvas="canvas" :getitemscore="getItemScore" :substrname="subStrName" :gonexttag="goNextTag" :titlearr="titleArr" :tabindex="tabIndex" :showdemo="showDemo" :showchilddom="showChildDom"></child-tag>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 暂无开通该功能 -->
+                    <div class='vacant-container' v-else>
+                        <img src="images/no-learning-detail.png" class='img'>
+                        <div class='text'>暂时还没有开通{{title}}的内容</div>
+                        <div class='text'>努力开发中，敬请期待</div>
+                    </div>
+                </div>
+                <!-- <div class="child-tag-contain" v-if="nowChildTag.child">
+                    <child-tag :tag="nowChildTag" :gettitle="getTagLevelTitle" :isopentag="isOpenTag" canvas="canvas" :getitemscore="getItemScore" :substrname="subStrName" :gonexttag="goNextTag" :showchilddom="showChildDom"></child-tag>
+                </div> -->
+            </div>
+        </div>
+        <div class="mask" v-show="tagDemoText" @click="hideDemo"></div>
+        <div class="tag-demo-con" v-show="tagDemoText">
+            <div class="demo-title">示例</div>
+            <div class="demo-content">{{tagDemoText}}</div>
+            <div class="demo-close-icon" @click="hideDemo"></div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src='js/jquery.min.js'></script>
+<script src="js/vue.min.js"></script>
+<script type="text/javascript" src='js/echarts.min.js'></script>
+<script type="text/javascript" src='js/default.js'></script>
+<script>
+Vue.component('child-tag', {
+    props: ['tag', 'gettitle', 'isopentag', 'canvas', 'getitemscore', 'substrname', 'gonexttag', 'titlearr', 'tabindex', 'showdemo', 'showchilddom'],
+    template: '<div class="child-tag">' +
+        '<div class="child-tag-scroll">' +
+        '<div class="all-bar scrolling" style="display:block;">' +
+        '<div class="time-status-bar"></div>' +
+        '<div class="tag-top-name head-operate-container">{{tag.name}}</div>' +
+        '</div>' +
+        '<div class="scroll-con">' +
+        '<div class="tag-name-l">{{titlearr[tabindex]+tag.concat_name}}</div>' +
+        '<div class="big-canvas-contain">' +
+        '<canvas class="big-canvas" :class="canvas+tag.id"></canvas>' +
+        '<div class="text">' +
+        '<div><span class="num">{{getitemscore(tag)}}</span><span class="unit">%</span></div>' +
+        '<div>得分率</div>' +
+        '</div>' +
+        '</div>' +
+        '<div class="tag-desc">{{tag.desc}}<span class="tag-example" v-if="tag.demo" @click="showdemo(tag)">示例</span></div>' +
+        '<div class="ability-items">' +
+        '<div class="item-container" v-if="isopentag(item)" v-for="(item, index) in tag.child">' +
+        '<div class="item" @click.stop.prevent="gonexttag($event,item,false)">' +
+        '<canvas class="small-canvas" :class="canvas+index" width="220" height="220"></canvas>' +
+        '<div class="text">{{getitemscore(item)}}<span class="unit">%</span></div>' +
+        '</div>' +
+        '<div class="note" @click.stop.prevent="gonexttag($event,item,false)">{{substrname(item.name)}}<span class="note-arrow"></span></div>' +
+        '<div class="child-tag-contain" v-if="showchilddom(item)" :id="item.id">' +
+        '<child-tag :tag="item" :gettitle="gettitle" :isopentag="isopentag" canvas="canvas" :getitemscore="getitemscore" :substrname="substrname" :gonexttag="gonexttag" :titlearr="titlearr" :tabindex="tabindex" :showdemo="showdemo" :showchilddom="showchilddom"></child-tag>' +
+        '</div>' +
+        '</div>' +
+        '</div>' +
+        '</div>' +
+        '</div>' +
+        '</div>'
+})
+</script>
+<script type="text/javascript" src='js/learning-figure-detail.js'></script>
+
+</html>

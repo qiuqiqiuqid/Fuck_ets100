@@ -1,0 +1,152 @@
+*{
+	margin: 0;
+	padding: 0;
+	box-sizing:border-box;
+	-webkit-box-sizing:border-box;
+	-moz-box-sizing:border-box;
+	font-family: "Microsoft YaHei";
+	-webkit-font-smoothing: antialiased;
+}
+html,body{
+	height: auto;
+	visibility: hidden;
+}
+.container{
+}
+.back-btn{
+	position: fixed;
+	top: 0.453rem;
+	left: 0.373rem;
+	width: 0.746rem;
+	height: 0.746rem;
+	cursor: pointer;
+	z-index: 1;
+	background-repeat: no-repeat;
+	background-size: 100% 100%;
+	background-image: url('../images/icon-back.png');
+}
+.title{
+	position: fixed;
+	width: 4.13rem;
+	height: 0.746rem;
+	line-height: 0.746rem;
+	top: 0.453rem;
+	left: 0;
+	right: 0;
+	margin:0 auto;
+	background: rgb(0,0,0,0.18);
+	border-radius: 0.373rem;
+	z-index: 1;
+	font-size: 0.48rem;
+	color: #FFFFFF;
+	text-align: center;
+	text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 4.13rem;
+    white-space: nowrap;
+}
+.map{
+	width: 100%;
+	background-repeat: no-repeat;
+	background-size: 100% 100%;
+	position: relative;
+}
+.level-box{
+	width: 2.4rem;
+	height: 2.4rem;
+	position: absolute;
+	font-size: 0.826rem;
+	color: #B17A4A;
+	background-repeat: no-repeat;
+	background-size: 100% 100%;
+	cursor: pointer;
+}
+.level-order{
+	margin-top: 0.72rem;
+	line-height: 1.173rem;
+	text-align: center;
+	font-weight: bold;
+	font-family: Arial-Black;
+}
+.level-1 .level-order{
+	color: #A7A7A7;
+}
+.star{
+	position: absolute;
+	top: 0rem;
+	left: 0rem;
+	background-repeat: no-repeat;
+	background-size: 100% 100%;
+	width: 100%;
+	height: 100%;
+}
+.icon-experience{
+	position: absolute;
+	width: 1.013rem;
+	height: 0.586rem;
+	background-image: url('../images/icon-experience.png');
+	background-size: 100% 100%;
+	margin: 0 auto;
+	left: 0;
+    right: 0;
+    bottom: 0;
+}
+/*icon-star*/
+.star-0{
+	background-image: url('../images/star-0.png');
+}
+.star-1{
+	background-image: url('../images/star-1.png');
+}
+.star-2{
+	background-image: url('../images/star-2.png');
+}
+.star-3{
+	background-image: url('../images/star-3.png');
+}
+.star-4{
+	background-image: url('../images/star-4.png');
+}
+.star-5{
+	background-image: url('../images/star-5.png');
+}
+/*icon-level*/
+.level-1{
+	background-image: url('../images/level-1.png');
+}
+.level-2{
+	background-image: url('../images/level-2.png');
+}
+.level-lock-1{
+	background-image: url('../images/level-lock-1.png');
+}
+.level-lock-2{
+	background-image: url('../images/level-lock-2.png');
+}
+/*下段地图*/
+.dub-map-1{
+	height: 21.893rem;
+}
+.dub-map-1 .level-box:nth-child(1) {left: 6.96rem;top: 18.19rem;}.dub-map-1 .level-box:nth-child(2) {left: 4.13rem;top: 15.68rem;}.dub-map-1 .level-box:nth-child(3) {left: 5.01rem;top: 12.16rem;}.dub-map-1 .level-box:nth-child(4) {left: 6.43rem;top: 9.09rem;}.dub-map-1 .level-box:nth-child(5) {left: 3.39rem;top: 6.51rem;}.dub-map-1 .level-box:nth-child(6) {left: 1.73rem;top: 4.11rem;}.dub-map-1 .level-box:nth-child(7) {left: 5.76rem;top: 1.71rem;}
+/*地图背景*/
+.map-type-1 .dub-map-1{
+	background-image: url('../images/dub-map-1.png');
+}
+.map-type-2 .dub-map-1{
+	background-image: url('../images/dub-map-2.png');
+}
+.map-type-3 .dub-map-1{
+	background-image: url('../images/dub-map-3.png');
+}
+.map-type-4 .dub-map-1{
+	background-image: url('../images/dub-map-4.png');
+}
+.map-type-5 .dub-map-1{
+	background-image: url('../images/dub-map-5.png');
+}
+.map-type-6 .dub-map-1{
+	background-image: url('../images/dub-map-6.png');
+}
+.map-type-7 .dub-map-1{
+	background-image: url('../images/dub-map-7.png');
+}

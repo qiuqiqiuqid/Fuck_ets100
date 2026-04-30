@@ -1,0 +1,55 @@
+<xml_result>
+
+  <topic lan="en" region="guangdong_zk" region_version="1" type="study" version="V4.1.0R6.81.20.35M5.81.35.0">
+    <rec_paper>
+      <rec_paper accuracy_score="4.905422" beg_pos="243" content="rec_paper" end_pos="2122" except_info="0" is_rejected="false" keypoints="li hua is a middle school student li hua got sick last week|his mother told him to drink more water|the doctor advised him to exercise more and eat healthy food|he learned that the most important thing is health" phone_score="5.000000" reject_type="0" speeking_speed="137.430161" total_score="4.561522" word_hit_of_each_kp="0.92|1.00|1.00|1.00">
+        <sentence content="li hua is a middle school student li hua got sick last week his mother told him to drink more water " index="0">
+          <word beg_pos="260" content="li" end_pos="297"/>
+          <word beg_pos="297" content="hua" end_pos="335"/>
+          <word beg_pos="335" content="is" end_pos="367"/>
+          <word beg_pos="367" content="a" end_pos="379"/>
+          <word beg_pos="379" content="middle" end_pos="427"/>
+          <word beg_pos="427" content="school" end_pos="455"/>
+          <word beg_pos="455" content="student" end_pos="539"/>
+          <word beg_pos="539" content="li" end_pos="603"/>
+          <word beg_pos="603" content="hua" end_pos="631"/>
+          <word beg_pos="631" content="got" end_pos="661"/>
+          <word beg_pos="661" content="sick" end_pos="700"/>
+          <word beg_pos="700" content="last" end_pos="739"/>
+          <word beg_pos="739" content="week" end_pos="793"/>
+          <word beg_pos="793" content="his" end_pos="859"/>
+          <word beg_pos="859" content="mother" end_pos="911"/>
+          <word beg_pos="911" content="told" end_pos="943"/>
+          <word beg_pos="943" content="him" end_pos="977"/>
+          <word beg_pos="977" content="to" end_pos="1003"/>
+          <word beg_pos="1003" content="drink" end_pos="1060"/>
+          <word beg_pos="1060" content="more" end_pos="1099"/>
+          <word beg_pos="1099" content="water" end_pos="1159"/>
+        </sentence>
+        <sentence content="the doctor advised him to exercise more and eat healthy food he learned that the most important thing is healthy " index="1">
+          <word beg_pos="1204" content="the" end_pos="1227"/>
+          <word beg_pos="1227" content="doctor" end_pos="1283"/>
+          <word beg_pos="1283" content="advised" end_pos="1338"/>
+          <word beg_pos="1338" content="him" end_pos="1381"/>
+          <word beg_pos="1381" content="to" end_pos="1429"/>
+          <word beg_pos="1429" content="exercise" end_pos="1529"/>
+          <word beg_pos="1529" content="more" end_pos="1565"/>
+          <word beg_pos="1565" content="and" end_pos="1595"/>
+          <word beg_pos="1595" content="eat" end_pos="1621"/>
+          <word beg_pos="1621" content="healthy" end_pos="1665"/>
+          <word beg_pos="1665" content="food" end_pos="1707"/>
+          <word beg_pos="1707" content="he" end_pos="1769"/>
+          <word beg_pos="1769" content="learned" end_pos="1803"/>
+          <word beg_pos="1803" content="that" end_pos="1841"/>
+          <word beg_pos="1841" content="the" end_pos="1856"/>
+          <word beg_pos="1856" content="most" end_pos="1902"/>
+          <word beg_pos="1902" content="important" end_pos="1979"/>
+          <word beg_pos="1979" content="thing" end_pos="2011"/>
+          <word beg_pos="2011" content="is" end_pos="2035"/>
+          <word beg_pos="2035" content="healthy" end_pos="2095"/>
+        </sentence>
+      </rec_paper>
+    </rec_paper>
+  </topic>
+
+</xml_result>

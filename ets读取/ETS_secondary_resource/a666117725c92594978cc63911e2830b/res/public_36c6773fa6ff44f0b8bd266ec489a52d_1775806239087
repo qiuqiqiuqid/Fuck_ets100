@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<xml_result>
+
+  <simple_expression_ufk lan="en" region="guangdong_zk" region_version="1" type="study" version="V4.1.0R6.81.20.35M5.81.35.0">
+    <rec_paper>
+      <rec_paper beg_pos="64" content="rec_paper" end_pos="361" except_info="0" is_rejected="false" keywords="bus" phone_score="4.417588" reject_type="0" total_score="4.998979" word_hit_of_each_kw="1.00">
+        <sentence content="they will go there by bus " index="0">
+          <word beg_pos="78" content="they" end_pos="107"/>
+          <word beg_pos="107" content="will" end_pos="124"/>
+          <word beg_pos="124" content="go" end_pos="151"/>
+          <word beg_pos="151" content="there" end_pos="189"/>
+          <word beg_pos="189" content="by" end_pos="219"/>
+          <word beg_pos="219" content="bus" end_pos="287"/>
+        </sentence>
+      </rec_paper>
+    </rec_paper>
+  </simple_expression_ufk>
+
+</xml_result>

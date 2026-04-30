@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>排名榜</title>
+    <meta name="keywords" content="E听说,科大讯飞,易听说,英文口语,英语听说,99abc">
+    <meta name="description" content="讯飞E听说是由科大讯飞（股票代码：002230）旗下企业广州讯飞易听说网络科技有限公司设计研发，产品版本囊括：广东高考、广州中考、深圳中考、沈阳中考、青岛中考、威海中考等，能有效帮助考生快速提升英语听说考试成绩。">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <script src="js/flexible.js"></script>
+    <script src="js/polyfill.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/preStyle.css">
+    <link rel="stylesheet" type="text/css" href="css/rank.css">
+</head>
+
+<body>
+    <div id='app'>
+        <!-- 正在加载中 -->
+        <div class='loading' v-if='isShowLoading'>
+            <div class='content'>
+                <img src="images/loading.gif">
+                <div class='text'> 玩命加载中...</div>
+            </div>
+        </div>
+        <!-- 请求失败 -->
+        <div id='loading-fail' class='loading hidePreScore'>
+            <div class='content'>
+                <img src="images/loading-fail.png">
+                <div class='text'>点击重新加载</div>
+                <div class='tip'>呜哇~哇~信号飞走了~</div>
+            </div>
+        </div>
+        <div id='app2' class="hidePreScore">
+            <!-- 排行榜banner -->
+            <div class='head-container ' :class='scoreResult'>
+                <!-- 头部操作栏 -->
+                <div class='all-bar' v-if='noramalPage' :style='{backgroundColor:"rgba(255,255,255,"+opacity+")"}'>
+                    <div class='time-status-bar'></div>
+                    <div class='head-operate-container'>
+                        <div class='opera-icon'></div>
+                        <div class="tab" @click='tabAddress'>
+                            <div class="tabs-active-bar" :style='tabBarStyle'></div>
+                            <div data-index="0 " class="item " :class='tabIndex == 0 ? "active" : ""'>班级</div>
+                            <div data-index="1 " class="item " :class='tabIndex == 1 ? "active" : ""' v-text="province"></div>
+                        </div>
+                        <img src="images/white-setting.png " class='opera-icon' @click='goSetting'>
+                    </div>
+                </div>
+                <div class='all-bar scroll' v-else>
+                    <div class='time-status-bar'></div>
+                    <div class='head-operate-container'>
+                        <div class='opera-icon'></div>
+                        <div class="out-on-off scroll-top ">
+                            <input type="checkbox " name="switch " class="switch " id="switch " v-model="isCheck ">
+                            <label for="switch " :data-name='province'></label>
+                        </div>
+                        <img src="images/gray-setting.png " class='opera-icon' @click='goSetting'>
+                    </div>
+                </div>
+                <div class='head-wrapper clearfix'>
+                    <div class='left-head'>
+                        <div class='title'>
+                            排行榜
+                            <img src="images/rank-help.png " class='img' @click='goHelp'>
+                        </div>
+                        <div class='sub-title'>{{subTitle}}</div>
+                    </div>
+                    <div class='right-head'>
+                        <img :src='trophySrc'>
+                    </div>
+                </div>
+            </div>
+            <!-- 请求失败 -->
+            <div id='class-loading-fail' class='loading hidePreScore'>
+                <div class='content'>
+                    <img src="images/loading-fail.png ">
+                    <div class='text'>点击重新加载</div>
+                    <div class='tip'>错误码：{{errorCode}}</div>
+                </div>
+            </div>
+            <!-- 排行榜人数少于5人 -->
+            <div class='less-five-person hidePreScore'>
+                有没有努力，大家都能看得到
+            </div>
+            <!-- 无预测分情况 -->
+            <div class='no-score-container' v-if='!isShowScoreContainer'>
+                <div class='no-score-wrapper'>
+                    <img src="images/add-rank.png " class='add-img'>
+                    <div class='no-class'>暂无班级</div>
+                    <div class='only'>就差你的加入</div>
+                    <div class='add-class' @click='addClass'>加入班级</div>
+                </div>
+            </div>
+            <!-- 有预测分情况 -->
+            <div class='hava-score-container' v-else id='scrollId'>
+                <div class='self-rank-container self-rank-container-myInfo' v-if='myInfo'>
+                    <div class='person-img-container'>
+<!--                         <img src="./images/gold-bg.png " class='person-bg' v-if='myInfo.rank==1'> -->
+<!--                         <img src="./images/silver-bg.png " class='person-bg' v-else-if='myInfo.rank==2'> -->
+<!--                         <img src="./images/copper-bg.png " class='person-bg' v-else-if='myInfo.rank==3'> -->
+<!--                         <img :src="myInfo.portrait_cache " class='person'> -->
+						<img src="./images/icon-rank-1.png " class='icon-rank' v-if='myInfo.rank==1'>
+						<img src="./images/icon-rank-2.png " class='icon-rank' v-if='myInfo.rank==2'>
+						<img src="./images/icon-rank-3.png " class='icon-rank' v-if='myInfo.rank==3'>
+						<span class="rank-text" v-if='myInfo.rank>3' v-text='myInfo.rank'></span>
+                    </div>
+<!--                     <div class='my-info'> -->
+<!--                         <div class='name' :class='scoreResult'>{{myInfo.name}}</div> -->
+<!--                         <div class='rank'>第{{myInfo.rank}}名</div> -->
+<!--                     </div> -->
+					<div class='name'>{{myInfo.name}}</div>
+                    <div class='school' v-if='rankLevel !== "class "'>{{myInfo.school}}</div>
+                    <div class='score' :class='scoreResult'>{{myInfo.predict_score}}分</div>
+                </div>
+                <div class='all-rank-container' :class='{"no-my-info":!myInfo}'>
+                    <div class='self-rank-container all-rank' v-for='(item,index) in rankData'>
+                        <div class='person-img-container'>
+<!--                             <img src="./images/gold-bg.png " class='person-bg' v-if='item.rank==1'> -->
+<!--                             <img src="./images/silver-bg.png " class='person-bg' v-else-if='item.rank==2'> -->
+<!--                             <img src="./images/copper-bg.png " class='person-bg' v-else-if='item.rank==3'> -->
+<!--                             <img :src="item.portrait_cache " class='person'> -->
+							<img src="./images/icon-rank-1.png " class='icon-rank' v-if='item.rank==1'>
+                            <img src="./images/icon-rank-2.png " class='icon-rank' v-if='item.rank==2'>
+                            <img src="./images/icon-rank-3.png " class='icon-rank' v-if='item.rank==3'>
+<!-- 							<span class="rank-text" v-if='item.rank>3' v-text='item.rank'></span> -->
+                        </div>
+                        <div class='name' :class='[item.account_id==account_id ? "excellent " : " "]'>{{item.name}}</div>
+                        <div class='school' v-if='rankLevel !== "class "'>{{item.school}}</div>
+                        <div class='score' :class='[item.account_id==account_id ? "excellent " : " "]'>{{item.predict_score}}分</div>
+                    </div>
+                    <div class='rank-tip' v-if='tabIndex==0'>
+                        <span class='line'></span>
+                        <span class='tip'>只显示班级前10</span>
+                        <span class='line'></span>
+                    </div>
+                      <div class='rank-tip' v-if='tabIndex==1'>
+                        <span class='line'></span>
+                        <span class='tip'>只显示资源前50</span>
+                        <span class='line'></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript " src='js/jquery.min.js'></script>
+<script type="text/javascript " src='js/vue.min.js'></script>
+<!-- <script type="text/javascript " src='js/iscroll-probe.js'></script> -->
+<!-- <script type="text/javascript " src='js/iscroll.js'></script> -->
+<script type="text/javascript " src='js/default.js'></script>
+<script type="text/javascript " src='js/rank.js'></script>
+
+</html>

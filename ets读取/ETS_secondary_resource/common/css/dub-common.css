@@ -1,0 +1,318 @@
+/*2016.12.21*/
+/*html,body,div,h1,h2,h3,h4,h5,h6,ul,ol,li,table,tr,td,thead,tbody,tfoot,p,span,img,article,aside,nav,section,em,form,label,input,button,audio,video,iframe,blockquote,caption,hr
+*/
+*{
+	margin: 0;
+	padding: 0;
+	box-sizing:border-box;
+	-webkit-box-sizing:border-box;
+	-moz-box-sizing:border-box;
+	font-family: "Microsoft YaHei";
+	-webkit-font-smoothing: antialiased;
+}
+html,body{
+	width: 100%;
+	height: 100%;
+	background-color: #fff;
+	color: #404040;
+}
+h1,h2,h3,h4,h5,h6{
+	font-weight: normal;
+}
+ul,li{
+	list-style: none;
+	margin:0;
+}
+a:link,a:hover,a:active,a:visited{
+	text-decoration: none;
+}
+input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px white inset !important;
+}
+p{
+	word-break: break-word;
+}
+.p-bold{font-weight:bold;}
+.b{
+	display:block;
+}
+.ib{
+	display:inline-block;
+}
+.ab{position:absolute;}
+.re{position:relative;}
+.cl-fix{
+	content: '';
+	display: block;
+	width: 0;
+	height: 0;
+	visibility: hidden;
+	clear: both;
+}
+.clear:after{
+	content: '';
+	display: block;
+	width: 0;
+	height: 0;
+	visibility: hidden;
+	clear: both;
+}
+.fl{float: left;}
+.fr{float: right;}
+.none{
+	display: none;
+}
+.pointer{
+	cursor: pointer;
+}
+.default{
+	cursor: default;
+}
+.blue{color:#2199de;}
+.red{color:#ef3e58;}
+.green{color: #43cb75;}
+.yellow{color: #ffa600;}
+body .btn-no{background:#e3e5e8 !important;color:#a5a5a5 !important;cursor:default !important;}
+.w100p{width: 100%;}
+/*禁用获取验证码*/
+body .code-no{}
+/*遮蔽层*/
+.mask{
+	width: 100%;
+	height: 100%;
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 9;
+	display:none;
+	background-color: rgba(0,0,0,0.5);
+}
+/*提示窗*/
+.tips-con{
+	height: 0.8rem;
+    background-color: #212121;
+    border-radius: 0.106667rem;
+    padding: 0 0.4rem;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    margin-top: -0.4rem;
+    text-align: center;
+    line-height: 0.8rem;
+    font-size: 0.373333rem;
+    color: #fff;
+    display: none;
+    z-index: 9999;
+}
+/*过渡*/
+#vue .showX{
+	left: 0%;
+}
+#vue .hideX{
+	left: 100%;
+}
+#vue .showY{
+	top: 0%;
+}
+#vue .hideY{
+	top: 100%;
+}
+.slide{
+	-webkit-overflow-scrolling: touch;
+}
+/*滚动*/
+.over-hidden{
+	overflow: hidden;
+	height: 100%;
+}
+.win{
+	display:none;
+	position: fixed;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	margin: auto;
+	z-index: 10;
+	background: #FFFFFF;
+	box-shadow: 0 0.106rem 0.24rem 0 rgba(0,0,0,0.23);
+	border-radius: 0.26rem;
+	overflow: hidden;
+}
+.sb{display:block !important;}
+.icon-close{
+	position: absolute;
+	top: 0rem;
+	right: 0rem;
+	width: 0.8rem;
+	height: 0.8rem;
+	background-image: url(../images/icon-close.png);
+	background-repeat: no-repeat;
+	background-size: contain;
+	background-position: center;
+	cursor: pointer;
+}
+.icon-close-t{
+	background-image: url(../images/icon-close-t.png);
+}
+.default-btn{
+	background-image: url(../images/default-btn.png);
+	background-repeat: no-repeat;
+	background-size: contain;
+	background-position: center;
+	background-color: #fff;
+	outline: 0;
+	border: 0;
+	text-align: center;
+}
+.default-btn-t{
+	background-image: url(../images/default-btn-t.png);
+}
+.default-btn-m{
+	background-image: url(../images/default-btn-m.png);
+	background-repeat: no-repeat;
+	background-size: contain;
+	background-position: center;
+	background-color: #fff;
+	outline: 0;
+	border: 0;
+	text-align: center;
+}
+.default-btn-m-t{
+	background-image: url(../images/default-btn-m-t.png);
+}
+/*查看答案*/
+.see-answer-btn{
+	color: #43CB75;
+	background-image: url(../images/see-answer-btn.png);
+	background-repeat: no-repeat;
+	background-size: contain;
+	background-position: center;
+	background-color: #fff;
+	outline: 0;
+	border: 0;
+	text-align: center;
+}
+.see-answer-btn-t{
+	background-image: url(../images/see-answer-btn-t.png);
+}
+.see-answer-btn-m{
+	color: #43CB75;
+	background-image: url(../images/see-answer-btn-m.png);
+	background-repeat: no-repeat;
+	background-size: contain;
+	background-position: center;
+	background-color: #fff;
+	outline: 0;
+	border: 0;
+	text-align: center;
+}
+.see-answer-btn-m-t{
+	background-image: url(../images/see-answer-btn-m-t.png);
+}
+/*听录音*/
+.icon-hron{
+	background: url('../images/icon-horn.png') no-repeat center;
+	background-size: cover;
+}
+.icon-hron.icon-hron-t{
+	background: url('../images/icon-horn-t.png') no-repeat center;
+	background-size: cover;
+}
+.icon-hron-ing{
+	background: url('../images/icon-horn-ing.gif') no-repeat center;
+	background-size: cover;
+}
+/*正确错误*/
+.icon-answer{
+	width: 4.64rem;
+	height: 2.186rem;
+	position: fixed;
+	left: 0;
+	right: 0;
+	margin: 0 auto;
+	bottom: -2.186rem;
+	z-index: 1;
+}
+.answer-right{
+	background: url('../images/answer-right.png') no-repeat center;
+	background-size: cover;
+}
+.answer-wrong{
+	background: url('../images/answer-wrong.png') no-repeat center;
+	background-size: cover;
+}
+.answer-show-a{
+	animation: answerShowA 1.5s;
+	-moz-animation: answerShowA 1.5s;	/* Firefox */
+	-webkit-animation: answerShowA 1.5s;	/* Safari 和 Chrome */
+	-o-animation: answerShowA 1.5s;
+}
+@-webkit-keyframes answerShowA /* Safari 和 Chrome */
+{
+	0%   {bottom: -2.186rem;}
+	20%  {bottom: 3.68rem;}
+	87%	 {bottom: 3.68rem;}
+	100% {bottom: -2.186rem;}
+}
+/*if-win*/
+.if-win{
+    transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+    -o-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    -moz-transform: translate(-50%, -50%);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+	right: auto;
+	bottom: auto;
+	width: 7.46rem;
+	padding-top: 0.53rem;
+	padding-bottom: 1.86rem;
+}
+.if-win-title{
+	font-size: 0.453rem;
+	color: #3C3C3C;
+	text-align: center;
+	height: 0.64rem;
+	line-height: 0.64rem;
+	margin-bottom: 0.26rem;
+}
+.if-win-text{
+	font-size: 0.426rem;
+	color: #3C3C3C;
+	text-align: center;
+	line-height: 0.586rem;
+	padding: 0 0.53rem;
+}
+.if-win-btn-box{
+	position:absolute;
+	bottom: 0;
+	left:0;
+	height: 1.33rem;
+	width: 100%;
+	border-top:1px solid #E6E6E6;
+}
+.if-btn{
+	width: 50%;
+	height: 1.33rem;
+	line-height: 1.33rem;
+	text-align: center;
+	font-size: 0.426rem;
+	outline: none;
+	background: #fff;
+	border: 0;
+}
+.if-btn:first-child{
+	border-right:1px solid #E6E6E6;
+}
+.if-cancel-btn{
+	color: #979797;
+}
+.if-submit-btn{
+	color: #43CB75;
+}
+.if-btn-t{
+	background-color: #e2e2e2;
+}

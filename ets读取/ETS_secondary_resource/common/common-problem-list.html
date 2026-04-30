@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>常见问题</title>
+    <meta name="keywords" content="E听说,科大讯飞,易听说,英文口语,英语听说,99abc">
+    <meta name="description" content="讯飞E听说是由科大讯飞（股票代码：002230）旗下企业广州讯飞易听说网络科技有限公司设计研发，产品版本囊括：广东高考、广州中考、深圳中考、沈阳中考、青岛中考、威海中考等，能有效帮助考生快速提升英语听说考试成绩。">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <script src="js/flexible.js"></script>
+    <script src="js/polyfill.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/preStyle.css">
+    <link rel="stylesheet" type="text/css" href="css/common-problem-list.css">
+</head>
+
+<body>
+    <div id='app'>
+        <div class='all-bar scrolling'>
+            <div class='time-status-bar'></div>
+            <div class='head-operate-container scroll'>
+                <div class='opera-icon'></div>
+                <div class="out-on-off scroll-top">
+                    常见问题
+                </div>
+                <div class='opera-icon'></div>
+            </div>
+        </div>
+        <div class='container'>
+            <div class='question-container' click='goDetail(event)'>
+                <div class='question-item'>
+                    <div class='title' data-title='什么是预测分'>什么是预测分</div>
+                    <img src="images/question-arrow.png" class='img'>
+                </div>
+                <div class='question-item'>
+                    <div class='title' data-title='如何提高预测分'>如何提高预测分</div>
+                    <img src="images/question-arrow.png" class='img'>
+                </div>
+                <!--  <div class='question-item'>
+                    <div class='title' data-title='预测分分布'>预测分分布</div>
+                    <img src="images/question-arrow.png" class='img'>
+                </div> -->
+                <div class='question-item'>
+                    <div class='title' data-title='能力标签得分率'>能力标签得分率</div>
+                    <img src="images/question-arrow.png" class='img'>
+                </div>
+                <!-- <div class='question-item'>
+                    <div class='title' data-title='如何进入排名'>如何进入排名</div>
+                    <img src="images/question-arrow.png" class='img'>
+                </div> -->
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src='js/jquery.min.js'></script>
+<!-- <script type="text/javascript" src='js/vue.min.js'></script> -->
+<!-- <script type="text/javascript" src='js/echarts.min.js'></script> -->
+<script type="text/javascript" src='js/default.js'></script>
+<script type="text/javascript">
+setBackButtonStyle(1)
+$(document).ready(function() {
+    var ifIos = isIos();
+    var iosDp = $('html').attr('data-dpr')
+    if (ifIos) {
+        $('.out-on-off').css('fontSize', 18 * iosDp + 'px');
+    } else {
+        $('.out-on-off').css('fontSize', '16px');
+    }
+    var titleHeight = GetQueryString('titleHeight');
+    var statusHeight = GetQueryString('statusHeight');
+    $('.time-status-bar').height(statusHeight)
+    $('.head-operate-container').height(titleHeight);
+    $('.container').css('margin-top', $('.all-bar').height())
+    $('.question-container').css('margin-top', '0.267rem')
+    setTopColor('#ffffff');
+    // $(document).on('.question-container','click',function(e){
+    $('.question-container').click(function(e) {
+
+        // function goDetail(e) {
+        var url = 'common-problem-detail.html?title=' + e.target.dataset.title + "&titleHeight=" + titleHeight + "&statusHeight=" + statusHeight
+        window.location.assign(encodeURI(url));
+        // }
+    })
+})
+</script>
+
+</html>

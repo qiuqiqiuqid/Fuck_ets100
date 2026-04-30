@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>答案页</title>
+    <script src="js/flexible.js"></script>
+    <script src="js/polyfill.js"></script>
+    <link rel="stylesheet" href="css/answer.css">
+    <link rel="stylesheet" href="css/templet_common.css">
+    <link rel="stylesheet" href="css/templet_common_answer.css">
+    <!-- 调试工具
+	<script src="https://cdn.bootcdn.net/ajax/libs/vConsole/3.8.1/vconsole.min.js"></script>
+	<script>
+		var vConsole = new VConsole();
+	</script> -->
+</head>
+
+<body>
+    <div class="container" :class="{isDwdContainer:isDwdContainer, 'repeat-container':isRepeatQuestion}" id="templateApp">
+        <div class="" :class="{'white-block white-block-not-pd mb-16':isRepeatQuestion}">
+            <div class="result_con" :class="hasHalfStarImg?'':'noHalfStarImg'">
+                <div class="score_con" :class="scoreRationColor"><span class="get_score" id="score" v-text="getScore"></span>分/<span class="all_score" id="total-score" v-text="allScore"></span>分</div>
+                <div class="star_con" :class="'star_level_'+scoreStarRationLevel">
+                    <div class="star_img"></div>
+                    <div class="star_img"></div>
+                    <div class="star_img"></div>
+                    <div class="star_img"></div>
+                    <div class="star_img"></div>
+                </div>
+            </div>
+            <div class="pd-container">
+                <div class="title" v-if="title!=''" v-html="formatString(title)"></div>
+                <div class="subtitle" v-if="subtitle!=''" v-html="formatString(subtitle)"></div>
+                <div class="description" v-if="description!=''" v-html="formatString(description)"></div>
+            </div>
+            <div class="dropdown_con pd-container" :class="dropdown_con_active?'active':''">
+                <div class="dropdown_title" v-if="dropdown_title!=''" v-html="formatString(dropdown_title)"></div>
+                <div class="dropdown_subtitle" v-if="dropdown_subtitle!=''" v-html="formatString(dropdown_subtitle)"></div>
+                <div class="dropdown_description" v-if="dropdown_description!=''" v-html="formatString(dropdown_description)"></div>
+                <div class="dropdown_icon" v-if="dropdown_title" @click="toggleDropdown"></div>
+                <div class="hint" v-if="hint" v-html="hint"></div>
+            </div>
+            <div class="content test_con" :class="{'isRepeatQuestion':isRepeatQuestion, 'isShowQuestionDetail':isShowQuestionDetail}">
+                <!-- 复述题UI更新 -->
+                <div class="white-pd" v-if="isRepeatQuestion">
+                    <div class="flex ">
+                        <div class="student-answer-audio-text">题目原文</div>
+                        <div class="student-answer-audio-btn origin-audio" v-if="questions[0] && questions[0].info && questions[0].info.audio" :data-audio-id="questions[0].info.audio" :data-path="getMaterialPath(0)">
+                            <div class="student-answer-audio-btn-img"></div>
+                            <span>原音</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="questions" v-if="questions.length>0">
+                    <div v-for="(question, index) in questions">
+                        <!-- 朗读题 -->
+                        <div class="pd-container" v-if="question.structure_type === 'collector.read'">
+                            <div class="question">
+                                <!-- 用户得分以及录音 -->
+                                <div class="q_score">
+                                    <span class="q_score_title" v-html="(index+1)+'.'"></span>
+                                    <span>(<span class="q_score_con"></span>)</span>
+                                    <span class="record_icon user_record" :id="question.info.stid+'_1'" :data-path="getMaterialPath(index)"></span>
+                                </div>
+                                <!-- 原文text以及录音 -->
+                                <div class="recordText_con">
+                                    <p class="">
+                                        <p class="inline-block" v-html="formatHtmlPContent(question.info.value,question.info.audio,index)"></p>
+                                    </p>
+                                    <!-- <p v-if="question.info.symbol" class="">
+                                        <p class="inline-block" v-html="question.info.symbol"></p>
+                                    </p> -->
+                                    <div class="content_img" v-if="question.info.image" @click="showBigImg(index,question.info.image)">
+                                        <img :src="getMaterialUrl(index,question.info.image)" alt="原文图片">
+                                        <div class="show_big_img_tip">查看大图</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 三问五答 角色扮演 情景问答 -->
+                        <div class="pd-container" v-if="question.structure_type === 'collector.3q5a' ||  question.structure_type === 'collector.role' ||  question.structure_type === 'collector.dialogue'">
+                            <div class="recordText_con">
+                                <p class="">
+                                    <p class="inline-block" v-html="formatHtmlPContent(question.info.value, question.info.audio,index)"></p>
+                                </p>
+                                <div class="content_img" v-if="question.info.image" @click="showBigImg(index,question.info.image)">
+                                    <img :src="getMaterialUrl(index,question.info.image)" alt="原文图片">
+                                    <div class="show_big_img_tip">查看大图</div>
+                                </div>
+                            </div>
+                            <div class="info_questions pb20">
+                                <div class="info_question mt20 border_b pb20" v-for="(info_q, info_q_index) in question.info.question">
+                                    <div class="q_score">
+                                        <span class="q_score_title" v-html="info_q.xh+'.'"> </span>
+                                        <span>(<span class="q_score_con"></span>)</span>
+                                        <span class="record_icon user_record" :id="question.info.stid + '_' + info_q.xh" :data-path="getMaterialPath(index)"></span>
+                                    </div>
+                                    <div class="info_question_title" v-html="formatHtmlPContent('问题：'+info_q.ask, info_q.askaudio, index)"></div>
+                                    <div class="content_img" v-if="info_q.askimg" @click="showBigImg(index,info_q.askimg)">
+                                        <img :src="getMaterialUrl(index,info_q.askimg)" alt="原文图片">
+                                        <div class="show_big_img_tip">查看大图</div>
+                                    </div>
+                                    <div class="" v-if="info_q.analyze" v-html="formatHtml(info_q.analyze)"></div>
+                                    <div class="info_question_answer">
+                                        <div class="inline-block" v-html="formatHtmlPContent('回答：'+info_q.answer, info_q.aswaudio,index)"></div>
+                                    </div>
+                                    <div class="info_question_ask color_green" v-if="info_q.std.length>0">
+                                        <p>参考答案：</p>
+                                        <p v-for="(info_q_std, info_q_std_index) in info_q.std" v-if="info_q_std_index<3"><span v-html="formatAnswerHtmlPContent(info_q_std.value, info_q_std.audio,index)"></span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 看图说话 -->
+                        <div class="pd-container" v-if="question.structure_type === 'collector.picture'">
+                            <div class="q_score" v-if="!isRepeatQuestion">
+                                <span class="q_score_title" v-html="(index+1)+'.'"> </span>
+                                <span>(<span class="q_score_con"></span>)</span>
+                                <span class="record_icon user_record" :id="question.info.stid+'_1'" :data-path="getMaterialPath(index)"></span>
+                            </div>
+                            <div class="recordText_con">
+                                <p class="">
+                                    <p class="inline-block" v-html="formatHtmlPContent(question.info.value, question.info.audio,index)"></p>
+                                </p>
+                                <div class="content_img" v-if="question.info.image" @click="showBigImg(index, question.info.image)">
+                                    <img :src="getMaterialUrl(index,question.info.image)" alt="原文图片">
+                                    <div class="show_big_img_tip">查看大图</div>
+                                </div>
+                            </div>
+                            <div class="info_question_ask color_green" v-if="question.info.std.length>0">
+                                <p>参考答案：</p>
+                                <p v-for="(info_q_std, info_q_std_index) in question.info.std" v-if="info_q_std_index<3" v-html="formatAnswerHtmlPContent(info_q_std.value, info_q_std.audio,index)">
+                                </p>
+                            </div>
+                        </div>
+                        <!-- 选择题 -->
+                        <div v-if="question.structure_type === 'collector.choose'" class="content_choose border_b_div mb20">
+                            <div class="pd-container pb20" v-if="question.info.st_sm" v-html="question.info.st_sm"></div>
+                            <!-- <div class="pd-container question_title" v-if="question.info.st_nr" v-html="getNotScoreContentAudioHtml(question.info,index)"></div> -->
+                            <div class="pd-container question_title pb20" v-html="getNotScoreContentAudioHtml(question.info,index)"></div>
+                            <div class="pd-container pb20" v-if="question.info.st_content" v-html="question.info.st_content"></div>
+                            <div class="pd-container content_img" v-if="question.info.st_pic" @click="showBigImg(index, question.info.st_pic)">
+                                <img :src="getMaterialUrl(index,question.info.st_pic)" alt="原文图片">
+                                <div class="show_big_img_tip">查看大图</div>
+                            </div>
+                            <div v-for="(xt_item, xt_index) in question.info.xtlist">
+                                <!-- 图片选择题 -->
+                                <div class="question1 pd-container" :id="'choose_'+question.info.stid+'_'+xt_item.xt_xh" v-if="isPicChooseQue(xt_item)" :data-xth="xt_item.xt_xh">
+                                    <div class="question1_title error" v-html="getXtContentAudioHtml(xt_item,index)"></div>
+                                    <div class="question_value" v-if="xt_item.xt_value" v-html="xt_item.xt_value"></div>
+                                    <div class="content_img" v-if="xt_item.xt_pic" @click="showBigImg(index, xt_item.xt_pic)">
+                                        <img :src="getMaterialUrl(index,xt_item.xt_pic)" alt="原文图片">
+                                        <div class="show_big_img_tip">查看大图</div>
+                                    </div>
+                                    <div>
+                                        <ul class="clear">
+                                            <li class="choose1" :class="xx_item.selected ? 'choose1_selected' : ''" v-for="(xx_item, xx_index) in xt_item.xxlist" :id="question.info.stid+'_'+xt_item.xt_xh+'_'+xx_item.xx_xh">
+                                                <img :src="getMaterialUrl(index,xx_item.xx_wj)" alt="选择项" class="choose1_img">
+                                                <!-- <div class="choose1_input error" v-text="xx_item.xx_mc"></div> -->
+                                                <div class="choose1_input error"></div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <!-- 普通选择题 -->
+                                <div class="question2 pd-container" v-else :id="'choose_'+question.info.stid+'_'+xt_item.xt_xh" :data-xth="xt_item.xt_xh">
+                                    <div class="question2_title" v-html="getXtContentAudioHtml(xt_item,index)"></div>
+                                    <div class="question_value" v-if="xt_item.xt_value || xt_item.xt_wj2" v-html="getXtValueContentAudioHtml(xt_item,index)"></div>
+                                    <div class="content_img" v-if="xt_item.xt_pic" @click="showBigImg(index, xt_item.xt_pic)">
+                                        <img :src="getMaterialUrl(index,xt_item.xt_pic)" alt="原文图片">
+                                        <div class="show_big_img_tip">查看大图</div>
+                                    </div>
+                                    <div class="choose2_con">
+                                        <div class="choose2" :class="xx_item.selected ? 'choose2_selected' : ''" v-for="(xx_item, xx_index) in xt_item.xxlist" :id="question.info.stid+'_'+xt_item.xt_xh+'_'+xx_item.xx_xh">
+                                            <div class="choose2_input"></div>
+                                            <p class="choose2_text" v-html="xx_item.xx_mc+'. '+xx_item.xx_nr"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 填空题 -->
+                        <div v-if="question.structure_type === 'collector.fill'" class="pd-container content_fill_answer pd-container">
+                            <div class="q_score">
+                                <span class="q_score_title" v-html="index+1+'.'"> </span>
+                                <span>(<span class="q_score_con"></span>)</span>
+                                <span class="" :data-id="question.info.stid"></span>
+                            </div>
+                            <div class="recordText_con">
+                                <p class="">
+                                    <p class="inline-block" v-html="formatHtmlPContent(question.info.value, question.info.audio,index)"></p>
+                                </p>
+                                <div class="content_img" v-if="question.info.image" @click="showBigImg(index, question.info.image)">
+                                    <img :src="getMaterialUrl(index,question.info.image)" alt="原文图片">
+                                    <div class="show_big_img_tip">查看大图</div>
+                                </div>
+                            </div>
+                            <div class="pb20" v-for="(item, index) in question.info.std" :data-xth="item.xth" :data-th="item.th">
+                                <span class="clear">
+                                    <span class="fl fill_word_number" v-text="item.th.indexOf('.') > -1 ? item.th : (item.th+'.')"></span>
+                                    <span class="fl fill_word">
+                                        <!-- <span class="number" v-text="item.th"></span> -->
+                                        <!-- <span class="fill_number" v-show="index == 0" v-text="'点击作答'"></span> -->
+                                        <input :id="question.info.stid+'_'+item.xth" type="text" class="fill_word_input">
+                                    </span>
+                                </span>
+
+                                <!-- <span class="fill_word"> 
+                                    <span class="number" v-text="item.th"></span>
+                                    <span class="fill_number" v-text="item.th"></span>
+                                    <input :id="question.info.stid+'_'+item.xth" type="text" class="fill_word_input">
+                                </span> -->
+                            </div>
+                            <div class="info_question_ask color_green" v-if="question.info.std.length>0">
+                                <p>参考答案：</p>
+                                <p v-for="(info_q_std, info_q_std_index) in question.info.std" v-html="formatHtml(info_q_std.th+'. '+info_q_std.value)" :data-xth="info_q_std.xth" :data-th="info_q_std.th"></p>
+                            </div>
+                        </div>
+                        <!-- 跟读与模仿 -->
+                        <div v-if="question.structure_type === 'collector.repeat'">
+                            <div class="question2 pd-container question-repeat" v-for="(fj_item, fj_index) in question.info.fj">
+                                <div class="q_score red">
+                                    <span class="q_score_title" v-text="fj_item.xh+'. '"></span>
+                                    <span>(<span class="q_score_con">未作答</span>)</span>
+                                    <div class="my_record floatR record_icon" :id="question.info.stid+'_'+fj_item.xh" :data-path="getMaterialPath(index)">
+                                        <!-- <img src="images/ans_my_record.png" alt="我的录音" class="record_icon"> -->
+                                    </div>
+                                    <div class="stander_record floatR record_icon" :id="fj_item.audio" :data-path="getMaterialPath(index)">
+                                        <!-- <img src="images/ans_record_icon.png" alt="录音" class="record_icon stander_record" :id="fj_item.audio"> -->
+                                    </div>
+                                </div>
+                                <div class="">
+                                    <p v-html="fj_item.value"></p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 朗读句子 -->
+                        <div v-if="question.structure_type === 'collector.word'">
+                            <div class="question2 pd-container" :id="question.info.stid">
+                                <div class="q_score red">
+                                    <span class="q_score_title" v-text="(index+1) + '.'"></span>
+                                    <span>(<span class="q_score_con">未作答</span>)</span>
+                                    <img src="images/ans_my_record.png" alt="我的录音" class="record_icon my_record" :id="question.info.stid+'_'+question.info.xh">
+                                </div>
+                                <div class="recordText_con">
+                                    <p class="" v-html="formatHtmlPContent(question.info.value, question.info.audio,index)"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="show-qeustion-detail" v-if="isRepeatQuestion" @click="showQuestionDetail">
+                    <div class="mr12">{{isShowQuestionDetail ? '收起' : '展开'}}题目详情</div>
+                    <div class="show-qeustion-detail-icon" :class="{'active':isShowQuestionDetail}"></div>
+                </div>
+            </div>
+            <div class="audio_con none" v-if="questions.length>0 && !isRepeatQuestion">
+                <button class="stander_record" :id="questions[0]['info']['audio']" :data-path="getMaterialPath(0)" v-if="questions[0]['info']['audio'] && isScoreOnTop">
+                    <img src="images/ans_record_icon_blue.png" alt="" class="record_icon"><span>原音</span>
+                </button>
+                <button class="my_record" :id="questions[0]['info']['stid']" :data-path="getMaterialPath(0)">
+                    <img src="images/ans_my_record_blue.png" alt="" class="record_icon"><span>录音</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- 复述题诊断相关UI 开始-->
+        <div class="repeat-content" v-if="isRepeatQuestion">
+            <div class="white-block mb-16 pd-lr-16">
+                <div class="flex">
+                    <div class="student-answer-audio-text">学生回答</div>
+                    <div class="student-answer-audio-btn student-audio" :id="questions[0]['info']['stid']" :data-path="getMaterialPath(0)">
+                        <div class="student-answer-audio-btn-img student-answer-audio-btn-img-1"></div>
+                        <span>播放</span>
+                    </div>
+                </div>
+                <div class="text-content" v-html="studentOriginText"></div>
+                <div v-if="diagnosisButtonVisible">
+                    <div class="create-report-btn mb-16" v-if="repeatDiagnosisStatus === 0" @click="startRepeatQuestionDiagnosis">AI诊断</div>
+                    <div class="flex mb-16 justify-between" v-else-if="repeatDiagnosisStatus === 1" @click="stopRepeatQuestionDiagnosis">
+                        <div class="create-report-process ">
+                           <div class="create-report-process-color" :style="{width: repeatDiagnosisProgress+'%'}"></div>
+                           <div class="create-report-process-text">诊断中{{repeatDiagnosisProgress}}%</div>
+                        </div>
+                        <div class="create-report-btn active">停止诊断</div>
+                    </div>
+                    <div class="create-report-btn disabled mb-16" v-else-if="repeatDiagnosisStatus === 2">诊断完成，下拉查看诊断报告</div>
+                    <div class="tips" v-if="repeatDiagnosisStatus == 0">* 一键获取要点、语言维度的AI诊断报告</div>
+                    <div class="tips" v-if="repeatDiagnosisStatus == 1">* 已开始AI诊断，预计需要1分钟。可以先去学习其他内容，晚点回来查看结果~</div>
+                </div>
+            </div>
+            <div class="white-block" v-if="repeatDiagnosisData">
+                <div class="tab">
+                    <div class="tab-item" v-for="(tab, index) in repeatTabs" :class="{'active': repeatTabIndex === index}" @click="repeatTabIndex = index">{{tab}}</div>
+                </div>
+                <div class="repeat-analysis-item pd-lr-16" v-show="repeatTabIndex === 0">
+                    <div class="text-content-cn" v-html="repeatDiagnosisGlobalAssessment"></div>
+                </div>
+                <!-- 要点诊断 -->
+                <div class="repeat-analysis-item pd-lr-16" v-show="repeatTabIndex === 1">
+                    <div class="flex justify-between">
+                        <div class=""></div>
+                        <div class="flex repeat-more-btn" v-if="hasRepeatDiagnosisDataCorrect" @click="ydfxStudentAnswerVisible = !ydfxStudentAnswerVisible">
+                            <div>{{ydfxStudentAnswerVisible ? '收起' : '展开'}}正确要点</div>
+                            <img class="icon-down-img" :class="{'active': ydfxStudentAnswerVisible}" src="images/icon-arrow-down-blue.png" alt="">
+                        </div>
+                    </div>
+                    <div class="mb-28"  v-for="(item, index) in repeatDiagnosisData">
+                        <div v-if="typeof item.content_score !== 'undefined'">
+                            <div class="flex justify-between">
+                                <div class="repeat-title">要点{{item.keypoint}}</div>
+                            </div>
+                            <div class="text-content" v-html="item.keypointValue"></div>
+                            <div class="grey-block">
+                                <div class="flex justify-between" v-if="item.student_answer === '学生作答未提到'">
+                                    <div class="">学生作答未提到</div>
+                                </div>
+                                <div class="flex justify-between" v-else>
+                                    <div class="repeat-title">学生回答</div>
+                                    <div class="text-answer-status" v-if="item.content_score==1">要点回答正确</div>
+                                </div>
+                                <div class="" v-if="item.student_answer !== '学生作答未提到'">
+                                    <div class="text-content info-item" v-html="formatStudentAnswer(item.student_answer)" v-show="item.content_score!=1 || ydfxStudentAnswerVisible"></div>
+                                    <div class="text-content info-item" v-if="item.content_score!=1">
+                                        <span class="text-bold">诊断：</span>
+                                        <span>{{formatContentComment(item.content_comment)}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div v-show="repeatTabIndex === 2">
+                    <!-- 语言诊断 -->
+                    <div class="repeat-analysis-item">
+                        <div class="yftj-content pd-lr-16">
+                            <div class="flex justify-between">
+                                <div class="flex">
+                                    <div class="title-index title-index-1"></div>
+                                    <div class="repeat-title">语法统计</div>
+                                </div>
+                                <div class="flex repeat-more-btn" v-if="repeatDiagnosisDataErrorList.length>3" @click="errorListAllVisible = !errorListAllVisible">
+                                    <div>{{errorListAllVisible ? '收起' : '展开'}}所有统计</div>
+                                    <img class="icon-down-img" :class="{'active': errorListAllVisible}" src="images/icon-arrow-down-blue.png" alt="">
+                                </div>
+                            </div>
+                            <div v-if="repeatDiagnosisDataErrorList.length>0">
+                                <div class="flex-wrapper mb-12" v-for="(item, index) in repeatDiagnosisDataErrorList" v-show="index<3 || errorListAllVisible">
+                                    <div class="yftj-title">{{item.error_type}}</div>
+                                    <div class="yftj-process-content flex-wrapper">
+                                        <div class="yftj-process" :style="{width: (item.count/repeatDiagnosisDataErrorMaxCount*100)+'%'}"></div>
+                                        <div class="yftj-num">{{item.count}}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="empty-data" v-else>
+                                <div class="empty-data-img"></div>
+                                <div class="empty-data-text">没有语法错误</div>
+                            </div>
+                        </div>
+                        <div class="pd-16">
+                            <div class="flex justify-between mb-16">
+                                <div class="flex">
+                                    <div class="title-index title-index-2"></div>
+                                    <div class="repeat-title">详细分析</div>
+                                </div>
+                                <div class="flex repeat-more-btn" v-if="hasRepeatDiagnosisDataErrorListCorrect" @click="yyfxStudentAnswerVisible = !yyfxStudentAnswerVisible">
+                                    <div>{{yyfxStudentAnswerVisible ? '收起' : '展开'}}正确要点</div>
+                                    <img class="icon-down-img" :class="{'active': yyfxStudentAnswerVisible}" src="images/icon-arrow-down-blue.png" alt="">
+                                </div>
+                            </div>
+                            <template v-if="repeatDiagnosisDataErrorList.length>0">
+                                <div class="mb-28" v-for="(item, index) in repeatDiagnosisData">
+                                    <div v-if="typeof item.content_score !== 'undefined'">
+                                        <div class="flex justify-between">
+                                            <div class="repeat-title">要点{{item.keypoint}}</div>
+                                        </div>
+                                        <div class="text-content" v-html="item.keypointValue"></div>
+                                        <div class="grey-block">
+                                            <div class="flex justify-between" v-if="item.student_answer === '学生作答未提到'">
+                                                <div class="">学生作答未提到</div>
+                                            </div>
+                                            <div class="flex justify-between" v-else>
+                                                <div class="repeat-title">学生回答</div>
+                                                <div class="text-answer-status" v-if="item.grammar_score==1">无语法错误</div>
+                                            </div>
+                                            <div class="" v-if="item.student_answer !== '学生作答未提到'">
+                                                <div class="text-content info-item" v-html="formatStudentText(item)" v-show="item.grammar_score!=1 || yyfxStudentAnswerVisible"></div>
+                                                <div class="text-content info-item" v-if="item.grammar_score!=1">
+                                                    <span class="text-error-tag">{{item.grammar_error_type}}</span>
+                                                    <span>{{ formatGrammarComment(item.grammar_comment) }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+                            <div class="empty-data" v-else>
+                                <div class="empty-data-img"></div>
+                                <div class="empty-data-text">没有语法错误</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 复述题诊断相关UI 结束-->
+
+
+        <!-- 失分音素相关 -->
+        <div class="word-analysis new-result-con">
+            <div class="pb20">
+                <div class="title-wrapper">
+                    <div>题目得分</div>
+                    <div class="flex-wrapper">
+                        <div class="star_con" :class="'star_level_'+scoreStarRationLevel">
+                            <div class="star_img"></div>
+                            <div class="star_img"></div>
+                            <div class="star_img"></div>
+                            <div class="star_img"></div>
+                            <div class="star_img"></div>
+                        </div>
+                        <div class="score-data" :class="scoreRationColor">
+                            <span class="" v-text="getScore"></span>分
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="word-analysis">
+            <div class="analysis-item dwd-analysis none">
+                <div class="title-wrapper">
+                    多维度分析
+                </div>
+                <div class="dwd-desc-text">
+                    <span>{{phonemeInfo.comment}}</span>
+                    <template v-if="phonemeInfo.speedText">
+                        <span>你的语速为<span class="color-blue"><span>{{phonemeInfo.speed}}</span>词/分钟</span></span>
+                        <span class="speed-status" :class="{'warning':phonemeInfo.speedText === '缓慢' }">{{phonemeInfo.speedText}}</span>
+                    </template>
+                </div>
+                <div class="dwd-score">
+                    <div class="dwd-item zqd-item" id="dwdAccuracy">
+                        <div class="text">准确度</div>
+                        <div class="data">
+                            <span class="num"></span>
+                            <span class="">分</span>
+                        </div>
+                    </div>
+                    <div class="dwd-item lcd-item" id="dwdFluency">
+                        <div class="text">流畅度</div>
+                        <div class="data">
+                            <span class="num"></span>
+                            <span class="">分</span>
+                        </div>
+                    </div>
+                    <div class="dwd-item wzd-item" id="dwdIntegrity">
+                        <div class="text">完整度</div>
+                        <div class="data">
+                            <span class="num"></span>
+                            <span class="">分</span>
+                        </div>
+                    </div>
+                    <div class="dwd-item wzd-item" id="dwdStandard">
+                        <div class="text">标准度</div>
+                        <div class="data">
+                            <span class="num"></span>
+                            <span class="">分</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="analysis-item " v-if="phonemeInfo.lostWords && phonemeInfo.lostWords.length">
+                <div class="title-wrapper">
+                    <div class="flex-wrapper">
+                        失分单词<span class="icon-question"  @click="setMaskModalVisible('sfdcMaskVisible', true)"></span>
+                    </div>
+                    <div class="show-more none">展开全部</div>
+                </div>
+                <div class="words-scroll-content">
+                    <div class="words-wrapper">
+                        <div class="word-item list-item" v-for="(word, index) in phonemeInfo.lostWords">{{word.value}}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="analysis-item " v-if="phonemeInfo.missReadWords && phonemeInfo.missReadWords.length">
+                <div class="title-wrapper">
+                    <div class="flex-wrapper">
+                        漏读单词
+                    </div>
+                    <div class="show-more none">展开全部</div>
+                </div>
+                <div class="words-scroll-content">
+                    <div class="words-wrapper">
+                        <div class="word-item list-item" v-for="(word, index) in phonemeInfo.missReadWords">{{word.value}}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="analysis-item " v-if="phonemeInfo.excessReadWords && phonemeInfo.excessReadWords.length">
+                <div class="title-wrapper">
+                    <div class="flex-wrapper">
+                        多读单词
+                    </div>
+                    <div class="show-more none">展开全部</div>
+                </div>
+                <div class="words-scroll-content">
+                    <div class="words-wrapper">
+                        <div class="word-item list-item" v-for="(word, index) in phonemeInfo.excessReadWords">{{word.value}}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="analysis-item " v-if="phonemeInfo.lostPhoneme && phonemeInfo.lostPhoneme.length">
+                <div class="title-wrapper">
+                    <div class="flex-wrapper">
+                        失分音素<span class="icon-question" @click="setMaskModalVisible('sfysMaskVisible', true)"></span>
+                    </div>
+                    <div class="show-more none">展开全部</div>
+                </div>
+                <div class="words-scroll-content">
+                    <div class="words-wrapper">
+                        <div class="phoneme-item list-item" v-for="(word, index) in phonemeInfo.lostPhoneme">{{word.value}}</div>
+                    </div>
+                </div>
+            </div>
+            <!-- <div class="mask" v-show="sfysMaskVisible">
+                <div class="modal">
+                    <div class="modal-title">失分音素</div>
+                    <div class="modal-content">
+                        <p>1、失分音素指发音不准确的音素</p>
+                        <p>2、点击音素可查看发音方法</p>
+                    </div>
+                    <div class="modal-btn-wrapper">
+                        <div class="btn-item color-blue" @click="setMaskModalVisible('sfysMaskVisible', false)">我知道了</div>
+                    </div>
+                </div>
+            </div> -->
+            <!-- <div class="mask" v-show="sfdcMaskVisible">
+                <div class="modal">
+                    <div class="modal-title">失分单词</div>
+                    <div class="modal-content">
+                        <p>1、失分单词指得分率低于90%的单词</p>
+                        <p>2、点击单词可查询单词释义</p>
+                    </div>
+                    <div class="modal-btn-wrapper">
+                        <div class="btn-item color-blue" @click="setMaskModalVisible('sfdcMaskVisible', false)">我知道了</div>
+                    </div>
+                </div>
+            </div> -->
+            <!-- <div class="mask" v-show="yinbiaoMaskVisible">
+                <div class="modal">
+                    <div class="modal-title">音标i:</div>
+                    <div class="modal-content">
+                        <p>【发音方法】发长音/i: /的时候，可以依照汉语中的“衣”音，但舌面要离开上腭，使气流从口腔泄出时不在舌面上发生任何摩擦。这里有一个特别的方法，可以使你在发音时避免发生摩擦，这种方法被人们称为微笑的“一”，就是在面部保持一种微笑的状态下发汉语的“一”，这时汉语“一”发音和英语的/i: /就极其接近。后面很长很长很长很长很长很长很长很长很长就会需要滚动
+                        </p>
+                    </div>
+                    <div class="modal-btn-wrapper">
+                        <div class="btn-item" @click="setMaskModalVisible('yinbiaoMaskVisible', false)">关闭</div>
+                        <div class="btn-item color-blue">去做音标练习</div>
+                    </div>
+                </div>
+            </div> -->
+        </div>
+    </div>
+</body>
+<script src="js/jquery.min.js"></script>
+<script src="js/vue.min.js"></script>
+<script src="js/fn.js"></script>
+<!-- <script src="js/templet-data.js"></script> -->
+<script src="js/ets_common.js"></script>
+<script src="js/templet_common_answer.js"></script>
+<script src="js/templet_audio_play.js"></script>
+
+</html>

@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>音标</title>
+	<script src="js/flexible.js"></script>
+    <script src="js/polyfill.js"></script>
+	<script src="js/jquery.js"></script>
+	<link rel="stylesheet" href="css/word-map.css">
+	<script>
+		function getLoad(obj) {
+	        $(".bgimg").css("width", $(document).width() + "px");
+	        if (obj.height === 0 || obj.width === 0) {
+	            console.log("enter getLoad 1 : " + obj.height + " ;; " + obj.width);
+
+	            var path = obj.src;
+	            var index = path.indexOf("?");
+	            if (index != -1) {
+	                path = path.substring(0, index);
+	            }
+	            console.log("enter getLoad 2 : " + path);
+	            path = path + "?t=" + Date.parse(new Date());
+	            $(".bgimg").attr('src', path);
+	            console.log("enter getLoad 3 : " + path);
+	        }
+	        console.log("enter getLoad 4 : " + obj.height + " ;; " + obj.width + " ;; " + obj.src);
+	    }
+	</script>
+</head>
+
+<body >
+	<!-- 容器 -->
+	<div id='dxApp'>
+		<div class="map-con">
+			<!-- 音标 -->
+			<div class="map-cir phonogram" id="7201" name="前元音[ɪ]" data-index='0'>
+				<div class="map-cir-text">ɪ</div>
+				<div class="map-cir-star">
+				</div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir phonogram" id="7202" name="前元音[i：]">
+				<div class="map-cir-text indent-i">i：</div>
+				<div class="map-cir-star">
+				</div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir phonogram" id="7203" name="前元音[e]">
+				<div class="map-cir-text">e</div>
+				<div class="map-cir-star">
+				</div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir phonogram" id="7204" name="前元音[æ]">
+				<div class="map-cir-text">æ</div>
+				<div class="map-cir-star">
+				</div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir PhonogramTest" id="test1" name="test 1">
+				<div class="map-cir-text map-cir-text-test">Quiz 1</div>
+				<div class="map-cir-star">
+				</div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir phonogram" id="7205" name="前元音[æ]">
+				<div class="map-cir-text">ə</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir phonogram" id="7206" name="前元音[æ]">
+				<div class="map-cir-text">ɜ:</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir phonogram" id="7207" name="前元音[æ]">
+				<div class="map-cir-text">ʌ</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir PhonogramTest" id="test2" name="前元音[æ]">
+				<div class="map-cir-text map-cir-text-test">Quiz 2</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir phonogram" id="7208" name="前元音[æ]">
+				<div class="map-cir-text">ɑ:</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir phonogram" id="7209" name="前元音[æ]">
+				<div class="map-cir-text">ɔ:</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir phonogram" id="7210" name="前元音[æ]">
+				<div class="map-cir-text">ɒ</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir phonogram" id="7211" name="前元音[æ]">
+				<div class="map-cir-text">u:</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir phonogram" id="7212" name="前元音[æ]">
+				<div class="map-cir-text">ʊ</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir PhonogramTest" id="test3" name="前元音[æ]">
+				<div class="map-cir-text map-cir-text-test">Quiz 3</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir phonogram" id="7213" name="前元音[æ]">
+				<div class="map-cir-text">eɪ</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir phonogram" id="7214" name="前元音[æ]">
+				<div class="map-cir-text">əʊ</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir phonogram" id="7215" name="前元音[æ]">
+				<div class="map-cir-text">aɪ</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir phonogram" id="7216" name="前元音[æ]">
+				<div class="map-cir-text">aʊ</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir phonogram" id="7217" name="前元音[æ]">
+				<div class="map-cir-text">ɔɪ</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir PhonogramTest" id="test4" name="前元音[æ]">
+				<div class="map-cir-text map-cir-text-test">Quiz 4</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir phonogram" id="7218" name="前元音[æ]">
+				<div class="map-cir-text">ɪə</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir phonogram" id="7219" name="前元音[æ]">
+				<div class="map-cir-text">eə</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir phonogram" id="7220" name="前元音[æ]">
+				<div class="map-cir-text">ʊə</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir PhonogramTest" id="test5" name="前元音[æ]">
+				<div class="map-cir-text map-cir-text-test">Quiz 5</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir phonogram" id="7221" name="前元音[æ]">
+				<div class="map-cir-text">p</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir phonogram" id="7222" name="前元音[æ]">
+				<div class="map-cir-text">b</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir phonogram" id="7223" name="前元音[æ]">
+				<div class="map-cir-text">t</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir phonogram" id="7224" name="前元音[æ]">
+				<div class="map-cir-text">d</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir phonogram" id="7225" name="前元音[æ]">
+				<div class="map-cir-text">k</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir phonogram" id="7226" name="前元音[æ]">
+				<div class="map-cir-text">g</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir PhonogramTest" id="test6" name="前元音[æ]">
+				<div class="map-cir-text map-cir-text-test">Quiz 6</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir phonogram" id="7227" name="前元音[æ]">
+				<div class="map-cir-text">f</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir phonogram" id="7228" name="前元音[æ]">
+				<div class="map-cir-text">v</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir phonogram" id="7229" name="前元音[æ]">
+				<div class="map-cir-text">θ</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir phonogram" id="7230" name="前元音[æ]">
+				<div class="map-cir-text">ð</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir phonogram" id="7231" name="前元音[æ]">
+				<div class="map-cir-text">s</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir phonogram" id="7232" name="前元音[æ]">
+				<div class="map-cir-text">z</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir phonogram" id="7233" name="前元音[æ]">
+				<div class="map-cir-text">ʃ</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir phonogram" id="7234" name="前元音[æ]">
+				<div class="map-cir-text">ʒ</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir phonogram" id="7235" name="前元音[æ]">
+				<div class="map-cir-text">h</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir phonogram" id="7236" name="前元音[æ]">
+				<div class="map-cir-text">r</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir PhonogramTest" id="test7" name="前元音[æ]">
+				<div class="map-cir-text map-cir-text-test">Quiz 7</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir phonogram" id="7237" name="前元音[æ]">
+				<div class="map-cir-text">tʃ</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir phonogram" id="7238" name="前元音[æ]">
+				<div class="map-cir-text">dʒ</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir phonogram" id="7239" name="前元音[æ]">
+				<div class="map-cir-text">tr</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir phonogram" id="7240" name="前元音[æ]">
+				<div class="map-cir-text">dr</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir phonogram" id="7241" name="前元音[æ]">
+				<div class="map-cir-text">ts</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir phonogram" id="7242" name="前元音[æ]">
+				<div class="map-cir-text">dz</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir PhonogramTest" id="test8" name="前元音[æ]">
+				<div class="map-cir-text map-cir-text-test">Quiz 8</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir phonogram" id="7243" name="前元音[æ]">
+				<div class="map-cir-text">m</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir phonogram" id="7244" name="前元音[æ]">
+				<div class="map-cir-text">n</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir phonogram" id="7245" name="前元音[æ]">
+				<div class="map-cir-text">ŋ</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir PhonogramTest" id="test9" name="前元音[æ]">
+				<div class="map-cir-text map-cir-text-test">Quiz 9</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir phonogram" id="7246" name="前元音[æ]">
+				<div class="map-cir-text">l</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir PhonogramTest" id="test10" name="前元音[æ]">
+				<div class="map-cir-text map-cir-text-test notlh">Quiz
+					<BR>10</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir phonogram" id="7247" name="前元音[æ]">
+				<div class="map-cir-text">w</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir phonogram" id="7248" name="前元音[æ]">
+				<div class="map-cir-text">j</div>
+				<div class="map-cir-star"></div>
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+			<div class="map-cir PhonogramTest" id="test11" name="前元音[æ]">
+				<div class="map-cir-text map-cir-text-test notlh">Quiz
+					<BR>11</div>
+				<div class="map-cir-star"></div>	
+				<img src="images/word_lock.png" class='lock-img'>
+			</div>
+
+		</div>
+		<img src='images/new-bg-map-hk.png' onload="getLoad(this);" alt="" class="bgimg" v-if="isHongkong === '1'">
+		<img src='images/new-bg-map.png' onload="getLoad(this);" alt="" class="bgimg" v-else>
+	</div>
+</body>
+<script src="js/vue.min.js"></script>
+<script src="js/fn.js"></script>
+<script src="js/word-map.js"></script>
+
+</html>

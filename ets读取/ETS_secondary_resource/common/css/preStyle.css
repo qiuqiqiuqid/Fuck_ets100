@@ -1,0 +1,418 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -o-box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #F3F6FA;
+    
+}
+
+body {
+    position: relative;
+}
+
+body>div {
+    font-size: 0.426667rem;
+}
+
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.fl {
+    float: left;
+}
+
+.fr {
+    float: right;
+}
+
+.cl_fix:after {
+    content: '';
+    display: block;
+    width: '';
+    clear: both;
+}
+
+.none {
+    display: none;
+}
+
+.color_red {
+    color: #ff6268;
+}
+
+#app .notranslateX {
+    transform: translateX(0);
+    -webkit-transform: translateX(0);
+    -o-transform: translateX();
+    -moz-transform: translateX(0);
+}
+
+#app .notranslateY {
+    transform: translateY(0);
+    -webkit-transform: translateY(0);
+    -o-transform: translateY();
+    -moz-transform: translateY(0);
+}
+
+.translateX1 {
+    transform: translateX(-100%);
+    -webkit-transform: translateX(-100%);
+    -o-transform: translateX(-100%);
+    -moz-transform: translateX(-100%);
+}
+
+.translateX2 {
+    transform: translateX(-200%);
+    -webkit-transform: translateX(-200%);
+    -o-transform: translateX(-200%);
+    -moz-transform: translateX(-200%);
+}
+
+.translateY1 {
+    transform: translateY(-100%);
+    -webkit-transform: translateY(-100%);
+    -o-transform: translateY(-100%);
+    -moz-transform: translateY(-100%);
+}
+
+.slide {
+    /*过渡效果*/
+    transition: transform 0.3s linear;
+    -webkit-transition: transform 0.3s linear;
+    -o-transition: transform 0.3s linear;
+    -moz-transition: transform 0.3s linear;
+    -webkit-overflow-scrolling: touch;
+}
+
+.container,
+.school_con,
+.grade_con,
+.area_con,
+.grade_noall_con,
+.book_type_con {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 100;
+}
+
+.all-bar {
+    position: fixed;
+    left: 0;
+    padding-left: 0.64rem;
+    right: 0;
+    padding-right: 0.453rem;
+    top: 0;
+    /*top:-1;*/
+    /*z-index: 999;*/
+    z-index: 99998;
+}
+
+.all-bar .time-status-bar {
+    height: 0.64rem;
+}
+
+
+/*页面头部栏*/
+
+.all-bar.scrolling {
+    background-color: #fff;
+    border-bottom: 0.013rem solid #e6e6e6
+}
+
+.head-operate-container {
+    display: flex;
+    display: -webkit-flex;
+    display: -ms-flex;
+    display: -moz-flex;
+    display: -o-flex;
+    /*height: 1.173rem;*/
+    height: 1.173rem;
+    justify-content: space-between;
+    -webkit-justify-content: space-between;
+    -moz-justify-content: space-between;
+    -o-justify-content: space-between;
+    -ms-justify-content: space-between;
+    align-items: center;
+    -webkit-align-items: center;
+    -moz-align-items: center;
+    -ms-align-items: center;
+    -o-align-items: center;
+    /*  position: fixed;
+    left: 0;
+    padding-left: 0.427rem;
+    right: 0;
+    padding-right: 0.427rem;
+    top: 0;
+    z-index: 999;*/
+}
+
+
+/*.head-operate-container.scroll {
+    background-color: #fff;
+    border-bottom: 0.013rem solid #e6e6e6
+}
+*/
+
+.out-on-off {
+    /*font-family: Helvetica, Arial, sans-serif;*/
+    /*font-family: fantasy;*/
+    color: #000;
+
+    /*font-size: 0.427rem;*/
+    font-size: 0.533rem;
+    /*font-size: 0.6rem;*/
+    font-weight: bold;
+    /*font-weight: bolder;*/
+}
+
+.opera-icon {
+    width: 0.64rem;
+    height: 0.64rem;
+}
+
+
+
+
+/*.area_con{
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 1.066667rem;
+    left: 0;
+    z-index: 100;
+}*/
+
+.container {
+    overflow-x: hidden;
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+}
+
+
+
+
+
+/*地区选择区域*/
+
+.slide_con {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.province_div,
+.city_div,
+.area_div {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+
+
+
+
+/*省市item*/
+
+.icon_item>div {
+    background-image: url(../images/next_icon.png);
+    background-size: 0.186667rem 0.32rem;
+    background-position: right center;
+    background-repeat: no-repeat;
+}
+
+.choose_item {
+    height: 1.12rem;
+    line-height: 1.12rem;
+    padding: 0 0.533333rem;
+    border-bottom: 1px solid #f0f0f0;
+    background-color: #fff;
+    cursor: pointer;
+    font-size: 0.373333rem;
+    color: #3c3c3c;
+}
+
+.choose_item:last-child {
+    border-bottom: none;
+}
+
+.choose_item>div {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.choose_item.choose_item_on {
+    background-color: #e2e2e2;
+}
+
+
+
+
+
+/*学校选择*/
+
+.search_div {
+    margin: 0.32rem 0.48rem 0;
+    padding: 0 0.32rem;
+    border: 1px solid #f0f0f0;
+    position: relative;
+    background-color: #fff;
+    border-radius: 0.106667rem;
+}
+
+
+
+
+
+/*mask*/
+
+.mask,
+.bjMask {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 100;
+}
+
+.mask.body_mask {
+    background-color: #fff;
+}
+
+.load-mask {
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 10000;
+}
+
+
+
+
+
+/*错误提示，弹出框＋文本*/
+
+.tips_con {
+    height: 0.8rem;
+    background-color: #212121;
+    border-radius: 0.106667rem;
+    padding: 0 0.4rem;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    margin-top: -0.4rem;
+    text-align: center;
+    line-height: 0.8rem;
+    font-size: 0.373333rem;
+    color: #fff;
+    display: none;
+    z-index: 20000;
+}
+
+.hidden {
+    display: none;
+}
+
+.clearfix:after {
+    content: "";
+    height: 0;
+    visibility: hidden;
+    display: block;
+    clear: both;
+}
+
+.clearfix {
+    zoom: 1;
+}
+
+#app {
+    /*position: relative;*/
+}
+
+
+
+/*loading框*/
+
+.loading {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: #fff;
+    display: flex;
+    display: -webkit-flex;
+    display: -moz-flex;
+    display: -ms-flex;
+    display: -o-flex;
+    align-items: center;
+    -webkit-align-items: center;
+    -moz-align-items: center;
+    -ms-align-items: center;
+    -o-align-items: center;
+    justify-content: center;
+    -webkit-justify-content: center;
+    -moz-justify-content: center;
+    -o-justify-content: center;
+    -ms-justify-content: center;
+    z-index: 9999;
+}
+.loading .content{
+    text-align: center;
+}
+.loading .content img{
+    width:2.667rem;
+    height:2.667rem;
+}
+#loading-fail .content img{
+    width: 4.373rem;
+    height: 4.907rem;
+}
+.loading .content .text {
+    text-align: center;
+    margin-top: 0.533rem;
+    font-size: 0.427rem;
+    color: #3c3c3c;
+}
+
+.loading .content .tip {
+    text-align: center;
+    margin-top: 0.16rem;
+    color: #bbb;
+    font-size: 0.373rem;
+}
+
+.hidePreScore, .hidden {
+    display: none;
+}

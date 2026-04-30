@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<xml_result>
+
+  <simple_expression_ufk lan="en" region="guangdong_zk" region_version="1" type="study" version="V4.1.0R6.81.20.35M5.81.35.0">
+    <rec_paper>
+      <rec_paper beg_pos="77" content="rec_paper" end_pos="381" except_info="0" is_rejected="false" keywords="lantern festival" phone_score="4.377979" reject_type="0" total_score="4.909112" word_hit_of_each_kw="1.00">
+        <sentence content="on the lantern festival " index="0">
+          <word beg_pos="93" content="on" end_pos="120"/>
+          <word beg_pos="120" content="the" end_pos="133"/>
+          <word beg_pos="133" content="lantern" end_pos="195"/>
+          <word beg_pos="195" content="festival" end_pos="292"/>
+        </sentence>
+      </rec_paper>
+    </rec_paper>
+  </simple_expression_ufk>
+
+</xml_result>

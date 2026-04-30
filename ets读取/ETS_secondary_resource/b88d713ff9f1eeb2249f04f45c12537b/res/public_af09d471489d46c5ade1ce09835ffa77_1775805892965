@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<xml_result>
+
+  <simple_expression_ufk lan="en" region="guangdong_zk" region_version="1" type="study" version="V4.1.0R6.81.20.35M5.81.35.0">
+    <rec_paper>
+      <rec_paper beg_pos="61" content="rec_paper" end_pos="267" except_info="0" is_rejected="false" keywords="planting trees|trees planting" phone_score="4.120865" reject_type="0" total_score="4.713334" word_hit_of_each_kw="1.00|0.50">
+        <sentence content="it's planting trees " index="0">
+          <word beg_pos="76" content="it's" end_pos="116"/>
+          <word beg_pos="116" content="planting" end_pos="173"/>
+          <word beg_pos="173" content="trees" end_pos="247"/>
+        </sentence>
+      </rec_paper>
+    </rec_paper>
+  </simple_expression_ufk>
+
+</xml_result>

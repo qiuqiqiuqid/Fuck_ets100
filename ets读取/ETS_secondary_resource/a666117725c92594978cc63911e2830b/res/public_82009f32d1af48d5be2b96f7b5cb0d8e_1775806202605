@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<xml_result>
+
+  <simple_expression_ufk lan="en" region="guangdong_zk" region_version="1" type="study" version="V4.1.0R6.81.20.35M5.81.35.0">
+    <rec_paper>
+      <rec_paper beg_pos="153" content="rec_paper" end_pos="581" except_info="0" is_rejected="false" keywords="nine morning|nine am" phone_score="4.519796" reject_type="0" total_score="4.999769" word_hit_of_each_kw="1.00|0.50">
+        <sentence content="they will meet at nine o'clock in the morning " index="0">
+          <word beg_pos="163" content="they" end_pos="194"/>
+          <word beg_pos="194" content="will" end_pos="240"/>
+          <word beg_pos="240" content="meet" end_pos="309"/>
+          <word beg_pos="309" content="at" end_pos="361"/>
+          <word beg_pos="361" content="nine" end_pos="392"/>
+          <word beg_pos="392" content="o'clock" end_pos="448"/>
+          <word beg_pos="448" content="in" end_pos="465"/>
+          <word beg_pos="465" content="the" end_pos="475"/>
+          <word beg_pos="475" content="morning" end_pos="531"/>
+        </sentence>
+      </rec_paper>
+    </rec_paper>
+  </simple_expression_ufk>
+
+</xml_result>

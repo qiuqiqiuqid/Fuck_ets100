@@ -1,0 +1,380 @@
+::-webkit-scrollbar{width:0;height:0}
+*{
+	margin: 0;
+	padding: 0;
+	box-sizing:border-box;
+	-webkit-overflow-scrolling : touch;  
+}
+.score_great{color:#3ad56f}
+.score_bad{color:#f86767}
+.score_normal{color:#000000}
+.none{display:none;}
+html,body{
+	width: 100%;
+	height: 100%;
+	background-color:transparent;
+}
+.font12{
+	font-size: 0.352941rem;
+}
+.red{
+	color: #e65151!important;
+}
+.yellow{
+	color: #f4db33;
+}
+.green{
+	color: #43cb75!important;
+}
+li{
+	list-style: none;
+}
+.floatR{
+	float: right;
+}
+.clear:after{
+	content: '';
+	width: 0;
+	height: 0;
+	display: block;;
+	clear: both;
+}
+.test_con{
+	font-size: 0.529412rem;
+}
+.test_title{
+	height: 0.78125rem;
+	overflow: hidden;
+	position: relative;
+	padding-right: 0.9375rem;
+	line-height: 0.78125rem;
+	margin: 0.75rem 0.6875rem;
+	font-size: 0.529412rem;
+}
+.t_title{
+	overflow: hidden;
+	position: relative;
+	line-height: 0.78125rem;
+	margin: 0.75rem 0;
+	font-size: 0.529412rem;
+	padding: 0 0.6875rem;
+}
+.title{
+    padding-bottom:0.46875rem;
+	word-wrap: break-word;
+	font-size:0.529412rem;
+	line-height: 0.78125rem;
+}
+.question_no_ans{
+	background-color: #fffbea!important;
+}
+.question1:before{
+	margin-bottom: 0.625rem;
+}
+.question_no_ans:before{
+	content: '该题未作答';
+    display: block;
+    width: 100%;
+    height: 0.5rem;
+    line-height: 0.5rem;
+    font-size: 0.45rem;
+    color: #e65151;
+    border-left: 0.4rem solid #E65151;
+    text-indent: 0.4rem;
+    margin-left: -0.6875rem;
+}
+.question1{
+	padding: 0.71875rem 0.6875rem;
+}
+.question1_on{
+	background-color: #e1fceb;
+}
+.choose1{
+	width: 2.8rem;
+	/*height: 2.8rem;*/
+	margin-right: 0.1rem;
+	overflow: hidden;
+	position: relative;
+	float: left;
+	cursor: pointer;
+}
+.choose1:last-child{
+	margin-right: 0;
+}
+.choose1_img{
+	width: 2.8rem;
+	height: 2.8rem;
+	vertical-align: middle;
+	border-radius: 0.12rem;
+	box-sizing: border-box;
+	/*border: 0.125rem solid transparent;*/
+	position: relative;
+}
+.choose1_input{
+	/*position: absolute;*/
+	/*right: 0;*/
+	/*bottom: 0;*/
+	/*width: 1.25rem;*/
+	width: 100%;
+	/*height: 0.65625rem;*/
+	height: 0.8rem;
+	text-align: center;
+	line-height: 0.8rem;
+	margin-top: 0.2rem;
+	/*line-height: 0.78rem;*/
+	/*background-image: url(../images/choose1_n.png);*/
+	/*background-repeat: no-repeat;*/
+	/*background-size: cover;*/
+	/*color: #fff;*/
+	text-indent: 0.8rem;
+}
+.choose1_input:before{
+	display: block;
+	content: '';
+	position: absolute;
+    width: 0.85rem;
+    height: 0.8rem;
+    background-image: url(../images/dx_select_icon.png);
+    background-repeat: no-repeat;
+    background-size: 0.65rem;
+    background-position: center;
+    left: 50%;
+    margin-left: -0.8rem;
+}
+.choose1_selected .choose1_img{
+	border: 0.125rem solid #51b0e6;
+}
+/*
+.choose1_selected{
+	border: 0.125rem solid #51b0e6;
+	background-color: #51b0e6;
+}*/
+.choose1_selected .choose1_input{
+	/*background-image: url(../images/choose1_y.png);*/
+	color: #51b0e6;
+}
+.choose1_selected .choose1_input:before{
+	background-image: url(../images/dx_selected_icon.png);
+}
+.question2{
+	padding: 0.325rem 0.6875rem;
+}
+.choose2{
+	position: relative;
+	min-height: 0.8rem;
+	line-height: 0.8rem;
+	cursor: pointer;
+}
+.choose2_selected{
+	color: #51b0e6;
+}
+.choose2_input.choose2_input_right{
+	background-image: url(../images/sel_rightIcon_green.png)!important;
+}
+.choose2_input.choose2_input_error{
+	background-image: url(../images/sel_wrongIcon_red.png)!important;
+}
+.choose2_selected .choose2_input{
+	background-image: url(../images/dx_selected_icon.png);
+}
+.choose2_input{
+	position: absolute;
+	width: 0.85rem;
+	height: 0.8rem;
+	background-image: url(../images/dx_select_icon.png);
+	background-repeat: no-repeat;
+	background-size: 0.65rem;
+	background-position: center;
+}
+
+p.choose2_text{
+	padding-left: 0.9375rem;
+	margin:0.625rem 0;
+}
+.choose2_con{
+	margin-top: 0.225rem;
+}
+.choose_title{
+	margin-bottom: 0.625rem;
+}
+
+
+.question3{
+	margin-top: 0.325rem;
+	padding: 0 0.6875rem;
+}
+.text_indent{
+	text-indent: 0.9375rem;
+}
+
+.recordText_con p{
+	font-size: 0.529412rem;
+    line-height: 0.735294rem;
+}
+.listening{text-decoration: underline;}
+.reading{
+	text-decoration: underline;
+	background-color: lightgrey;
+}
+.readed{
+	color: lightgrey;
+}
+.question_on{
+	background-color: #e1fceb;
+}
+.show_m{
+	background: url(../images/slidedown_icon.png) no-repeat center;
+	background-size: 0.46875rem;
+	position: absolute;
+	right: 0;
+	top:0;
+	width: 0.9375rem;
+	height: 0.9375rem;
+	cursor: pointer;
+}
+.hide_m{
+	background: url(../images/slideup_icon.png) no-repeat center;
+	background-size: 0.46875rem;
+	position: absolute;
+	right: 0;
+	top:0;
+	width: 0.9375rem;
+	height: 0.9375rem;
+	cursor: pointer;
+}
+.show-big-img{
+	position: relative;
+	cursor: pointer;
+}
+.show-big-img-tip{
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	width: 2.117647rem;
+	height: 0.705882rem;
+	line-height: 0.764706rem;
+	font-size: 0.352941rem;
+	text-indent: 0.176471rem;
+	background-color: #000;
+	color: #fff;
+	background: url(../images/show-big-img-tip.png) no-repeat center;
+	background-size: contain;
+	text-align: center;
+}
+/*kttb选择题*/
+/*听音判断*/
+/*答案解析*/
+.analysis{
+	padding: 0.477612rem;
+	border-radius: 0.15rem;
+	font-size: 0.447761rem;
+	margin: 0.447761rem 0.716418rem 0;
+	color: #000000;
+}
+.sen{
+	font-size: 0.716418rem;
+}
+.mt160{
+	margin-top: 2.38806rem!important;
+}
+.bg_pink{
+	background-color: #ffecec;
+}
+.bg_green{
+	background-color: #e1fceb;
+}
+.errorPic .choose1_input{
+	/*background-image: url(../images/error1.png);*/
+	color: #f86666;
+}
+
+.errorPic .choose1_input:before{
+	background-image: url(../images/sel_wrongIcon_red.png);
+}
+/*.errorB.choose1{
+	border: 0.125rem solid #f86666;
+    background-color: #f86666;
+}*/
+.rightPic .choose1_input{
+	/*background-image: url(../images/right1.png);*/
+	color: #43cb75;
+}
+.rightPic .choose1_input:before{
+	background-image: url(../images/sel_rightIcon_green.png);
+}
+/*.rightB.choose1{
+    border: 0.125rem solid #43cb75;
+    background-color: #43cb75;
+}*/
+/*凡哥之前的一些样式*/
+.mark{
+	color: #F61010;
+	font-weight: bold;
+}
+.italic{  
+	font-style:italic;  
+}
+.colorred{  
+	font-weight: bold;
+	color:red;  
+}
+.colorgreen{  
+	font-weight: bold;
+	color:green;  
+}
+.colorblue{  
+	font-weight: bold;
+	color:blue;  
+}
+.coloryellow{  
+	font-weight: bold;
+	color:yellow;  
+}
+.colorgold{  
+	font-weight: bold;
+	color:gold;  
+}
+.colorblack{  
+	font-weight: bold;
+	color:black;  
+}
+.leftclass{
+	text-align:left;display:inline-block;width:100%;text-indent:0;
+}
+.rightclass{
+	text-align:right;display:inline-block;width:100%;text-indent:0;
+}
+.centerclass{
+	text-align:center;display:inline-block;width:100%;text-indent:0;
+}
+.redline{
+	display: inline-block;
+	position: relative;
+}
+.redline:after{
+	content: '';
+	position: absolute;
+	top: 50%;
+	left: 0;
+	margin-top: -1px;
+	width: 100%;
+	height: 3px;
+	background: red;
+}
+.original-text{
+	background: #F5F5F5;
+	margin: 0 0.6875rem;
+	padding: .2133rem;
+}
+.original-text p:nth-child(1){
+	font-size: .3733rem;
+	font-weight: bold;
+	line-height: .5867rem;
+	color: #3C3C3C;
+	margin-bottom: .1067rem;
+}
+.original-text p:nth-child(2){
+	font-size: .3733rem;
+	line-height: .5867rem;
+	color: #3C3C3C;
+}

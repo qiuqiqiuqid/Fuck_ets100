@@ -1,0 +1,101 @@
+.show-class-info.out-on-off {
+	width: 1.36rem;
+	height: 0.8rem;
+}
+
+.switch {
+	display: none;
+}
+.container{
+	/*margin-top: 1.173rem;*/
+	margin-top: 1.813rem;
+}
+.out-on-off label {
+	position: relative;
+	display: block;
+	border-radius: 0.4rem;
+	height: 0.8rem;
+	width: 1.36rem;
+}
+
+.out-on-off label:before {
+	content: '';
+	display: block;
+	border-radius: 0.4rem;
+	height: 0.8rem;
+	background-color: #979797;
+	transform: scale(1, 1);
+	-webkit-transform: scale(1, 1);
+	-moz-transform: scale(1, 1);
+	-ms-transform: scale(1, 1);
+	-o-transform: scale(1, 1);
+	transition: all 0.3s ease;
+	-webkit-transition: all 0.3s ease;
+	-moz-transition: all 0.3s ease;
+	-o-transition: all 0.3s ease;
+	-ms-transition: all 0.3s ease;
+}
+
+.out-on-off label:after {
+	content: '';
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	margin-top: -0.347rem;
+	margin-left: -0.64rem;
+	width: 0.693rem;
+	height: 0.693rem;
+	border-radius: 50%;
+	background-color: #fff;
+	transition: all 0.3s ease;
+	-webkit-transition: all 0.3s ease;
+	-moz-transition: all 0.3s ease;
+	-ms-transition: all 0.3s ease;
+	-o-transition: all 0.3s ease;
+}
+
+.switch:checked~label:after {
+	-webkit-transform: translateX(0.587rem);
+	transform: translateX(0.587rem);
+	-moz-transform: translateX(0.587rem);
+	-ms-transform: translateX(0.587rem);
+	-o-transform: translateX(0.587rem);
+}
+
+.switch:checked~label:before {
+	background-color: #3AD56F;
+}
+#app{
+	
+}
+.class-title{
+	color: #979797;
+	font-size: 0.373rem;
+	margin-top: 0.32rem;
+	margin-bottom: 0.213rem;
+	padding:0 0.427rem;
+}
+.class-title.province{
+	margin-top: 0.64rem;
+}
+.show-class-info{
+	height: 1.547rem;
+	line-height: 1.547rem;
+	display: flex;
+	display: -webkit-flex;
+	display: -moz-flex;
+	display: -ms-flex;
+	display: -o-flex;
+	justify-content: space-between;
+	-webkit-justify-content: space-between;
+	-moz-justify-content: space-between;
+	-ms-justify-content: space-between;
+	-o-justify-content: space-between;
+	align-items: center;
+	-webkit-align-items: center;
+	-moz-align-items: center;
+	-ms-align-items: center;
+	-o-align-items: center;
+	padding:0 0.427rem;
+	background-color: #fff;
+}

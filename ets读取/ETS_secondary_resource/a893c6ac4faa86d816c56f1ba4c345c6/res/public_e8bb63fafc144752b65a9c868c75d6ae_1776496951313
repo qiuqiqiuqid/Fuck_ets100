@@ -1,0 +1,19 @@
+<xml_result>
+
+  <simple_expression_ufi lan="en" region="guangdong_zk" region_version="1" type="study" version="V4.1.0R6.81.20.35M5.81.35.0">
+    <rec_paper>
+      <rec_paper beg_pos="245" content="rec_paper" end_pos="685" except_info="0" is_rejected="false" keywords="animals losing homes" phone_score="4.641610" reject_type="0" total_score="4.936651" word_hit_of_each_kw="1.00">
+        <sentence content="because many animals are losing their homes " index="0">
+          <word beg_pos="262" content="because" end_pos="329"/>
+          <word beg_pos="329" content="many" end_pos="379"/>
+          <word beg_pos="379" content="animals" end_pos="451"/>
+          <word beg_pos="451" content="are" end_pos="474"/>
+          <word beg_pos="474" content="losing" end_pos="523"/>
+          <word beg_pos="523" content="their" end_pos="551"/>
+          <word beg_pos="551" content="homes" end_pos="629"/>
+        </sentence>
+      </rec_paper>
+    </rec_paper>
+  </simple_expression_ufi>
+
+</xml_result>

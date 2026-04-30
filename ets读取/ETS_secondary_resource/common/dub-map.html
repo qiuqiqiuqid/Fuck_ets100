@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" href="css/dub-common.css">
+	<link rel="stylesheet" href="css/dub-map.css">
+    <script src="js/polyfill.js"></script>
+</head>
+<body id='vue'>
+	<div class="container">
+<!-- 		标题与返回 -->
+<!-- 		<div class="back-btn"></div> -->
+<!-- 		<p class="title">Unit 4</p> -->
+
+<!--        * status:      1 锁 2 过关 3 会员过期或未开通-锁 4 未通关 5 建设中 -->
+<!--        * background   1 - 7 -->
+<!--        * lock         1 加锁 0 没加锁 -->
+<!--        * star         星星数 -->
+<!--        * isComplete   是否完成 1 完成 0 没完成 -->
+<!-- 		* order        题目序号 -->
+
+<!-- 		7题 -->
+		<div class="map dub-map-1">
+			<div class="level-box" v-for='s in set' :data-id='s.id' :data-status='s.status' :class="[{'level-1':s.lock==0&&s.isComplete==0,'level-2':s.lock==0&&s.isComplete==1,'level-lock-1':s.lock==1&&s.isComplete==0,'level-lock-2':s.lock==1&&s.isComplete==1}]" v-if="$index<7">
+				<div class="star" :class="'star-'+s.star"></div>
+				<p class="level-order" v-text='s.order' v-show='s.lock==0'></p>
+				<div class="icon-experience" v-show="s.experience==1"></div>
+			</div>
+		</div>
+	</div>
+	<div class="mask"></div>
+	<div class="tips-con"></div>
+</body>
+<script type="text/javascript" src="js/flexible.js"></script>
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/vue.min.dub.js"></script>
+<!-- 数据 -->
+<script type="text/javascript" src="js/dub-common-data.js"></script>
+<script type="text/javascript" src="js/dub-common.js"></script>
+<script type="text/javascript" src="js/dub-map.js"></script>
+</html>

@@ -1,0 +1,376 @@
+::-webkit-scrollbar{width:0;height:0}
+*{
+	margin: 0;
+	padding: 0;
+	box-sizing:border-box;
+	-webkit-overflow-scrolling : touch;  
+}
+.score_great{color:#3ad56f}
+.score_bad{color:#f86767}
+.score_normal{color:#000000}
+html,body{
+	width: 100%;
+	height: 100%;
+	font-size: 0.5rem;
+	background-color:transparent;
+}
+.none{display: none;}
+.font12{
+	font-size: 0.4rem;
+}
+.red{
+	color: #e65151;
+}
+.yellow{
+	color: #f4db33;
+}
+.green{
+	color: #43cb75;
+}
+.bold{
+	font-weight: bold;
+}
+li{
+	list-style: none;
+}
+.t_indent20{
+	text-indent: 0.625rem;
+}
+.mt20{
+	margin-top: 0.625rem;
+}
+.mb20{
+	margin-bottom: 0.625rem;
+}
+.pb20{
+	padding-bottom: 0.625rem;
+}
+.border_b{
+	border-bottom: 0.03125rem solid #e6e6e6;
+}
+.floatR{
+	float: right;
+}
+.clear:after{
+	content: '';
+	width: 0;
+	height: 0;
+	display: block;;
+	clear: both;
+}
+.main{
+	/*padding: 0 1.25rem;*/
+}
+.pic_li{
+	float: left;
+	margin-right: 0.28125rem;
+}
+.result_con{
+	padding-top: 1.25rem;
+	margin-bottom: 1.0rem;
+	text-align: center;
+	display: none;
+}
+.score_con{
+	margin-bottom: 0.375rem;
+}
+
+.all_score,#score{
+	font-size: 0.8rem;
+}
+#total-score{
+	font-size: 0.4rem;
+}
+.star_img{
+	display: inline-block;
+	margin-left: 0.125rem;
+	width: 0.34375rem;
+	height: 0.28125rem;
+}
+.dwd_score{
+	display: inline-block;
+	width: 7rem;
+	margin: 0.375rem auto 0;
+	background-color: #EEFCF3;
+	border-radius: 0.1rem;
+	padding: 0.3rem 0.6rem;
+}
+.dwd_item{
+	display: inline-block;
+	width: 1.8rem;
+}
+.dwd_name{margin-bottom: 0.2rem;font-size: 0.42rem;color: #979797;}
+.dwd_flu{color: #3c3c3c;font-size: 0.44rem;}
+.dwd_fen{color: #979797;font-size: 0.36rem;}
+.audio_con{
+	text-align: center;
+}
+
+.audio_con > div{
+	display: inline-block;
+	width: 3rem;
+	height: 0.8rem;
+	line-height:0.8rem;
+	border:0.04rem solid #3ad56f;
+	color: #3ad56f;
+	border-radius: 0.6rem;
+	position: relative;
+	padding: 0 0.8rem;
+	text-align: right;
+	cursor: pointer;
+}
+
+.audio_con > button{
+	display: inline-block;
+	outline: none;
+	background-color: #fff;
+	width: 3rem;
+	height: 0.8rem;
+	line-height:0.8rem;
+	border:0.04rem solid #3ad56f;
+	color: #3ad56f;
+	font-size: 0.32rem;
+	border-radius: 0.6rem;
+	position: relative;
+	padding: 0 0.8rem;
+	text-align: right;
+	cursor: pointer;
+}
+.audio_con .my_record{margin-left: 0.8rem;}
+.audio_con .record_icon{
+	vertical-align: inherit;
+	position: absolute;
+    left: 0.8rem;
+    top: 0.07rem;
+}
+
+.test_con{
+	padding: 0 0.6875rem;
+}
+.test_title{
+	height: 0.78125rem;
+	overflow: hidden;
+	font-size: 0.441176rem;
+	position: relative;
+	padding-right: 0.9375rem;
+	line-height: 0.78125rem;
+	margin: 0.75rem 0;
+}
+.t_title{
+	overflow: hidden;
+	position: relative;
+	line-height: 0.78125rem;
+	margin: 0.75rem 0;
+	font-size: 0.529412rem;
+}
+.title{
+    padding-bottom:0.46875rem;
+	word-wrap: break-word;
+	font-size:0.529412rem;
+	line-height: 0.78125rem;}
+.questions{
+	font-size: 0.529412rem;
+    line-height: 0.735294rem;
+}
+.question1{
+	margin-bottom: 0.9375rem;
+}
+.question1_title{
+	position: relative;
+	color: #43cb75;
+	font-size: 0.5rem;
+	margin-bottom: 0.375rem;
+}
+.record_icon{
+	/*width: 0.59375rem;*/
+	height: 0.6rem;
+	position: relative;
+	vertical-align: top;
+}
+.choose1{
+	width: 2.8rem;
+	height:2.8rem;
+	margin-right: 0.1rem;
+	overflow: hidden;
+	position: relative;
+	float: left;
+}
+.choose1:last-child{
+	margin-right: 0;
+}
+.rightPic{
+	border:0.125rem solid #43cb75;
+	background-color: #43cb75;
+}
+.errorPic{
+	border:0.125rem solid #f86666;
+	background-color: #f86666;
+}
+.choose1_img{
+	width: 100%;
+	height: 100%;
+	vertical-align: middle;
+}
+.eorr{
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	width: 1.25rem;
+	height: 0.65625rem;
+}
+.question2{
+	margin-top: 0.625rem;
+	padding-bottom: 0.625rem;
+	border-bottom: 0.03125rem solid #e6e6e6;
+}
+.question2:last-child{
+	border-bottom: none;
+}
+.q_score{
+	margin-bottom: 0.3125rem;
+}
+.recordText_con{
+	margin-bottom: 0.9375rem;
+}
+.recordText_con p {
+	word-break:break-word;
+	font-size: 0.5rem;
+	line-height: 0.65625rem;
+}
+p.choose2{
+	text-indent: 0.78125rem;
+	margin:0.1875rem 0;
+}
+.choose2_con{
+	margin-top: 0.625rem;
+}
+.errorCh{
+	background: url(../images/error2.png) no-repeat left 0.176471rem;
+	background-size: 0.5625rem 0.46875rem;
+}
+.rightCh{
+	background: url(../images/right2.png) no-repeat left 0.176471rem;
+	background-size: 0.5625rem 0.46875rem;
+}
+
+.stander_record,.my_record{
+	margin-left: 0.325rem;
+}
+
+.question3{
+	margin-top: 0.625rem;
+	padding-bottom: 0.625rem;
+}
+.text_indent{
+	text-indent: 0.9375rem;
+}
+
+
+.listening{text-decoration: underline;}
+.reading{
+	text-decoration: underline;
+	background-color: lightgrey;
+}
+.readed{
+	color: lightgrey;
+}
+.question_on{
+	background-color: #e0ffcc;
+}
+.show_m{
+	background: url(../images/slidedown_icon.png) no-repeat center;
+	background-size: 0.3125rem;
+	position: absolute;
+	right: 0;
+	bottom:0;
+	width: 0.9375rem;
+	height: 0.9375rem;
+	cursor: pointer;
+}
+.hide_m{
+	background: url(../images/slideup_icon.png) no-repeat center;
+	background-size: 0.3125rem;
+	position: absolute;
+	right: 0;
+	top:0;
+	width: 0.9375rem;
+	height: 0.9375rem;
+	cursor: pointer;
+}
+.show-big-img{
+	position: relative;
+	cursor: pointer;
+}
+.show-big-img-tip{
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	width: 2.117647rem;
+	height: 0.705882rem;
+	font-size: 0.352941rem;
+	line-height: 0.764706rem;
+	text-indent: 0.176471rem;
+	background-color: #000;
+	color: #fff;
+	background: url(../images/show-big-img-tip.png) no-repeat center;
+	background-size: contain;
+	text-align: center;
+}
+.mark{
+	color: #F61010;
+	font-weight: bold;
+}
+.italic{  
+	font-style:italic;  
+}
+.colorred{  
+	font-weight: bold;
+	color:red;  
+}
+.colorgreen{  
+	font-weight: bold;
+	color:green;  
+}
+.colorblue{  
+	font-weight: bold;
+	color:blue;  
+}
+.coloryellow{  
+	font-weight: bold;
+	color:yellow;  
+}
+.colorgold{  
+	font-weight: bold;
+	color:gold;  
+}
+.colorblack{  
+	font-weight: bold;
+	color:black;  
+}
+.leftclass{
+	text-align:left;display:inline-block;width:100%;text-indent:0;
+}
+.rightclass{
+	text-align:right;display:inline-block;width:100%;text-indent:0;
+}
+.centerclass{
+	text-align:center;display:inline-block;width:100%;text-indent:0;
+}
+.redline{
+	display: inline-block;
+	position: relative;
+}
+.redline:after{
+	content: '';
+	position: absolute;
+	top: 50%;
+	left: 0;
+	margin-top: -1px;
+	width: 100%;
+	height: 3px;
+	background: red;
+}
+.namestyle{
+	color: #979797;
+	/* font-style: italic; */
+}

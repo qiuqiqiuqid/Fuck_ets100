@@ -1,0 +1,18 @@
+<xml_result>
+
+  <simple_expression_ufj lan="en" region="guangdong_zk" region_version="1" type="study" version="V4.1.0R6.81.20.35M5.81.35.0">
+    <rec_paper>
+      <rec_paper beg_pos="207" content="rec_paper" end_pos="509" except_info="0" is_rejected="false" keywords="why fever|what reason fever|what made fever|what caused fever|what led fever" phone_score="4.239459" reject_type="0" total_score="4.838430" word_hit_of_each_kw="1.00|0.33|0.67|0.67|0.33">
+        <sentence content="why did you have a fever " index="0">
+          <word beg_pos="225" content="why" end_pos="271"/>
+          <word beg_pos="271" content="did" end_pos="303"/>
+          <word beg_pos="303" content="you" end_pos="340"/>
+          <word beg_pos="340" content="have" end_pos="376"/>
+          <word beg_pos="376" content="a" end_pos="392"/>
+          <word beg_pos="392" content="fever" end_pos="452"/>
+        </sentence>
+      </rec_paper>
+    </rec_paper>
+  </simple_expression_ufj>
+
+</xml_result>

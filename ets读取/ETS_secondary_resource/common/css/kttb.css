@@ -1,0 +1,439 @@
+::-webkit-scrollbar{width:0;height:0}
+*{
+	margin: 0;
+	padding: 0;
+	box-sizing:border-box;
+	-moz-box-sizing:border-box;
+	-webkit-box-sizing:border-box;
+	-o-box-sizing:border-box;
+}
+html,body{
+	width: 100%;
+	height: 100%;
+	font-family: Arial,'Microsoft YaHei','宋体';
+	background-color: #fff;
+	-webkit-overflow-scrolling: touch;
+}
+input[disabled]{opacity:1}
+.none{
+	display: none; 
+}
+.cl_fix:after{
+	display: block;
+	content: '';
+	clear: both;
+	width: 0;
+	height: 0;
+}	
+.fl{float: left;}
+.fr{float: right;}
+.red{
+	color: #e65151;
+}
+.no_border{
+	border: none!important;
+}
+.white{
+	color: #fff!important;
+}
+.yellow{
+	color: #f4db33;
+}
+
+.green{
+	color: #43cb75;
+}
+.bold{
+	font-weight: bold;
+}
+.bg_pink{
+	background-color: #ffecec;
+}
+.bg_grey{
+	background-color: #f0f0f0;
+}
+.bg_green{
+	background-color: #e1fceb;
+}
+.bg_darkGreen{
+	background-color: #43cb75!important;
+}
+.bg_darkRed{
+	background-color: #ff6268!important;
+}
+p{
+	line-height: 0.8rem;
+}
+.mt160{
+	margin-top: 1.79rem!important;
+}
+.mt240{
+	margin-top: 3.58209rem;
+}
+
+.mt20_fill{
+	margin-top: 0.266667rem;
+}
+
+.mt40{
+	margin-top: 0.597015rem;
+}
+.mt34{
+	margin-top: 0.507463rem;
+}
+.pt30{
+	padding-top: 0.447761rem;
+}
+.container{
+	width: 100%;
+	height: 100%;
+	padding-top: 0.716418rem;
+	padding-left: 0.716418rem;
+	padding-right: 0.716418rem;
+	/*overflow-y: scroll;*/
+	font-size: 0.447761rem;
+}
+.title{
+	padding-bottom: 0.597015rem;
+	font-size: 0.529412rem;
+}
+
+/*听音判断*/
+.sen{
+	font-size: 0.716418rem;
+}
+/*判断题按钮*/
+
+/*button可通用其余为判断题时所用*/
+.button{
+	position: relative;
+	width: 3.880597rem;
+	height: 1.074627rem;
+	text-align: center;
+	font-size: 0.447761rem;
+	background-color: #fff;
+	border-radius: 1rem;
+	border: 1px solid #d3d3d3;
+	cursor: pointer;
+}
+.button_disabled{
+	pointer-events: none;
+}
+.button.button_yes{
+	text-indent: 0.985075rem;
+}
+.button.button_no{
+	text-indent: 0.820896rem;
+}
+.button_hover{
+	background-color: #d3d3d3;
+}
+.button.button_right{
+	text-align: left;
+	border-color: #2ab75d;
+	background-color: #2ab75d;
+	color: #fff;
+}
+.button.button_error{
+	text-align: left;
+	border-color: #ff6268;
+	background-color: #ff6268;
+	color: #fff;
+}
+.button.button_yes:after{
+	right: 0.985075rem;
+}
+.button.button_right:after{
+	content: '';
+	display: block;
+	width: 0.537313rem;
+	height: 0.41791rem;
+	position: absolute;
+	top: 50%;
+	margin-top: -0.208955rem;
+	background-image: url('../images/sel_rightIcon_white.png');
+	background-repeat: no-repeat;
+	background-size: contain;
+	background-position: center;
+}
+.button.button_no:after{
+	right: 0.820896rem;
+}
+.button.button_error:after{
+	content: '';
+	display: block;
+	width: 0.537313rem;
+	height: 0.41791rem;
+	position: absolute;
+	top: 50%;
+	margin-top: -0.208955rem;
+	background-image: url('../images/sel_wrongIcon_white.png');
+	background-repeat: no-repeat;
+	background-size: contain;
+	background-position: center;
+}
+/*选择题*/
+.choose_selected{
+	color: #51b0e6;
+}
+.choose_selected .choose_input{
+	background-image: url(../images/choose2_y.png);
+}
+.choose_input{
+	position: absolute;
+	width: 0.85rem;
+	height: 0.8rem;
+	background-image: url(../images/choose2_n.png);
+	background-repeat: no-repeat;
+	background-size: contain;
+}
+p.choose_text{
+	padding-left: 0.9375rem;
+	margin: 0.447761rem 0;
+	line-height: 0.8rem;
+}
+
+/*选择题答案展示*/
+p.choose{
+	padding-left: 0.78125rem;
+	margin:0.447761rem 0;
+}
+.errorCh{
+	background: url(../images/error2.png) no-repeat left 0.176471rem;
+	background-size: 0.5625rem 0.46875rem;
+}
+.rightCh{
+	background: url(../images/right2.png) no-repeat left 0.176471rem;
+	background-size: 0.5625rem 0.46875rem;
+}
+
+/*填空题*/
+.write_input_con{
+	width: 5.970149rem;
+	position: relative;
+	margin: 0 auto;
+}
+.write_input{
+	width: 100%;
+	height: 1.19403rem;
+	/*padding-right: 0.622388rem;*/
+	line-height: 1.19403rem;
+	font-size: 0.597015rem;
+	border-top: none;
+	border-left: none;
+	border-right: 0;
+	border-bottom: 0.04rem solid #d3d3d3;
+	text-align: center;
+	outline: none;
+	display: block;
+}
+.write_cancle_icon{
+	width: 0.447761rem;
+	height: 0.447761rem;
+	position: absolute;
+	right: 0;
+	top: 0.38806rem;
+	background-image: url('../images/DeleteallIcon_nor.png');
+	background-size: 0.41791rem;
+	background-repeat: no-repeat;
+	background-position: center;
+	cursor: pointer;
+	display: none;
+}
+.write_cancle_icon.write_cancle_icon_hover{
+	background-image: url('../images/DeleteallIcon_over.png');
+}
+.next_icon{
+	display: none;
+	width: 1.791045rem;
+	height: 0.895522rem;
+	line-height: 0.895522rem;
+	border-radius: 0.895522rem;
+	color: #fff;
+	text-align: center;
+	margin: 0 auto;
+	cursor: pointer;
+	background-color: #51b0e6;
+	font-size: 0.41791rem;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: 0.865672rem;
+	transition: width 0.2s ease-in-out;
+	-webkit-transition: width 0.2s ease-in-out;
+	-ms-transition: width 0.2s ease-in-out;
+	-moz-transition: width 0.2s ease-in-out;
+}
+.next_icon.next_icon_hover{
+	background-color: #2d98d4;
+}
+.next_icon.next_icon_right{
+	width: 0.895522rem;
+	display: block;
+	background-image: url('../images/rightIcon.png');
+	background-color: #43CB75;
+}
+.next_icon.next_icon_error{
+	display: block;
+	width: 0.895522rem;
+	background-image: url('../images/wrongIcon.png');
+	background-color: #FF6268;
+}
+.write_result_text{
+	text-align: center;
+	font-size: 0.955224rem;
+	/*font-size: 0.716418rem;*/
+}
+/*听音填单词或短语*/
+.fill_word_p{
+	font-size: 0.537313rem;
+	line-height: 0.955224rem;
+}
+.fill_word{
+	display: inline-block;
+	height: 0.835821rem;
+	width: 2.985075rem;
+	background-color: #51b0e6;
+	border: 1px solid #51b0e6;
+	border-radius: 0.1rem;
+	color: #51b0e6;
+	position: relative;
+	margin: 0 0.119403rem;
+}
+.fill_word.fill_word_noBgC{
+	background-color: #fff;
+}
+.fill_word .number{
+	display: inline-block;
+	text-align: center;
+	height: 100%;
+	padding: 0 0.074627rem;
+	line-height: 0.835821rem;
+}
+.fill_word_input{
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	left: 0;
+	top: 0;
+	background-color: transparent;
+	border: none;
+	outline: none;
+	display: inline-block;
+	text-align: center;
+	padding: 0 0.074627rem 0 0.522388rem;
+	vertical-align: top;
+	border-radius: 0.1rem;
+	color: #51b0e6;
+}
+.fill_word_input::-webkit-input-placeholder{
+　　color: #fff;
+}
+.fill_word_input::-moz-placeholder{
+　　color: #fff;
+}
+.fill_word_input::-moz-placeholder{
+　　color: #fff;
+}
+.fill_word_input:-ms-input-placeholder{
+　　color: #fff;
+}
+.fill_number{
+	width: 100%;
+	height: 100%;
+	text-align: center;
+	position: absolute;
+	top: 0;
+	left: 0;
+	color: #fff;
+	line-height: 0.835821rem;
+}
+.paragraph{
+	color: #000000;
+	font-size: 0.529412rem;
+	line-height: 0.75rem;
+	margin-bottom: 0.716418rem;
+}
+
+.frame{
+	padding: 0.477612rem;
+	border-radius: 0.15rem;
+}
+.write_tip.frame{
+	padding-left: 2.567164rem;
+	padding-right: 0;
+}
+.write_tip{
+	height: 2.38806rem;
+	background-image: url('../images/writeicon.png');
+	background-position: 0.716418rem center;
+	background-repeat: no-repeat;
+	background-size: 1.313433rem 1.253731rem;
+}
+
+/*答案解析*/
+.analysis{
+	padding: 0.477612rem;
+	border-radius: 0.15rem;
+	font-size: 0.447761rem;
+	margin-top: 0.447761rem;
+	color: #000000;
+}
+/*凡哥之前的一些样式*/
+.mark{
+	color: #F61010;
+	font-weight: bold;
+}
+.italic{  
+	font-style:italic;  
+}
+.colorred{  
+	font-weight: bold;
+	color:red;  
+}
+.colorgreen{  
+	font-weight: bold;
+	color:green;  
+}
+.colorblue{  
+	font-weight: bold;
+	color:blue;  
+}
+.coloryellow{  
+	font-weight: bold;
+	color:yellow;  
+}
+.colorgold{  
+	font-weight: bold;
+	color:gold;  
+}
+.colorblack{  
+	font-weight: bold;
+	color:black;  
+}
+.leftclass{
+	text-align:left;display:inline-block;width:100%;text-indent:0;
+}
+.rightclass{
+	text-align:right;display:inline-block;width:100%;text-indent:0;
+}
+.centerclass{
+	text-align:center;display:inline-block;width:100%;text-indent:0;
+}
+.redline{
+	display: inline-block;
+	position: relative;
+}
+.redline:after{
+	content: '';
+	position: absolute;
+	top: 50%;
+	left: 0;
+	margin-top: -1px;
+	width: 100%;
+	height: 3px;
+	background: red;
+}
+.namestyle{
+	color: #979797;
+	/* font-style: italic; */
+}

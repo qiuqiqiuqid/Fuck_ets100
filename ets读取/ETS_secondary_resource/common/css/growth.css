@@ -1,0 +1,119 @@
+body{
+    background-color: #fff;
+}
+body, #growthCon{
+    overflow-y: hidden;
+}
+.growth-tab{
+    display: -webkit-flex;
+    display: flex;
+    text-align: center;
+    justify-content: space-between;
+    height: 1.173rem;
+    line-height: 1.173rem;
+    position: relative;
+    background-color: #fff;
+    border-bottom: 0.013rem solid #e6e6e6;
+}
+.growth-tab .item{
+    flex: 1;
+    -webkit-flex: 1;
+    -moz-flex: 1;
+    -ms-flex: 1;
+    -o-flex: 1;
+    cursor: pointer;
+}
+.growth-tab .tabs-active-bar{
+}
+
+.growth-tab .item.active {
+    color: #43cb75;
+}
+
+.scroll-container{
+    padding-top: 0;
+}
+.loading{
+    width: 100%;
+}
+.full-con{
+    height: 100%;
+}
+
+#app2 .tabs-container .tab .title, 
+#app2 .content .title {
+    width: 100%;
+    text-align: initial;
+    float: none;
+}
+.echart-title{
+    padding: 0;
+}
+.ability-container{
+    padding-bottom: 1rem;
+}
+.child-tag{
+    z-index: 99999999;
+}
+#app2 .mask,
+#app2 .tag-demo-con{
+    z-index: 99999999;
+}
+
+#app2 .content{
+    background-color: #fff;
+}
+#radar-chart{
+    width: 100%;
+}
+/* .item-container{
+    position: relative;
+    z-index: 99999999;
+} */
+.radar-con{
+    width: 80%;
+    margin: 0 auto;
+    position: relative;
+}
+.not-radar{
+    color: #3c3c3c;
+    font-size: .373rem;
+    line-height: .533rem;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    text-align: center;
+}
+.not-radar .text{
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1.067rem;
+    margin:  auto;
+}
+.content .growing-line{
+    padding-top: 1px
+}
+.tag-desc-content{
+    padding: 0.37rem;
+    margin-bottom: 0;
+}
+
+.content .ability-container{
+    border-top-width: .133rem;
+}
+.margin-top-grey{
+    height: .133rem;
+    background-color: #F3F6FA;
+}
+
+/* .small-div .score{
+    font-size: 1rem;
+}
+.small-div .total-score{
+    font-size: 0.5rem;
+} */

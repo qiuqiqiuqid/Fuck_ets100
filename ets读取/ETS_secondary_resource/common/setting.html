@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>设置</title>
+    <meta name="keywords" content="E听说,科大讯飞,易听说,英文口语,英语听说,99abc">
+    <meta name="description" content="讯飞E听说是由科大讯飞（股票代码：002230）旗下企业广州讯飞易听说网络科技有限公司设计研发，产品版本囊括：广东高考、广州中考、深圳中考、沈阳中考、青岛中考、威海中考等，能有效帮助考生快速提升英语听说考试成绩。">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <script src="js/flexible.js"></script>
+    <script src="js/polyfill.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/preStyle.css">
+    <link rel="stylesheet" type="text/css" href="css/setting.css">
+</head>
+
+<body>
+    <div>
+        <div class='all-bar scrolling'>
+            <div class='time-status-bar'></div>
+            <div class='head-operate-container scroll'>
+                <div class='opera-icon'></div>
+                <div class="out-on-off scroll-top">
+                    设置
+                </div>
+                <div class='opera-icon'></div>
+            </div>
+        </div>
+        <div class='container hidePreScore' id='settingApp'>
+            <div class='class-title'>
+                班级榜单
+            </div>
+            <div class='show-class-info'>
+                <div>显示我的完整信息</div>
+                <!-- <div>{{showClassInfo}}</div> -->
+                <div class='out-on-off class'>
+                    <input type="checkbox" name="switchs" class='switch' id='switchs' checked>
+                    <label for='switchs'></label>
+                </div>
+            </div>
+            <div class='class-title province'>
+                <span id='province'></span>榜单
+            </div>
+            <div class='show-class-info '>
+                <div>显示我的完整信息</div>
+                <div class='out-on-off resource'>
+                    <input type="checkbox" name="proSwitch" class='switch' id='proSwitch' checked>
+                    <label for='proSwitch'></label>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src='js/jquery.min.js'></script>
+<script type="text/javascript" src='js/vue.min.js'></script>
+<script type="text/javascript" src='js/default.js'></script>
+<!-- <script type="text/javascript" src='js/setting.js'></script> -->
+<script type="text/javascript">
+setBackButtonStyle(1)
+$(document).ready(function() {
+
+    var ifIos = isIos();
+     var iosDp=$('html').attr('data-dpr')
+    if (ifIos) {
+        $('.out-on-off').css('fontSize', 18*iosDp+'px');
+    } else {
+        $('.out-on-off').css('fontSize', '16px');
+    }
+    var province = GetQueryString('province');
+    var token = GetQueryString('token');
+    var titleHeight = GetQueryString('titleHeight');
+    var statusHeight = GetQueryString('statusHeight');
+    var apiUrl = GetQueryString('apiUrl');
+  
+    var arr = { true: 1, false: 0 };
+    var getArr = [false, true];
+    $('.time-status-bar').height(statusHeight)
+    $('.head-operate-container').height(titleHeight);
+    $('.container').css('margin-top', $('.all-bar').height())
+    $('#province').html(province)
+    $.ajax({
+        url: apiUrl + '/user/get-predict-option',
+        type: 'post',
+        dataType: 'json',
+        data: {
+            client_token: token
+        },
+        success: function(data) {
+            $("input[name='switchs']").prop("checked", getArr[data.data.class_show_full_name]);
+            $("input[name='proSwitch']").prop("checked", getArr[data.data.resource_show_full_name]);
+            $('#settingApp').removeClass('hidePreScore')
+        },
+        error: function() {}
+    });
+
+    $(document).on('click', ".out-on-off.class", function(e) {
+        var newVal = $("input[name='switchs']").prop("checked");
+        if (newVal) {
+            $("input[name='switchs']").prop("checked", false);
+        } else {
+            $("input[name='switchs']").prop("checked", true);
+        }
+        $.ajax({
+            url: apiUrl + '/user/set-predict-option',
+            type: 'post',
+            data: {
+                class_show_full_name: arr[!newVal],
+                client_token: token
+            },
+            success: function() {},
+            error: function() {
+
+            }
+        })
+    });
+    $(document).on('click', ".out-on-off.resource", function(e) {
+        var newVal = $("input[name='proSwitch']").prop("checked");
+        if (newVal) {
+            $("input[name='proSwitch']").prop("checked", false);
+        } else {
+            $("input[name='proSwitch']").prop("checked", true);
+        }
+        $.ajax({
+            url: apiUrl + '/user/set-predict-option',
+            type: 'post',
+            data: {
+                resource_show_full_name: arr[!newVal],
+                client_token: token
+            },
+            success: function() {},
+            error: function() {
+
+            }
+        })
+    })
+})
+</script>
+
+</html>

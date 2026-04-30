@@ -1,0 +1,15 @@
+<xml_result>
+
+  <simple_expression_ufi lan="en" region="guangdong_zk" region_version="1" type="study" version="V4.1.0R6.81.20.35M5.81.35.0">
+    <rec_paper>
+      <rec_paper beg_pos="229" content="rec_paper" end_pos="417" except_info="0" is_rejected="false" keywords="lion" phone_score="3.230547" reject_type="0" total_score="4.966558" word_hit_of_each_kw="1.00">
+        <sentence content="a lion dance " index="0">
+          <word beg_pos="248" content="a" end_pos="269"/>
+          <word beg_pos="269" content="lion" end_pos="325"/>
+          <word beg_pos="325" content="dance" end_pos="397"/>
+        </sentence>
+      </rec_paper>
+    </rec_paper>
+  </simple_expression_ufi>
+
+</xml_result>

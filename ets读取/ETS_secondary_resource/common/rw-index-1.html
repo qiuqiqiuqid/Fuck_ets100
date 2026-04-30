@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>单选题</title>
+	<script src="js/flexible.js"></script>
+    <script src="js/polyfill.js"></script>
+	<link rel="stylesheet" href="css/rw-style.css">
+</head>
+
+<body>
+	<div id="dxApp" class="fill_container bgwhite">
+		<div class="container hidden sub-container">
+			<!-- <div>question</div> -->
+			<div v-if="question.id&&deepReloaded">
+				<div class="nosingle-choose" :data-id="question.id">
+					<!-- <div>{{info}}</div> -->
+					<!-- <div>{{info.order}}</div> -->
+					<div class="tit">第{{calculationOrder(info.order)}}小题</div>
+					<!-- <div class="" v-html="formatQuestionContent(question.content)"></div> -->
+					<div :class="{'sub-info-content' : info.content !=''}" v-html='formatInfoContent(info.content)'></div>
+					<div class="choose-con" :class="{'disabled': answerPage}">
+						<div class="choose-item" :class="{'right':c.option==standerAns&&answerPage, 'wrong':c.option==userAns&&userAns!=standerAns&&answerPage}" v-for="(c, ind) in info.choose" :data-index="ind" :data-option="c.option">
+							<div class="choose-icon"></div>
+							<div class="choose-text" v-html="formatInfoContent(c.option+'.'+c.value)"></div>
+						</div>
+					</div>
+				</div>
+				<div class="single-choose-answer answer-con" v-if="answerPage">
+					<div class="answer">
+						<p class="title" :class="standerAnswer == 0 ? 'right-color' : standerAnswer == 1 ? 'wrong-color' : standerAnswer == 2 ? 'unfinished-color' : 'half-color'">{{standerAnswer == 0 ? "回答正确" : standerAnswer == 1 ? "回答错误" : standerAnswer == 2 ? "未作答" : "部分正确"}}</p>
+						<p v-html="'正确答案'+formatInfoContent(info.answer)"></p>
+					</div>
+					<div v-if="errorType != 1">
+						<div class="analysis" v-if="info.analysis">
+							<p class="title">分析</p>
+							<p v-html="formatInfoContent(info.analysis)"></p>
+						</div>
+						<div class="translation" v-if="info.translate">
+							<p class="title">翻译</p>
+							<p v-html="formatInfoContent(info.translate)"></p>
+						</div>
+						<div class="sites" v-if="info.tag.length>0">
+							<p class="title">考点</p>
+							<p v-for="(item , index) in info.tag" v-html="getInfoTag(item)"></p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+<script src="js/jquery.js"></script>
+<script src="js/vue.min.js"></script>
+<script src="js/StrFormat.js"></script>
+<script src="js/lodash.min.js"></script>
+<script src="js/lodash.min.js"></script>
+<script src="js/rw-common.js"></script>
+<script src="js/rw-index-1.js"></script>
+
+</html>

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>做题页</title>
+    <script src="js/flexible.js"></script>
+    <script src="js/polyfill.js"></script>
+    <link rel="stylesheet" href="css/view.css">
+    <link rel="stylesheet" href="css/templet_common.css">
+</head>
+
+<body>
+    <div class="container none" id="templateApp">
+        <div class="pd-container">
+            <div class="title" v-if="title" v-html="formatString(title)"></div>
+            <div class="subtitle" v-if="subtitle" v-html="formatString(subtitle)"></div>
+            <div class="description" v-if="description" v-html="formatString(description)"></div>
+        </div>
+        <div class="dropdown_con pd-container" :class="dropdown_con_active?'active':''">
+            <div class="dropdown_title" v-if="dropdown_title" v-html="formatString(dropdown_title)"></div>
+            <div class="dropdown_subtitle" v-if="dropdown_subtitle" v-html="formatString(dropdown_subtitle)"></div>
+            <div class="dropdown_description" v-if="dropdown_description" v-html="formatString(dropdown_description)"></div>
+            <div class="dropdown_icon" v-if="dropdown_title" @click="toggleDropdown"></div>
+            <div class="hint" v-if="hint" v-html="hint"></div>
+        </div>
+        <div class="content pd-container" v-if="content" v-html="formatString(content)"></div>
+        <div class="content_symbol pd-container word_txt" v-if="content_symbol" v-html="formatString(content_symbol)"></div>
+        <div class="pd-container" v-if="content_img.length > 0">
+            <div class="content_img" v-for="item in content_img" @click="showBigImg(item)">
+                <img :src="getMaterialUrl(item)" alt="">
+                <div class="show_big_img_tip">查看大图</div>
+            </div>
+        </div>
+        <!-- 单词、音标拼读 -->
+        <div class="word_main" v-if="words.length>0">
+            <div class="word_con">
+                <div class="word_tips" v-if="words_tips_tit">
+                    <div class="inline-block" v-if="words_tips_tit" v-html="formatString(words_tips_tit)"></div>
+                </div>
+                <div class="word_txt" v-if="words_con" v-html="formatString(words_con)"></div>
+                <div class="word_info">
+                    <div class="spell_info none">
+                        <p class="spell_txt_org" v-html="formatString(spell_txt_org)"></p>
+                        <p v-html="formatString(spell_tla)"></p>
+                    </div>
+                    <p class="words_mark" v-if="words_mark" v-html="formatString(words_mark)"></p>
+                    <p v-if="words_tla" v-html="formatString(words_tla)"></p>
+                </div>
+                <!-- 自然拼读新增 -->
+                <div class="flex-wrapper-center">
+                    <div class="word_pronunciation" v-if="word_pronunciation_text || word_pronunciation_audio">
+                        <div class="word_pronunciation_text" v-if="word_pronunciation_text">{{word_pronunciation_text}}</div>
+                        <div class="word_pronunciation_audio" v-if="word_pronunciation_audio" @click="toggleAudio($event, word_pronunciation_audio)"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 听说同步朗读 -->
+        <div class="se_main" v-if="read.length>0">
+            <div class="word_con word_con_1 se_con">
+                <div class="word_tips" v-if="read_title">
+                    <div class="inline-block" v-if="read_title" v-html="formatString(read_title)"></div>
+                </div>
+                <div class="word_txt" v-if="read_con" v-html="formatString(read_con)"></div>
+                <div class="sen_con se_txt" v-if="read_sen" v-html="formatString(read_sen)"></div>
+                <div class="word_info">
+                    <p v-if="read_tla" v-html="formatString(read_tla)"></p>
+                </div>
+            </div>
+        </div>
+        <!-- 短语和句子 -->
+        <div class="test_con other_con se_main" v-if="sentence.length>0">
+            <div class="word_con_1 se_con">
+                <div class="se_txt sen_con" v-if="sen_con" v-html="formatString(sen_con)"></div>
+                <div class="se_txt phrase_con" v-else-if="phrase_con" v-html="formatString(phrase_con)"></div>
+                <div class="se_info" v-if="sen_tla" v-html="sen_tla"></div>
+            </div>
+        </div>
+        <!-- 短文 -->
+        <div class="test_con other_con" v-if="essay.length>0">
+            <div class="article_main">
+                <div class="article_con">
+                    <p class="guide_reading" v-if="essay_intro" v-html="essay_intro"></p>
+                    <div class="article_txt">	
+                        <div class="original_con" v-html="formatString(essay_con)"></div>
+                        <p class="translate_con none" v-html="formatString(essay_tla)"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 选择题 -->
+        <div v-if="content_choose" class="content_choose">
+            <div class="pd-container pb20" v-if="content_choose.st_sm" v-html="content_choose.st_sm"></div>
+            <div class="pd-container pb20" v-if="content_choose.st_content" v-html="content_choose.st_content"></div>
+            <div class="pd-container content_img" v-if="content_choose.st_pic" @click="showBigImg(content_choose.st_pic)">
+                <img :src="getMaterialUrl(content_choose.st_pic)" alt="原文图片">
+                <div class="show_big_img_tip">查看大图</div>
+            </div>
+            <div v-for="(xt_item, xt_index) in content_choose.xtlist" class="question-pd6">
+                <!-- 图片选择题 -->
+                <div class="question1" :id="'choose_'+content_choose.stid+'_'+xt_item.xt_xh" v-if="isPicChooseQue(xt_item)">
+                    <div class="choose_title" v-html="xt_item.xt_nr"></div>
+                    <div>
+                        <ul class="clear">
+                            <li class="choose1" :class="xx_item.selected ? 'choose1_selected' : ''" :data-real-answer="xx_item.xx_mc" v-for="(xx_item, xx_index) in xt_item.xxlist" :id="content_choose.stid+'_'+xt_item.xt_xh+'_'+xx_item.xx_xh" @click="chooseSelect(xt_index, xx_index, 'content_choose')">
+                                <img :src="getMaterialUrl(xx_item.xx_wj)" alt="选择项" class="choose1_img">
+                                <div class="choose1_input" v-text="xx_item.xx_mc_text"></div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- 普通选择题 -->
+                <div class="question2" v-else :id="'choose_'+content_choose.stid+'_'+xt_item.xt_xh">
+                    <div class="choose_title" v-html="xt_item.xt_nr"></div>
+                    <div class="choose2_con">
+                        <div class="choose2" :class="xx_item.selected ? 'choose2_selected' : ''" :data-real-answer="xx_item.xx_mc" v-for="(xx_item, xx_index) in xt_item.xxlist" :id="content_choose.stid+'_'+xt_item.xt_xh+'_'+xx_item.xx_xh" @click="chooseSelect(xt_index, xx_index, 'content_choose')">
+                            <div class="choose2_input"></div>
+                            <p class="choose2_text" v-html="xx_item.xx_mc_text+'. '+xx_item.xx_nr"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="pd-container" v-if="hint_2">
+            <div class="hint_2" v-html="hint_2"></div>
+        </div>
+        <div v-if="content_choose2" class="content_choose2">
+            <div v-for="(xt_item, xt_index) in content_choose2.xtlist">
+                <!-- 图片选择题 -->
+                <div class="question1" :id="'choose_'+content_choose.stid+'_'+xt_item.xt_xh" v-if="isPicChooseQue(xt_item)">
+                    <div class="choose_title" v-html="xt_item.xt_nr"></div>
+                    <div>
+                        <ul class="clear">
+                            <li class="choose1" :class="xx_item.selected ? 'choose1_selected' : ''" v-for="(xx_item, xx_index) in xt_item.xxlist" :data-real-answer="xx_item.xx_mc" :id="content_choose.stid+'_'+xt_item.xt_xh+'_'+xx_item.xx_xh" @click="chooseSelect(xt_index, xx_index, 'content_choose2')">
+                                <img :src="getMaterialUrl(xx_item.xx_wj)" alt="选择项" class="choose1_img">
+                                <div class="choose1_input" v-text="xx_item.xx_mc"></div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- 普通选择题 -->
+                <div class="question2" v-else :id="'choose_'+content_choose.stid+'_'+xt_item.xt_xh">
+                    <div class="choose_title" v-html="xt_item.xt_nr"></div>
+                    <div class="choose2_con">
+                        <div class="choose2" :class="xx_item.selected ? 'choose2_selected' : ''" v-for="(xx_item, xx_index) in xt_item.xxlist" :data-real-answer="xx_item.xx_mc" :id="content_choose.stid+'_'+xt_item.xt_xh+'_'+xx_item.xx_xh" @click="chooseSelect(xt_index, xx_index, 'content_choose2')">
+                            <div class="choose2_input"></div>
+                            <p class="choose2_text" v-html="xx_item.xx_mc+'. '+xx_item.xx_nr"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 填空题 -->
+        <div v-if="content_fill_answer" class="content_fill_answer pd-container">
+            <div class="pb20" v-for="(item, index) in content_fill_answer">
+                <span class="clear">
+                    <span class="fl fill_word_number" v-text="item.th"></span>
+                    <span class="fl fill_word"> 
+                        <!-- <span class="number" v-text="item.th"></span> -->
+                        <span class="fill_number" v-show="index == 0" v-text="'点击作答'"></span>
+                        <input :id="item.stid+'_'+item.xth" type="text" class="fill_word_input">
+                    </span>
+                </span>
+            </div>
+        </div>
+        <!-- 禁止输入的填空题 -->
+        <div v-if="content_fill_answer_enable && show_topic_blank==1" class="content_fill_answer pd-container">
+            <div class="pb20" v-for="(item, index) in content_fill_answer_enable">
+                <span class="clear">
+                    <span class="fl fill_word_number" v-text="item.th"></span>
+                    <span class="fl fill_word fill_word_disable"> 
+                        <!-- <span class="number" v-text="item.th"></span> -->
+                        <!-- <span class="fill_number" v-text="item.th"></span> -->
+                        <input :id="item.stid+'_'+item.xth" :value="item.answer" disabled="disabled" type="text" class="fill_word_input">
+                    </span>
+                </span>
+            </div>
+        </div>
+        <div class="pd-container" v-if="hint_3">
+            <div class="hint_2" v-html="hint_3"></div>
+        </div>
+        <!-- 有录音的填空题 -->
+        <div v-if="content_gap.length>0" class="content_tk">
+            <div class="pb20">
+                <div class="title" v-if="gap_title" v-html="gap_title"></div>
+                <div class="question3" v-if="gap_imgcon" @click="showBigImg(gap_imgcon)">
+                    <div class="show-big-img">
+                        <img :src="gap_imgcon" alt="原文图片" width='100%'>
+                        <div class="show-big-img-tip">查看大图</div>
+                    </div>
+                </div>
+                <div class="fill_word_p" v-if="gap_answer||gap_mixture" v-html="formatString(gap_answer)||formatString(gap_mixture)"></div>
+                <div class='analysis bg_green none' v-if="gap_comitcon" v-html="formatString(gap_comitcon)"></div>		
+            </div>
+        </div>
+        <!-- 听说同步 -->
+        <div v-if="choose.length>0" class="content_choose2">
+            <div class="t_title" v-html="choose_title"></div>
+            <div class="pd-container pb20" v-if="choose_con.st_sm" v-html="choose_con.st_sm"></div>
+            <div class="pd-container pb20" v-if="choose_con.st_content" v-html="choose_con.st_content"></div>
+            <div class="" v-if="choose_con.st_pic">
+                <div class="content_img" @click="showBigImg(choose_con.st_pic)">
+                    <img :src="getMaterialUrl(choose_con.st_pic)" alt="">
+                    <div class="show_big_img_tip">查看大图</div>
+                </div>
+            </div>
+            <div v-for="(xt_item, xt_index) in choose_con.xtlist">
+                <!-- 图片选择题 -->
+                <div class="question1" :id="'choose_'+choose_con.stid+'_'+xt_item.xt_xh" v-if="isPicChooseQue(xt_item)">
+                    <div class="choose_title" v-html="xt_item.xt_nr"></div>
+                    <div>
+                        <ul class="clear">
+                            <li class="choose1" :class="xx_item.selected ? 'choose1_selected' : ''" v-for="(xx_item, xx_index) in xt_item.xxlist" :id="choose_con.stid+'_'+xt_item.xt_xh+'_'+xx_item.xx_xh" @click="chooseSelect(xt_index, xx_index, 'choose_con')">
+                                <img :src="getMaterialUrl(xx_item.xx_wj)" alt="选择项" class="choose1_img">
+                                <div class="choose1_input" v-text="xx_item.xx_mc"></div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- 普通选择题 -->
+                <div class="question2" v-else :id="'choose_'+choose_con.stid+'_'+xt_item.xt_xh">
+                    <div class="choose_title" v-html="xt_item.xt_nr"></div>
+                    <div class="choose2_con">
+                        <div class="choose2" :class="xx_item.selected ? 'choose2_selected' : ''" v-for="(xx_item, xx_index) in xt_item.xxlist" :id="choose_con.stid+'_'+xt_item.xt_xh+'_'+xx_item.xx_xh" @click="chooseSelect(xt_index, xx_index, 'choose_con')">
+                            <div class="choose2_input"></div>
+                            <p class="choose2_text" v-html="xx_item.xx_mc+'. '+xx_item.xx_nr"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="none original-text" v-if="choose_con.st_nr">
+                <p>录音原文：</p>
+                <p v-html="choose_con.st_nr"></p>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="js/jquery.min.js"></script>
+<script src="js/vue.min.js"></script>
+<!-- <script src="js/templet-data.js"></script> -->
+<script src="js/fn.js"></script>
+<script src="js/ets_common.js"></script>
+<script src="js/templet_common.js"></script>
+<script src="js/answer1.js"></script>
+
+</html>

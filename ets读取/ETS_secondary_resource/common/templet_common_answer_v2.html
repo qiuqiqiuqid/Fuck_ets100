@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>答案页V2</title>
+    <script src="js/flexible.js"></script>
+    <script src="js/polyfill.js"></script>
+    <link rel="stylesheet" href="css/answer.css">
+    <link rel="stylesheet" href="css/templet_common.css">
+    <link rel="stylesheet" href="css/templet_common_answer.css">
+    <link rel="stylesheet" href="css/templet_common_v2.css">
+</head>
+
+<body>
+    <div class="container repeat-container" id="templateAppV2">
+        <!-- A区: 得分 + 题目原文 + 学生回答 + 诊断按钮 -->
+        <div class="white-block white-block-not-pd mb-16">
+            <div class="result_con" :class="hasHalfStarImg?'':'noHalfStarImg'">
+                <div class="score_con" :class="scoreRationColor">
+                    <span class="get_score" v-text="getScore"></span>分/<span class="all_score" v-text="allScore"></span>分
+                </div>
+                <div class="star_con" :class="'star_level_'+scoreStarRationLevel">
+                    <div class="star_img"></div>
+                    <div class="star_img"></div>
+                    <div class="star_img"></div>
+                    <div class="star_img"></div>
+                    <div class="star_img"></div>
+                </div>
+            </div>
+            <div class="pd-container">
+                <div class="title" v-if="title!=''" v-html="formatString(title)"></div>
+                <div class="subtitle" v-if="subtitle!=''" v-html="formatString(subtitle)"></div>
+                <div class="description" v-if="description!=''" v-html="formatString(description)"></div>
+            </div>
+            <div class="dropdown_con pd-container" :class="dropdown_con_active?'active':''">
+                <div class="dropdown_title" v-if="dropdown_title!=''" v-html="formatString(dropdown_title)"></div>
+                <div class="dropdown_subtitle" v-if="dropdown_subtitle!=''" v-html="formatString(dropdown_subtitle)"></div>
+                <div class="dropdown_description" v-if="dropdown_description!=''" v-html="formatString(dropdown_description)"></div>
+                <div class="dropdown_icon" v-if="dropdown_title" @click="toggleDropdown"></div>
+                <div class="hint" v-if="hint" v-html="hint"></div>
+            </div>
+            <div class="content test_con isRepeatQuestion" :class="{'isShowQuestionDetail':isShowQuestionDetail}">
+                <div class="white-pd">
+                    <div class="flex">
+                        <div class="student-answer-audio-text">题目原文</div>
+                        <div class="student-answer-audio-btn origin-audio"
+                             v-if="questions[0] && questions[0].info && questions[0].info.audio"
+                             :data-audio-id="questions[0].info.audio"
+                             :data-path="getMaterialPath(0)">
+                            <div class="student-answer-audio-btn-img"></div>
+                            <span>原音</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="questions" v-if="questions.length>0">
+                    <div v-for="(question, index) in questions">
+                        <div class="pd-container" v-if="question.structure_type === 'collector.picture'">
+                            <div class="recordText_con">
+                                <p class="inline-block" v-html="formatHtmlPContent(question.info.value, question.info.audio, index)"></p>
+                                <div class="content_img" v-if="question.info.image" @click="showBigImg(index, question.info.image)">
+                                    <img :src="getMaterialUrl(index, question.info.image)" alt="原文图片">
+                                    <div class="show_big_img_tip">查看大图</div>
+                                </div>
+                            </div>
+                            <div class="info_question_ask color_green" v-if="question.info.std && question.info.std.length>0">
+                                <p>参考答案：</p>
+                                <p v-for="(info_q_std, info_q_std_index) in question.info.std" v-if="info_q_std_index<3" v-html="formatAnswerHtmlPContent(info_q_std.value, info_q_std.audio, index)"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="show-qeustion-detail" @click="showQuestionDetail">
+                    <div class="mr12">{{isShowQuestionDetail ? '收起' : '展开'}}题目详情</div>
+                    <div class="show-qeustion-detail-icon" :class="{'active':isShowQuestionDetail}"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 学生回答 + 诊断按钮 -->
+        <div class="repeat-content">
+            <div class="white-block mb-16 pd-lr-16">
+                <div class="flex">
+                    <div class="student-answer-audio-text">学生回答</div>
+                    <div class="student-answer-audio-btn student-audio"
+                         :id="questions[0] && questions[0]['info']['stid']"
+                         :data-path="getMaterialPath(0)">
+                        <div class="student-answer-audio-btn-img student-answer-audio-btn-img-1"></div>
+                        <span>播放</span>
+                    </div>
+                </div>
+                <div class="text-content" v-html="studentOriginText"></div>
+
+                <!-- FP-12: 得分率区间判断，仅 (20%, 95%) 开区间内显示 -->
+                <div v-if="diagnosisButtonVisible && scoreRateInRange">
+                    <!-- FP-11: AI诊断按钮状态切换（二期：去掉进度条） -->
+                    <div class="create-report-btn mb-16"
+                         v-if="repeatDiagnosisStatus === 0"
+                         @click="startRepeatQuestionDiagnosis">AI诊断</div>
+                    <div class="create-report-btn active mb-16"
+                         v-else-if="repeatDiagnosisStatus === 1"
+                         @click="stopRepeatQuestionDiagnosis">停止诊断</div>
+                    <div class="create-report-btn disabled mb-16"
+                         v-else-if="repeatDiagnosisStatus === 2">诊断完成，下拉查看诊断报告</div>
+                    <div class="tips" v-if="repeatDiagnosisStatus == 0">* 一键获取要点、语言维度的AI诊断报告</div>
+                    <div class="tips" v-if="repeatDiagnosisStatus == 1">* 诊断结果会分段输出，整个过程需时约3分钟，可稍后回来查看完整结果</div>
+                    <div class="tips" v-if="repeatDiagnosisStatus == 2 && isPartialResult" style="color:#FF6268;">* 抱歉，时间关系部分诊断结果未能返回</div>
+                </div>
+            </div>
+
+            <!-- B区: 三Tab诊断报告 -->
+            <div class="white-block" v-if="repeatDiagnosisData || overviewText">
+                <div class="tab">
+                    <div class="tab-item"
+                         v-for="(tab, index) in repeatTabs"
+                         :class="{'active': repeatTabIndex === index}"
+                         @click="repeatTabIndex = index">{{tab}}</div>
+                </div>
+
+                <!-- Tab 0: 题目概述 (SSE 流式渲染) -->
+                <div class="repeat-analysis-item pd-lr-16" v-show="repeatTabIndex === 0">
+                    <div class="text-content-cn v2-overview-text" v-if="overviewText" v-html="overviewText"></div>
+                    <div class="v2-streaming-indicator" v-if="isStreaming && !overviewDone">
+                        <span class="v2-dot-pulse"></span>
+                    </div>
+                    <div class="v2-empty-text" v-if="!overviewText && !isStreaming">暂无内容</div>
+                </div>
+
+                <!-- Tab 1: 详细诊断 (合并一期要点+语言) -->
+                <div class="repeat-analysis-item pd-lr-16" v-show="repeatTabIndex === 1">
+                    <!-- A档折叠按钮 -->
+                    <div class="flex justify-between">
+                        <div></div>
+                        <div class="flex repeat-more-btn"
+                             v-if="hasCorrectPoints"
+                             @click="correctPointsVisible = !correctPointsVisible">
+                            <div>{{correctPointsVisible ? '收起' : '展开'}}正确要点</div>
+                            <img class="icon-down-img"
+                                 :class="{'active': correctPointsVisible}"
+                                 src="images/icon-arrow-down-blue.png" alt="">
+                        </div>
+                    </div>
+
+                    <!-- 按要点逐条展示（合并内容诊断+语法诊断） -->
+                    <div class="mb-28" v-for="(item, index) in diagnosisItems">
+                        <div class="flex justify-between">
+                            <div class="repeat-title">要点{{item.index}}</div>
+                        </div>
+                        <div class="text-content" v-html="item.point"></div>
+                        <div class="grey-block">
+                            <!-- 未提到 -->
+                            <div v-if="!item.answer || item.answer === '学生作答未提到' || item.answer === '未作答'">
+                                <div>学生回答未提及</div>
+                            </div>
+                            <!-- 有回答 -->
+                            <div v-else>
+                                <div class="flex justify-between">
+                                    <!-- A档(level=4)收起时显示"学生回答准确"，展开或非A档显示"学生回答" -->
+                                    <div class="repeat-title" v-if="parseInt(item.level) === 4 && !correctPointsVisible">学生回答准确</div>
+                                    <div class="repeat-title" v-else>学生回答</div>
+                                    <div class="v2-level-tag" :class="'v2-level-' + getLevelLetter(item.level)">
+                                        {{getLevelLetter(item.level)}}档
+                                    </div>
+                                </div>
+                                <div v-show="parseInt(item.level) !== 4 || correctPointsVisible">
+                                    <div class="text-content info-item"
+                                         v-html="formatStudentAnswerV2(item)"></div>
+                                    <!-- 要点信息 -->
+                                    <!-- 要点信息 -->
+                                    <div class="text-content info-item" v-if="item.pointInfo && parseInt(item.level) !== 4">
+                                        <div class="text-bold mb-8">要点信息：</div>
+                                        <div>{{item.pointInfo}}</div>
+                                    </div>
+                                    <!-- 语言运用 -->
+                                    <div class="text-content info-item" v-if="item.grammar && item.grammar.length > 0">
+                                        <div class="text-bold mb-8">语言运用：</div>
+                                        <div class="v2-grammar-list">
+                                            <div class="v2-grammar-item" v-for="g in item.grammar">
+                                                <span>{{g.detail}}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 流式加载中指示器 -->
+                    <div class="v2-streaming-indicator" v-if="isStreaming && !diagnosisDone">
+                        <span class="v2-dot-pulse"></span>
+                        <span class="v2-streaming-text">诊断数据加载中...</span>
+                    </div>
+                    <!-- 空状态 -->
+                    <div class="empty-data" v-if="diagnosisItems.length === 0 && !isStreaming">
+                        <div class="empty-data-img"></div>
+                        <div class="empty-data-text">暂无诊断结果</div>
+                    </div>
+                </div>
+
+                <!-- Tab 2: 作答总结 (FP-10 前端计算，文本拼接展示) -->
+                <div class="repeat-analysis-item pd-lr-16" v-show="repeatTabIndex === 2">
+                    <!-- 要点信息 -->
+                    <div class="v2-summary-section mb-28" v-if="summaryPointText">
+                        <div class="flex mb-8">
+                            <div class="title-index title-index-1"></div>
+                            <div class="repeat-title">要点信息</div>
+                        </div>
+                        <div class="text-content-cn">{{summaryPointText}}</div>
+                    </div>
+
+                    <!-- 语言运用 -->
+                    <div class="v2-summary-section mb-28" v-if="summaryData.x > 0">
+                        <div class="flex mb-8">
+                            <div class="title-index title-index-2"></div>
+                            <div class="repeat-title">语言运用</div>
+                        </div>
+                        <div class="text-content-cn">{{summaryGrammarText}}</div>
+                    </div>
+
+                    <!-- 空状态 -->
+                    <div class="empty-data" v-if="summaryData.x === 0 && !isStreaming">
+                        <div class="empty-data-img"></div>
+                        <div class="empty-data-text">暂无作答总结</div>
+                    </div>
+                    <!-- 流式加载中 -->
+                    <div class="v2-streaming-indicator" v-if="isStreaming && !diagnosisDone">
+                        <span class="v2-dot-pulse"></span>
+                        <span class="v2-streaming-text">数据统计中...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- C区: detectData 审核拦截弹窗 (FP-13) -->
+        <div class="v2-mask" v-if="detectModalVisible">
+            <div class="v2-modal">
+                <div class="v2-modal-title">内容提示</div>
+                <div class="v2-modal-content">
+                    <p>{{detectMessage}}</p>
+                </div>
+                <div class="v2-modal-btn-wrapper">
+                    <div class="v2-modal-btn v2-modal-btn-primary" @click="closeDetectModal">我知道了</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- D区: 超时/错误弹窗 (FP-14) -->
+        <div class="v2-mask" v-if="errorModalVisible">
+            <div class="v2-modal">
+                <div class="v2-modal-title">诊断提示</div>
+                <div class="v2-modal-content">
+                    <p>{{errorMessage}}</p>
+                </div>
+                <div class="v2-modal-btn-wrapper">
+                    <div class="v2-modal-btn v2-modal-btn-primary" @click="closeErrorModal">确定</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="js/jquery.min.js"></script>
+<script src="js/vue.min.js"></script>
+<script src="js/fn.js"></script>
+<script src="js/ets_common.js"></script>
+<script src="js/templet_common_answer_v2.js"></script>
+<script src="js/templet_audio_play.js"></script>
+
+</html>

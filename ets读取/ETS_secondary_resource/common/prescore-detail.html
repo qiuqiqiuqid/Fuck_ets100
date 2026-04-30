@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>预测分详情</title>
+    <meta name="keywords" content="E听说,科大讯飞,易听说,英文口语,英语听说,99abc">
+    <meta name="description" content="讯飞E听说是由科大讯飞（股票代码：002230）旗下企业广州讯飞易听说网络科技有限公司设计研发，产品版本囊括：广东高考、广州中考、深圳中考、沈阳中考、青岛中考、威海中考等，能有效帮助考生快速提升英语听说考试成绩。">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" /> -->
+    <script src="js/flexible.js"></script>
+    <script src="js/polyfill.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/preStyle.css">
+    <link rel="stylesheet" type="text/css" href="css/prescore-detail.css">
+</head>
+
+<body>
+    <div id='app'>
+        <!-- 正在加载中 -->
+        <div class='loading' v-if='isShowLoading'>
+            <div class='content'>
+                <img src="images/loading.gif">
+                <div class='text'> 玩命加载中...</div>
+            </div>
+        </div>
+        <!-- 请求失败 -->
+        <div id='loading-fail' class='loading hidePreScore'>
+            <div class='content'>
+                <img src="images/loading-fail.png">
+                <div class='text'>点击重新加载</div>
+                <div class='tip'>呜哇~哇~信号飞走了~</div>
+            </div>
+        </div>
+        <div id='app1' class="hidePreScore">
+            <div class='all-bar scrolling'>
+                <div class='time-status-bar'></div>
+                <div class='head-operate-container scroll'>
+                    <div class='opera-icon'></div>
+                    <div class="out-on-off scroll-top">
+                        英语预测分
+                    </div>
+                    <img src="images/detail-help.png" class='opera-icon' @click='goHelp'>
+                </div>
+            </div>
+            <div class='scroll-container'>
+                <!-- 预测分分数进程图 -->
+                <div class='prescore-process-wrap'>
+                    <div class='prescore-process-container'>
+                        <canvas id='process-canvas' width='660' height='660'></canvas>
+                        <div class='small-div' v-if='scores'>
+                            <div class='score'>
+                                {{scores.total_score}}
+                            </div>
+                            <div class='total-score'>总分：{{scores.total_point}}分</div>
+                        </div>
+                        <div class='small-div' v-else>
+                            <span class='no-prescore'>暂无</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- 成长轨迹 -->
+                <div class='grow-conatiner'>
+                    <!-- 成长轨迹无数据 -->
+                    <div class='no-data-growing' v-if='!scores'>
+                        <div class='tip-container'>
+                            <div class='tip'>你还没有预测分</div>
+                            <a href='#'>
+                                <div class='help'>如何预测</div>
+                            </a>
+                        </div>
+                    </div>
+                    <div v-else>
+                        <div class='title'>成长轨迹</div>
+                        <div id='growing-container'></div>
+                    </div>
+                </div>
+                <!-- tab 班级跟省市 -->
+                <div class='tabs-container none'>
+                    <div class='tab clearfix'>
+                        <div class='tabs-active-bar' :style='tabBarStyle'></div>
+                        <div class='title' data-index='0' v-on:click='tabAddress' :class='tabIndex == 0 ? "active" : ""'>
+                            <span class='text' data-index='0'>班级</span>
+                        </div>
+                        <div class='title' data-index='1' v-on:click='tabAddress' :class='tabIndex == 1 ? "active" : ""'>
+                            <span class='text' data-index='1'>{{tabRes}}</span>
+                        </div>
+                    </div>
+                    <div class='content' :class='contentChart != 0 ? "hidden" : ""'>
+                        <div class='body clearfix' v-if='class_id !=-1'>
+                            <div class='title'>
+                                <div class='ranking'>{{highestScore}}<span class='unit'>分</span></div>
+                                <div class='top'>全班最高分</div>
+                            </div>
+                            <div class='title'>
+                                <div class='ranking'>{{selfRank}}<span class='unit'>名</span></div>
+                                <div class='top'>全班排名</div>
+                            </div>
+                        </div>
+                        <!-- 班级排名无数据 -->
+                        <div class='no-data-growing no-data-ranking' v-if='class_id==-1'>
+                            <div class='tip-container'>
+                                <div class='tip'>你还未加入班级</div>
+                                <div class='add-class' @click='addClass'>
+                                    加入班级
+                                </div>
+                            </div>
+                        </div>
+                        <div class='no-data-growing' v-else-if='!scores && class_id !== -1'>
+                            <div class='tip-container'>
+                                <div class='tip'>还没有你的排名信息</div>
+                                <!-- <a href='#'> -->
+                                    <div class='help' @click='goDetailHelp'>如何进入排名？</div>
+                                <!-- </a> -->
+                            </div>
+                        </div>
+                        <div v-else>
+                            <div class='echart-title'>班级排名轨迹</div>
+                            <div id='growing-container1'></div>
+                        </div>
+                    </div>
+                    <div class='content' :class='contentChart != 1 ? "hidden" : ""'>
+                        <div class='body clearfix'>
+                            <div class='title'>
+                                <div class='ranking'>{{highestResScore}}<span class='unit'>分</span></div>
+                                <div class='top'>全{{tabResAdd}}最高分</div>
+                            </div>
+                            <div class='title'>
+                                <div class='ranking'>{{selfRank}}<span class='unit'>名</span></div>
+                                <div class='top'>全{{tabResAdd}}排名</div>
+                            </div>
+                        </div>
+                        <div v-if='isShowResRank'>
+                            <div class='echart-title'>{{distributionName}}排名轨迹</div>
+                            <div id='growing-container-demo'></div>
+                        </div>
+                        <!-- 省市排名无数据 -->
+                        <div class='no-data-growing' v-else>
+                            <div class='tip-container'>
+                                <div class='tip'>还没有你的排名信息</div>
+                                <!-- <a href='#'> -->
+                                    <div class='help' @click='goDetailHelp'>如何进入排名？</div>
+                                <!-- </a> -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 班级预测分分布 -->
+                <div class='spread-container none'>
+                    <div class='title none'>{{distributionName}}预测分分布</div>
+                    <div id='spread-sccore-container none'></div>
+                    <div class='data-explain'>
+                        <div class='generate-time'>生成时间{{latePdate}}</div>
+                        <div>以上数据来自E听说大数据平台</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src='js/jquery.min.js'></script>
+<script src="js/vue.min.js"></script>
+<script type="text/javascript" src='js/echarts.min.js'></script>
+<!-- <script type="text/javascript" src='js/iscroll.js'></script> -->
+<script type="text/javascript" src='js/default.js'></script>
+<script type="text/javascript" src='js/prescore-detail.js'></script>
+
+</html>

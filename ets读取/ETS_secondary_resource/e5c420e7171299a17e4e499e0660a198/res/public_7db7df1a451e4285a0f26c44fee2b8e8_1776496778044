@@ -1,0 +1,14 @@
+<xml_result>
+
+  <simple_expression_ufi lan="en" region="guangdong_zk" region_version="1" type="study" version="V4.1.0R6.81.20.35M5.81.35.0">
+    <rec_paper>
+      <rec_paper beg_pos="223" content="rec_paper" end_pos="387" except_info="0" is_rejected="false" keywords="foshan" phone_score="2.742114" reject_type="0" total_score="4.962168" word_hit_of_each_kw="1.00">
+        <sentence content="to foshan " index="0">
+          <word beg_pos="229" content="to" end_pos="275"/>
+          <word beg_pos="275" content="foshan" end_pos="364"/>
+        </sentence>
+      </rec_paper>
+    </rec_paper>
+  </simple_expression_ufi>
+
+</xml_result>
