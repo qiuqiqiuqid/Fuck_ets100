@@ -22,6 +22,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.platform.LocalContext
+import android.content.Intent
+import android.net.Uri
 import androidx.navigation.NavHostController
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -72,8 +75,10 @@ fun SettingsScreen(navController: NavHostController) {
                         showAboutDialog = true
                     }
                     HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f))
+                    val context = LocalContext.current
                     SettingsListItem(Icons.Default.Help, "帮助", "使用说明与常见问题", hideChevron = true) {
-                        // TODO: 帮助页面
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/qiuqiqiuqid/Fuck_ets100"))
+                        context.startActivity(intent)
                     }
                 }
             }
@@ -114,7 +119,7 @@ fun AboutDialog(onDismiss: () -> Unit) {
                 
                 // 应用图标
                 Image(
-                    painter = painterResource(id = R.drawable.ic_launcher_foreground),
+                    painter = painterResource(id = R.drawable.fe_logo),
                     contentDescription = "应用图标",
                     modifier = Modifier
                         .size(80.dp)

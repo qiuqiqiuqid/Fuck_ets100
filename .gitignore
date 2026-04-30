@@ -83,10 +83,10 @@ stitch_fe_material_3_interface/
 # ets 读取文件 (测试数据)
 ets读取/
 
-# AI 开发工具目录
-.kilo/
-.kotlin/
-.roo/
+# AI 开发工具目录 (已移除，追踪这些目录)
+# .kilo/
+# .kotlin/
+# .roo/
 
 # Gradle build reports
 build/reports/
