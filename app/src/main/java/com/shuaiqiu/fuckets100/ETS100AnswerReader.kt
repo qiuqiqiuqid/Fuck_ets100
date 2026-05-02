@@ -511,4 +511,54 @@ object ETS100AnswerReader {
         }
         return result
     }
+
+    fun generateExportText(paper: Paper, displayMode: AnswerDisplayMode): String {
+        val sep = "=".repeat(60)
+        val timeStr = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault())
+            .format(java.util.Date())
+
+        val typeCounts = mutableMapOf<String, Int>()
+        for (section in paper.sections) {
+            val count = section.questions.count { it.answerList.isNotEmpty() }
+            if (count > 0) {
+                typeCounts[section.typeName] = typeCounts.getOrDefault(section.typeName, 0) + count
+            }
+        }
+        val totalAnswered = typeCounts.values.sum()
+        val distribution = typeCounts.entries.joinToString("、") { "${it.key}(${it.value}题)" }
+
+        val sb = StringBuilder()
+        sb.appendLine("E听说答案提取报告")
+        sb.appendLine(sep)
+        sb.appendLine("生成时间: $timeStr")
+        sb.appendLine("试卷: ${paper.title} (ID: ${paper.paperId})")
+        sb.appendLine("总题数: $totalAnswered")
+        sb.appendLine("题型分布: $distribution")
+        sb.appendLine(sep)
+        sb.appendLine()
+
+        var questionNum = 0
+        for (section in paper.sections) {
+            for (q in section.questions) {
+                if (q.answerList.isEmpty()) continue
+                questionNum++
+
+                val answer = when (displayMode) {
+                    AnswerDisplayMode.SHORTEST -> q.shortestAnswer
+                    AnswerDisplayMode.ALL -> q.answerList.joinToString("\n") { "    - $it" }
+                }
+
+                sb.appendLine("【第${questionNum}题】${section.typeName} (${section.caption})")
+                sb.appendLine("问题: ${q.questionText}")
+                sb.appendLine("答案: $answer")
+                sb.appendLine()
+            }
+        }
+
+        sb.appendLine(sep)
+        sb.appendLine("报告结束 - 感谢使用FE")
+        sb.appendLine(sep)
+
+        return sb.toString().trimEnd()
+    }
 }

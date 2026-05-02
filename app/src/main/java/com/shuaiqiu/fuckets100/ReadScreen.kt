@@ -1,6 +1,7 @@
 package com.shuaiqiu.fuckets100
 
 import android.util.Log
+import android.content.Intent
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
@@ -1950,6 +1951,7 @@ private fun PaperDetailScreen(
 ) {
     // 宝贝添加返回手势支持喵~
     BackHandler(onBack = onBack)
+    val context = LocalContext.current
     
     Column(modifier = Modifier.fillMaxSize()) {
         // 获取默认颜色 - 需要在 Composable 上下文中获取
@@ -1982,6 +1984,22 @@ private fun PaperDetailScreen(
                         text = "${paper.sections.sumOf { it.questions.size }} 道题目",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                IconButton(onClick = {
+                    val displayMode = SettingsManager.getAnswerDisplayMode()
+                    val exportText = ETS100AnswerReader.generateExportText(paper, displayMode)
+                    val sendIntent = Intent(Intent.ACTION_SEND).apply {
+                        type = "text/plain"
+                        putExtra(Intent.EXTRA_TEXT, exportText)
+                        putExtra(Intent.EXTRA_TITLE, "E听说答案_${paper.title}")
+                    }
+                    context.startActivity(Intent.createChooser(sendIntent, "导出答案"))
+                }) {
+                    Icon(
+                        Icons.Default.IosShare,
+                        contentDescription = "导出答案",
+                        tint = MaterialTheme.colorScheme.primary
                     )
                 }
             }
