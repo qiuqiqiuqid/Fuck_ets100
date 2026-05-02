@@ -1550,6 +1550,11 @@ private fun QuestionDetailItem(
                 
                 // 答案信息
                 if (hasAnswer) {
+                    val answerDisplayMode = SettingsManager.getAnswerDisplayMode()
+                    val answerText = when (answerDisplayMode) {
+                        AnswerDisplayMode.SHORTEST -> question.shortestAnswer
+                        AnswerDisplayMode.ALL -> question.answerList.joinToString("\n") { "- $it" }
+                    }
                     Spacer(modifier = Modifier.height(8.dp))
                     Row(
                         modifier = Modifier
@@ -1566,7 +1571,7 @@ private fun QuestionDetailItem(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = question.answer,
+                            text = answerText,
                             style = MaterialTheme.typography.bodyMedium,
                             color = Color.White,
                             fontWeight = FontWeight.Bold
@@ -1917,9 +1922,14 @@ private fun QuestionBlock(
             
             // 答案折叠项
             if (question.answerList.isNotEmpty()) {
+                val answerDisplayMode = SettingsManager.getAnswerDisplayMode()
+                val answerContent = when (answerDisplayMode) {
+                    AnswerDisplayMode.SHORTEST -> question.shortestAnswer
+                    AnswerDisplayMode.ALL -> question.answerList.joinToString("\n") { "- $it" }
+                }
                 CollapsibleItem(
                     title = "✅ 答案",
-                    content = question.answerList.joinToString("\n") { "${it}" },
+                    content = answerContent,
                     defaultExpanded = defaultAnswerExpanded
                 )
             }
@@ -2193,9 +2203,14 @@ private fun QuestionItemSimple(
         
         // 答案显示 - 使用可折叠组件喵~
         if (question.answerList.isNotEmpty()) {
+            val answerDisplayMode = SettingsManager.getAnswerDisplayMode()
+            val answerContent = when (answerDisplayMode) {
+                AnswerDisplayMode.SHORTEST -> question.shortestAnswer
+                AnswerDisplayMode.ALL -> question.answerList.joinToString("\n") { "- $it" }
+            }
             CollapsibleItem(
                 title = "✅ 答案",
-                content = question.answerList.joinToString(" | "),
+                content = answerContent,
                 defaultExpanded = false
             )
         } else {
