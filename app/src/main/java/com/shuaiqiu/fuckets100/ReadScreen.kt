@@ -2,7 +2,11 @@ package com.shuaiqiu.fuckets100
 
 import android.util.Log
 import android.content.Intent
+import android.net.Uri
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
@@ -488,6 +492,11 @@ fun ReadScreen(
             
             // 宝贝删除确认对话框喵~
             if (showDeleteConfirmDialog) {
+                var currentMode by remember {
+                    mutableStateOf(
+                        SettingsManager.getSavedActivationMode() ?: ShizukuManager.getCurrentActivationMode()
+                    )
+                }
                 DeleteConfirmDialog(
                     onDismiss = { showDeleteConfirmDialog = false },
                     onConfirm = {
@@ -497,24 +506,41 @@ fun ReadScreen(
                         
                         // 获取当前模式
                         val currentModeValue = ShizukuManager.getCurrentActivationMode()
-                        
-                        // 删除 data 目录
+
+                        // 删除 data 目录 和 resource 目录
                         val dataPath = ETS100FileReader.Path.getDataDir()
-                        val dataDeleted = ETS100FileReader.deleteDirectory(currentModeValue, dataPath, context)
-                        if (dataDeleted) {
-                            addLog(LogLevel.SUCCESS, LogCategory.FILE, "✅ data 目录删除成功")
-                        } else {
-                            addLog(LogLevel.ERROR, LogCategory.FILE, "❌ data 目录删除失败")
-                        }
-                        
-                        // 删除 resource 目录
                         val resourcePath = ETS100FileReader.Path.getResourceDir()
-                        val resourceDeleted = ETS100FileReader.deleteDirectory(currentModeValue, resourcePath, context)
-                        if (resourceDeleted) {
-                            addLog(LogLevel.SUCCESS, LogCategory.FILE, "✅ resource 目录删除成功")
-                        } else {
-                            addLog(LogLevel.ERROR, LogCategory.FILE, "❌ resource 目录删除失败")
+                        if(currentMode == ActivationMode.SHIZUKU){
+                            val dataDeleted = ETS100FileReader.deleteDirectory(currentModeValue, dataPath, context)
+                            if (dataDeleted) {
+                                addLog(LogLevel.SUCCESS, LogCategory.FILE, "✅ data 目录删除成功")
+                            } else {
+                                addLog(LogLevel.ERROR, LogCategory.FILE, "❌ data 目录删除失败")
+                            }
+
+                            val resourceDeleted = ETS100FileReader.deleteDirectory(currentModeValue, resourcePath, context)
+                            if (resourceDeleted) {
+                                addLog(LogLevel.SUCCESS, LogCategory.FILE, "✅ resource 目录删除成功")
+                            } else {
+                                addLog(LogLevel.ERROR, LogCategory.FILE, "❌ resource 目录删除失败")
+                            }
                         }
+                        else{
+                            val dataDeleted = ETS100FileReader.deleteDirectory(currentMode, dataPath, context)
+                            if (dataDeleted) {
+                                addLog(LogLevel.SUCCESS, LogCategory.FILE, "✅ data 目录删除成功")
+                            } else {
+                                addLog(LogLevel.ERROR, LogCategory.FILE, "❌ data 目录删除失败")
+                            }
+
+                            val resourceDeleted = ETS100FileReader.deleteDirectory(currentMode, resourcePath, context)
+                            if (resourceDeleted) {
+                                addLog(LogLevel.SUCCESS, LogCategory.FILE, "✅ resource 目录删除成功")
+                            } else {
+                                addLog(LogLevel.ERROR, LogCategory.FILE, "❌ resource 目录删除失败")
+                            }
+                        }
+
                         
                         // 刷新页面重新读取
                         reloadTrigger++
@@ -1952,12 +1978,31 @@ private fun PaperDetailScreen(
     // 宝贝添加返回手势支持喵~
     BackHandler(onBack = onBack)
     val context = LocalContext.current
+    var showExportDialog by remember { mutableStateOf(false) }
+    
+    val exportText = remember(paper) {
+        val displayMode = SettingsManager.getAnswerDisplayMode()
+        ETS100AnswerReader.generateExportText(paper, displayMode)
+    }
+    
+    val createFileLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.CreateDocument("text/plain")
+    ) { uri: Uri? ->
+        uri?.let {
+            try {
+                context.contentResolver.openOutputStream(it)?.bufferedWriter()?.use { writer ->
+                    writer.write(exportText)
+                }
+                Toast.makeText(context, "文件已保存", Toast.LENGTH_SHORT).show()
+            } catch (e: Exception) {
+                Toast.makeText(context, "保存失败: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
     
     Column(modifier = Modifier.fillMaxSize()) {
-        // 获取默认颜色 - 需要在 Composable 上下文中获取
         val defaultPrimaryColor = MaterialTheme.colorScheme.primary
         
-        // 顶部导航栏
         Surface(
             color = MaterialTheme.colorScheme.surface,
             shadowElevation = 4.dp
@@ -1986,16 +2031,7 @@ private fun PaperDetailScreen(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-                IconButton(onClick = {
-                    val displayMode = SettingsManager.getAnswerDisplayMode()
-                    val exportText = ETS100AnswerReader.generateExportText(paper, displayMode)
-                    val sendIntent = Intent(Intent.ACTION_SEND).apply {
-                        type = "text/plain"
-                        putExtra(Intent.EXTRA_TEXT, exportText)
-                        putExtra(Intent.EXTRA_TITLE, "E听说答案_${paper.title}")
-                    }
-                    context.startActivity(Intent.createChooser(sendIntent, "导出答案"))
-                }) {
+                IconButton(onClick = { showExportDialog = true }) {
                     Icon(
                         Icons.Default.IosShare,
                         contentDescription = "导出答案",
@@ -2066,9 +2102,103 @@ private fun PaperDetailScreen(
                 }
             }
         }
+
+        if (showExportDialog) {
+            ExportChoiceDialog(
+                paper = paper,
+                exportText = exportText,
+                onShareText = {
+                    showExportDialog = false
+                    val sendIntent = Intent(Intent.ACTION_SEND).apply {
+                        type = "text/plain"
+                        putExtra(Intent.EXTRA_TEXT, exportText)
+                        putExtra(Intent.EXTRA_TITLE, "E听说答案_${paper.title}")
+                    }
+                    context.startActivity(Intent.createChooser(sendIntent, "导出答案"))
+                },
+                onSaveFile = {
+                    showExportDialog = false
+                    createFileLauncher.launch("E听说答案_${paper.title}_${System.currentTimeMillis()}.txt")
+                },
+                onDismiss = { showExportDialog = false }
+            )
+        }
     }
 }
 
+@Composable
+private fun ExportChoiceDialog(
+    paper: ETS100AnswerReader.Paper,
+    exportText: String,
+    onShareText: () -> Unit,
+    onSaveFile: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("导出答案") },
+        text = {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                ExportOption(
+                    icon = Icons.Default.Share,
+                    title = "分享纯文本",
+                    description = "通过系统分享面板发送答案文本",
+                    onClick = onShareText
+                )
+                ExportOption(
+                    icon = Icons.Default.Save,
+                    title = "保存为txt文件",
+                    description = "将答案保存到设备存储中",
+                    onClick = onSaveFile
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("取消")
+            }
+        }
+    )
+}
+
+@Composable
+private fun ExportOption(
+    icon: ImageVector,
+    title: String,
+    description: String,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(vertical = 4.dp),
+        verticalAlignment = Alignment.Top
+    ) {
+        Icon(
+            icon,
+            null,
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(24.dp)
+        )
+        Spacer(modifier = Modifier.width(12.dp))
+        Column {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = description,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
 /**
  * 合并题目块组件
  * 宝贝这个组件用于显示同一原文下的多个题目，将它们合并在一个大块中喵~
