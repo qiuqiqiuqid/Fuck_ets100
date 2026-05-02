@@ -53,20 +53,31 @@ object ETS100AnswerReader {
      * 题目数据类
      */
     data class Question(
-        val order: Int,                // 题目序号从1开始计数
-        val sectionOrder: Int,          // 当前 section 下的题目序号
-        val sectionCaption: String,     // 当前 section 的标题
-        val typeName: String,           // 题目类型名称
-        val questionText: String,       // 题目文本
-        val answers: List<String>,      // 答案列表
-        val originalText: String?,      // 原始文本内容
-        val category: String = "",       // category 分类
-        val content: AnswerContent = AnswerContent.Reading("")  // 用于UI显示
+        val order: Int,
+        val sectionOrder: Int,
+        val sectionCaption: String,
+        val typeName: String,
+        val questionText: String,
+        val answers: List<String>,
+        val originalText: String?,
+        val category: String = "",
+        val content: AnswerContent = AnswerContent.Reading("")
     ) {
-        // 兼容性别名 - ReadScreen 使用 question.question
         val question: String get() = questionText
-        val answer: String get() = answers.firstOrNull() ?: ""
+        val answer: String get() = shortestAnswer
         val answerList: List<String> get() = answers
+
+        val shortestAnswer: String
+            get() {
+                if (answers.isEmpty()) return ""
+                var shortest = answers[0]
+                for (a in answers) {
+                    if (a.length < shortest.length) {
+                        shortest = a
+                    }
+                }
+                return shortest
+            }
     }
 
     /**

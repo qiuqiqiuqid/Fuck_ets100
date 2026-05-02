@@ -11,20 +11,20 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 
-/**
- * 通用设置页面
- * 包含语言设置、时区设置等通用选项
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GeneralSettingsScreen(navController: NavHostController) {
+
+    var showAnswerModeDialog by remember { mutableStateOf(false) }
+    var currentAnswerMode by remember { mutableStateOf(SettingsManager.getAnswerDisplayMode()) }
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -45,7 +45,6 @@ fun GeneralSettingsScreen(navController: NavHostController) {
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // 通用设置分组标题
             Text("通用设置", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
 
             OutlinedCard(
@@ -54,41 +53,102 @@ fun GeneralSettingsScreen(navController: NavHostController) {
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
             ) {
                 Column {
-                    // 语言设置
                     GeneralSettingsRow(
-                        icon = Icons.Default.Language, 
-                        title = "语言设置 (Language)", 
-                        sub = "简体中文 (zh-CN)"
+                        icon = Icons.Default.QuestionAnswer,
+                        title = "答案显示模式",
+                        sub = currentAnswerMode.label
                     ) {
-                        // TODO: 语言设置功能待实现
+                        showAnswerModeDialog = true
                     }
                     HorizontalDivider(
-                        modifier = Modifier.padding(horizontal = 16.dp), 
+                        modifier = Modifier.padding(horizontal = 16.dp),
                         color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f)
                     )
-                    // 时区设置
                     GeneralSettingsRow(
-                        icon = Icons.Default.Schedule, 
-                        title = "时区设置", 
+                        icon = Icons.Default.Language,
+                        title = "语言设置 (Language)",
+                        sub = "简体中文 (zh-CN)"
+                    )
+                    HorizontalDivider(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f)
+                    )
+                    GeneralSettingsRow(
+                        icon = Icons.Default.Schedule,
+                        title = "时区设置",
                         sub = "自动获取设备时区 (Asia/Shanghai)"
-                    ) {
-                        // TODO: 时区设置功能待实现
-                    }
+                    )
                 }
             }
         }
     }
+
+    if (showAnswerModeDialog) {
+        AnswerModeDialog(
+            currentMode = currentAnswerMode,
+            onSelect = { mode ->
+                SettingsManager.saveAnswerDisplayMode(mode)
+                currentAnswerMode = mode
+                showAnswerModeDialog = false
+            },
+            onDismiss = { showAnswerModeDialog = false }
+        )
+    }
 }
 
-/**
- * 通用设置行组件
- * 用于显示单个设置项
- *
- * @param icon 设置项图标
- * @param title 设置项标题
- * @param sub 设置项副标题/描述
- * @param onClick 点击事件处理
- */
+@Composable
+private fun AnswerModeDialog(
+    currentMode: AnswerDisplayMode,
+    onSelect: (AnswerDisplayMode) -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("答案显示模式") },
+        text = {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                AnswerDisplayMode.entries.forEach { mode ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onSelect(mode) }
+                            .padding(vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = currentMode == mode,
+                            onClick = { onSelect(mode) }
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Column {
+                            Text(
+                                text = mode.label,
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                            Text(
+                                text = when (mode) {
+                                    AnswerDisplayMode.SHORTEST -> "只显示每题最简洁的答案"
+                                    AnswerDisplayMode.ALL -> "显示每题所有答案"
+                                },
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("关闭")
+            }
+        }
+    )
+}
+
 @Composable
 private fun GeneralSettingsRow(
     icon: ImageVector,
@@ -103,7 +163,6 @@ private fun GeneralSettingsRow(
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // 图标容器
         Box(
             modifier = Modifier
                 .size(40.dp)
@@ -111,37 +170,35 @@ private fun GeneralSettingsRow(
             contentAlignment = Alignment.Center
         ) {
             Icon(
-                icon, 
-                null, 
-                tint = MaterialTheme.colorScheme.primary, 
+                icon,
+                null,
+                tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(20.dp)
             )
         }
-        
-        // 标题和副标题
+
         Column(
             modifier = Modifier
                 .weight(1f)
                 .padding(start = 16.dp)
         ) {
             Text(
-                title, 
-                style = MaterialTheme.typography.titleMedium, 
+                title,
+                style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface
             )
             if (sub.isNotEmpty()) {
                 Text(
-                    sub, 
-                    style = MaterialTheme.typography.bodySmall, 
+                    sub,
+                    style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
-        
-        // 箭头指示
+
         Icon(
-            Icons.Default.ChevronRight, 
-            null, 
+            Icons.Default.ChevronRight,
+            null,
             tint = MaterialTheme.colorScheme.outlineVariant
         )
     }
