@@ -33,6 +33,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.*
+import androidx.compose.animation.*
+import androidx.compose.animation.core.tween
 
 // ============================================================================
 // 字体定义 - 用于应用标题的醒目展示效果
@@ -126,6 +128,7 @@ sealed class Screen(val route: String, val icon: ImageVector, val label: String)
     object GeneralSettings : Screen("general_settings", Icons.Default.Tune, "通用")
     object ThemeSettings : Screen("theme_settings", Icons.Default.Palette, "主题")
     object Debug : Screen("debug", Icons.Default.BugReport, "调试")
+    object Share : Screen("share", Icons.Default.Share, "分享")
 }
 
 // ============================================================================
@@ -302,11 +305,12 @@ fun FeAppMain() {
                     HomeScreen(currentMode, shizukuState, navController) 
                 }
                 
-                composable(Screen.Read.route) { 
+                composable(Screen.Read.route) {
                     ReadScreen(
                         currentMode = currentMode,
-                        onNavigateToSettings = { navController.navigate(Screen.Settings.route) }
-                    ) 
+                        onNavigateToSettings = { navController.navigate(Screen.Settings.route) },
+                        onNavigateToShare = { navController.navigate(Screen.Share.route) }
+                    )
                 }
                 
                 composable(Screen.Settings.route) { 
@@ -338,6 +342,30 @@ fun FeAppMain() {
                 
                 composable(Screen.Debug.route) {
                     DebugScreen(navController = navController)
+                }
+                
+                composable(
+                    route = Screen.Share.route,
+                    enterTransition = { slideInHorizontally(initialOffsetX = { it }, animationSpec = tween(300)) },
+                    exitTransition = { slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween(300)) }
+                ) {
+                    // 使用 FeApplication.sharePaper 获取试卷数据
+                    val paper = FeApplication.sharePaper
+                    if (paper != null) {
+                        ShareScreen(
+                            paper = paper,
+                            isDarkMode = currentTheme.isDark,
+                            onBack = {
+                                FeApplication.sharePaper = null
+                                navController.popBackStack()
+                            }
+                        )
+                    } else {
+                        // 试卷不存在，返回
+                        LaunchedEffect(Unit) {
+                            navController.popBackStack()
+                        }
+                    }
                 }
             }
         }

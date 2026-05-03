@@ -104,7 +104,8 @@ private sealed class InitResult {
 @Composable
 fun ReadScreen(
     currentMode: ActivationMode,
-    onNavigateToSettings: () -> Unit
+    onNavigateToSettings: () -> Unit,
+    onNavigateToShare: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -458,7 +459,12 @@ fun ReadScreen(
                                     showPaperDetail = false
                                     selectedPaper = null
                                 },
-                                categoryColors = categoryColors
+                                categoryColors = categoryColors,
+                                onShare = {
+                                    // 保存试卷到 FeApplication 并跳转到分享页面
+                                    FeApplication.sharePaper = paper
+                                        onNavigateToShare()
+                                }
                             )
                         } else {
                             // 一级页面：显示试卷列表
@@ -1947,7 +1953,8 @@ private fun QuestionBlock(
 private fun PaperDetailScreen(
     paper: ETS100AnswerReader.Paper,
     onBack: () -> Unit,
-    categoryColors: Map<String, Color>
+    categoryColors: Map<String, Color>,
+    onShare: () -> Unit = {}
 ) {
     // 宝贝添加返回手势支持喵~
     BackHandler(onBack = onBack)
@@ -1971,6 +1978,13 @@ private fun PaperDetailScreen(
                     Icon(
                         Icons.Default.ArrowBack,
                         contentDescription = "返回"
+                    )
+                }
+                IconButton(onClick = onShare) {
+                    Icon(
+                        Icons.Default.Share,
+                        contentDescription = "分享",
+                        tint = MaterialTheme.colorScheme.primary
                     )
                 }
                 Column(modifier = Modifier.weight(1f)) {

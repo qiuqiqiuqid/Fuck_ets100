@@ -39,10 +39,10 @@ fun ThemeSettingsScreen(
         topBar = {
             CenterAlignedTopAppBar(
                 title = { Text("主题设置", style = MaterialTheme.typography.titleMedium) },
-                navigationIcon = { 
-                    IconButton(onClick = { navController.popBackStack() }) { 
-                        Icon(Icons.Default.Palette, null) 
-                    } 
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.Default.Palette, null)
+                    }
                 }
             )
         }

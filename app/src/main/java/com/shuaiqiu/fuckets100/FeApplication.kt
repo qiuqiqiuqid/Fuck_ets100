@@ -54,6 +54,9 @@ class FeApplication : Application() {
         // 更新状态 Flow，用于通知 MainActivity 弹窗显示
         private val _updateStatusFlow = kotlinx.coroutines.flow.MutableStateFlow<UpdateStatus?>(null)
         val updateStatusFlow: kotlinx.coroutines.flow.StateFlow<UpdateStatus?> = _updateStatusFlow.asStateFlow()
+        
+        // 待分享的试卷数据，用于在 ShareScreen 中显示
+        var sharePaper: ETS100AnswerReader.Paper? = null
     }
     
     override fun onCreate() {
