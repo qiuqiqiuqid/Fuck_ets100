@@ -57,6 +57,11 @@ dependencies {
     implementation(libs.shizuku.api)
     implementation(libs.shizuku.provider)
     
+    // Miuix UI 库 - MIUI 风格的可爱组件喵~ 🎨
+    implementation(libs.miuix.ui)
+    implementation(libs.miuix.preference)
+    implementation(libs.miuix.icons)
+    
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

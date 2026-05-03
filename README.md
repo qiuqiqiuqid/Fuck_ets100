@@ -1,6 +1,11 @@
 # Fuck ets100 - e听说答案提取器 📱
 
 [![GPL-3.0 License](https://img.shields.io/badge/License-GPL%203.0-blue.svg)](LICENSE)
+[![Kotlin](https://img.shields.io/badge/kotlin-2.3.21-7F52FF)](https://kotlinlang.org/)
+[![Compose Multiplatform](https://img.shields.io/badge/compose-1.10.3-4285F4)](https://www.jetbrains.com/compose-multiplatform)
+![Android](https://img.shields.io/badge/Android-3DDC84?logo=android&logoColor=white)
+
+
 
 你是否还在面对数不尽的听说题而难堪，是否还在为没有人给你提供 e听说答案而困扰，是否还在为了达到老师要求的听说 30 分而感到不可能完成 ❓
 
