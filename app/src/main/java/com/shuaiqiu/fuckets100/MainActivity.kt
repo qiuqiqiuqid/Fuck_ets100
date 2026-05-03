@@ -3,6 +3,7 @@ package com.shuaiqiu.fuckets100
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -15,6 +16,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
+import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -123,6 +125,7 @@ sealed class Screen(val route: String, val icon: ImageVector, val label: String)
     object Activation : Screen("activation", Icons.Default.Build, "激活")
     object GeneralSettings : Screen("general_settings", Icons.Default.Tune, "通用")
     object ThemeSettings : Screen("theme_settings", Icons.Default.Palette, "主题")
+    object Debug : Screen("debug", Icons.Default.BugReport, "调试")
 }
 
 // ============================================================================
@@ -182,6 +185,21 @@ fun FeAppMain() {
     
     // 主题状态 - 主题变更时自动刷新界面
     var currentTheme by remember { mutableStateOf(ThemeManager.getSavedTheme()) }
+    
+    // 更新弹窗状态 - 使用 snapshotFlow 监听 FeApplication.updateStatus 的变化喵~
+    var showUpdateDialog by remember { mutableStateOf(false) }
+    var updateDialogStatus by remember { mutableStateOf<com.shuaiqiu.fuckets100.UpdateStatus?>(null) }
+    
+    // 监听更新状态 Flow，确保每次都能收到通知喵~
+    LaunchedEffect(Unit) {
+        FeApplication.updateStatusFlow.collect { status ->
+            Log.d("FeAppMain", "updateStatusFlow 收到: $status")
+            if (status != null && status.showDialog) {
+                updateDialogStatus = status
+                showUpdateDialog = true
+            }
+        }
+    }
     
     // 当前激活模式 - 从保存的设置或自动检测获取
     var currentMode by remember { 
@@ -317,7 +335,24 @@ fun FeAppMain() {
                         onThemeChanged = { newTheme -> currentTheme = newTheme }
                     )
                 }
+                
+                composable(Screen.Debug.route) {
+                    DebugScreen(navController = navController)
+                }
             }
+        }
+        
+        // 更新弹窗 - 放在 Scaffold 外面确保能覆盖其他内容喵~
+        if (showUpdateDialog && updateDialogStatus != null) {
+            Log.d("FeAppMain", "显示更新弹窗: ${updateDialogStatus!!.message}")
+            UpdateDialog(
+                status = updateDialogStatus!!,
+                onDismiss = {
+                    showUpdateDialog = false
+                    updateDialogStatus = null
+                    FeApplication.updateStatus = null
+                }
+            )
         }
     }
 }

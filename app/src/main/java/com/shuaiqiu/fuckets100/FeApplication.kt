@@ -7,6 +7,9 @@ import android.widget.Toast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import rikka.shizuku.Shizuku
 import rikka.sui.Sui
@@ -42,6 +45,15 @@ class FeApplication : Application() {
         // 应用全局上下文
         lateinit var appCtx: Context
             private set
+        
+        // 更新状态，用于在 MainActivity 中显示弹窗
+        // 使用 @Volatile 确保多线程可见性喵~
+        @Volatile
+        var updateStatus: UpdateStatus? = null
+        
+        // 更新状态 Flow，用于通知 MainActivity 弹窗显示
+        private val _updateStatusFlow = kotlinx.coroutines.flow.MutableStateFlow<UpdateStatus?>(null)
+        val updateStatusFlow: kotlinx.coroutines.flow.StateFlow<UpdateStatus?> = _updateStatusFlow.asStateFlow()
     }
     
     override fun onCreate() {
@@ -55,6 +67,12 @@ class FeApplication : Application() {
         
         // 初始化SAF管理器
         SAFManager.init(this)
+        
+        // 初始化资源索引管理器（宝贝加载 resource-*.json 喵~）
+        ResourceIndexManager.initialize(this)
+        
+        // 初始化北京索引管理器（宝贝加载 beijing-*.json 喵~）
+        BeijingIndexManager.initialize(this)
         
         // 初始化Sui (Magisk 模块)
         isSui = Sui.init(BuildConfig.APPLICATION_ID)
@@ -77,10 +95,10 @@ class FeApplication : Application() {
     private fun checkRemoteConfig() {
         applicationScope.launch {
             try {
-                val (isKillSwitch, showNotice, noticeMessage) = RemoteConfigManager.checkStatus()
+                val status = RemoteConfigManager.checkStatus()
                 
                 when {
-                    isKillSwitch -> {
+                    status.isKillSwitch -> {
                         // KillSwitch 激活,显示"程序异常"提示
                         Log.w(TAG, "KillSwitch activated: 程序异常")
                         Toast.makeText(this@FeApplication, "程序异常", Toast.LENGTH_LONG).show()
@@ -92,10 +110,16 @@ class FeApplication : Application() {
                             System.exit(0)
                         }, 2000) // 2秒后关闭
                     }
-                    showNotice && noticeMessage.isNotEmpty() -> {
-                        // 显示通知消息
-                        Log.i(TAG, "显示通知: $noticeMessage")
-                        Toast.makeText(this@FeApplication, noticeMessage, Toast.LENGTH_LONG).show()
+                    status.showDialog -> {
+                        // 有新版本，显示更新弹窗，通过 Flow 通知
+                        updateStatus = status
+                        _updateStatusFlow.value = status
+                        Log.i(TAG, "保存更新状态: showDialog=${status.showDialog}, message='${status.message}', isForce=${status.isForce}")
+                    }
+                    status.noticeMessage.isNotEmpty() -> {
+                        // 有公告，只显示 Toast
+                        Log.i(TAG, "显示公告 Toast: ${status.noticeMessage}")
+                        Toast.makeText(this@FeApplication, status.noticeMessage, Toast.LENGTH_LONG).show()
                     }
                 }
             } catch (e: RemoteConfigManager.NetworkException) {

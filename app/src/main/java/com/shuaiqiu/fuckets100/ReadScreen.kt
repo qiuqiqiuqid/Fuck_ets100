@@ -185,15 +185,21 @@ fun ReadScreen(
         addLog(LogLevel.INIT, LogCategory.SYSTEM, "=".repeat(50))
         
         try {
-            // 检查模式是否可用
+            // 检查是否启用了强执读取模式
+            val forceReadMode = SettingsManager.getForceReadMode()
+            if (forceReadMode) {
+                addLog(LogLevel.WARN, LogCategory.SYSTEM, "⚡ 强执读取模式已启用，跳过权限检查")
+            }
+            
+            // 检查模式是否可用（除非强制读取模式启用）
             addLog(LogLevel.DEBUG, LogCategory.SYSTEM, "检查模式可用性...")
-            if (!ETS100FileReader.isModeAvailable(currentMode, context)) {
+            if (!forceReadMode && !ETS100FileReader.isModeAvailable(currentMode, context)) {
                 addLog(LogLevel.ERROR, LogCategory.SYSTEM, "当前模式不可用: $currentMode")
                 errorMessage = "当前模式不可用: $currentMode"
                 isLoading = false
                 return@LaunchedEffect
             }
-            addLog(LogLevel.SUCCESS, LogCategory.SYSTEM, "✓ 模式检查通过")
+            addLog(LogLevel.SUCCESS, LogCategory.SYSTEM, "✓ 模式检查通过" + if (forceReadMode) " (强执模式跳过检查)" else "")
             
             // 在 IO 线程执行文件操作
             addLog(LogLevel.INFO, LogCategory.SYSTEM, "开始 IO 操作...")
@@ -235,7 +241,7 @@ fun ReadScreen(
                     if (paperList.isNotEmpty()) {
                         addLog(LogLevel.INIT, LogCategory.PAPER, "-".repeat(40))
                         paperList.forEachIndexed { paperIndex, paper ->
-                            addLog(LogLevel.INIT, LogCategory.PAPER, "📄 试卷 #${paperIndex + 1}: ${paper.title}")
+                            addLog(LogLevel.INIT, LogCategory.PAPER, "📄 试卷 #${paperIndex + 1}: ${paper.title} [${paper.regionLabel}]")
                             addLog(LogLevel.DEBUG, LogCategory.PAPER, "   ID: ${paper.paperId}")
                             addLog(LogLevel.DEBUG, LogCategory.PAPER, "   分区数: ${paper.sections.size}")
                             
@@ -330,8 +336,10 @@ fun ReadScreen(
         },
         floatingActionButton = {
             // 宝贝右下角的可展开圆形十字按钮喵~
+            val hideDebugButton = SettingsManager.getHideDebugButton()
             ExpandableCrossFab(
                 isExpanded = isFabExpanded,
+                hideDebugButton = hideDebugButton,
                 onToggleExpand = { isFabExpanded = !isFabExpanded },
                 onDebugClick = {
                     isFabExpanded = false
@@ -532,6 +540,7 @@ fun ReadScreen(
 @Composable
 private fun ExpandableCrossFab(
     isExpanded: Boolean,
+    hideDebugButton: Boolean = false,
     onToggleExpand: () -> Unit,
     onDebugClick: () -> Unit,
     onDeleteClick: () -> Unit,
@@ -585,14 +594,16 @@ private fun ExpandableCrossFab(
                     onClick = onDeleteClick
                 )
                 
-                // 调试按钮 - 最下面
-                SubFabItem(
-                    icon = Icons.Default.BugReport,
-                    label = "调试",
-                    containerColor = MaterialTheme.colorScheme.secondary,
-                    contentColor = MaterialTheme.colorScheme.onSecondary,
-                    onClick = onDebugClick
-                )
+                // 调试按钮 - 最下面（除非 hideDebugButton 为 true 才显示）
+                if (!hideDebugButton) {
+                    SubFabItem(
+                        icon = Icons.Default.BugReport,
+                        label = "调试",
+                        containerColor = MaterialTheme.colorScheme.secondary,
+                        contentColor = MaterialTheme.colorScheme.onSecondary,
+                        onClick = onDebugClick
+                    )
+                }
             }
         }
         
@@ -2296,12 +2307,34 @@ private fun PaperListItem(
                 }
                 Spacer(modifier = Modifier.width(12.dp))
                 Column {
-                    Text(
-                        text = paper.title,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
+                    // 宝贝显示地区标签和标题喵~
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        // 宝贝添加地区标签 Badge 喵~
+                        if (paper.regionLabel != "未知") {
+                            Surface(
+                                color = when (paper.regionLabel) {
+                                    "初中" -> Color(0xFF6366F1)
+                                    "高中" -> Color(0xFF22C55E)
+                                    else -> MaterialTheme.colorScheme.primary
+                                },
+                                shape = RoundedCornerShape(4.dp)
+                            ) {
+                                Text(
+                                    text = paper.regionLabel,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = Color.White,
+                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(8.dp))
+                        }
+                        Text(
+                            text = paper.title,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
                     Spacer(modifier = Modifier.height(2.dp))
                     // 宝贝显示分区类型，用对应颜色喵~
                     Row(verticalAlignment = Alignment.CenterVertically) {

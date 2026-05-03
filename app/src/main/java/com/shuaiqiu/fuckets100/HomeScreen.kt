@@ -1,5 +1,6 @@
 package com.shuaiqiu.fuckets100
 
+import android.os.Build
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
@@ -87,16 +88,7 @@ fun HomeScreen(mode: ActivationMode, shizukuState: ShizukuState, navController: 
     val activeColor = if (isTrulyActivated) mode.hexColor else Color(0xFFDC2626) // 未激活时显示红色警告
     
     Scaffold(
-        topBar = { FeTopAppBar(title = "Fe") },
-        floatingActionButton = {
-            ExtendedFloatingActionButton(
-                onClick = { /* 启动答题功能 */ },
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
-                icon = { Icon(Icons.Default.PlayArrow, null) },
-                text = { Text("开始答题", fontWeight = FontWeight.Bold) }
-            )
-        }
+        topBar = { FeTopAppBar(title = "Fe") }
     ) { paddingValues ->
         Column(
             Modifier
@@ -350,7 +342,7 @@ fun DeviceCard(activeColor: Color, etsAppInfo: Pair<Boolean, String>?) {
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Text(
-                            "OnePlus", 
+                            Build.MODEL ?: "Unknown",
                             style = MaterialTheme.typography.bodyMedium, 
                             fontWeight = FontWeight.Bold
                         )
@@ -363,7 +355,7 @@ fun DeviceCard(activeColor: Color, etsAppInfo: Pair<Boolean, String>?) {
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
-                        "Android 16", 
+                        "Android ${Build.VERSION.RELEASE}",
                         style = MaterialTheme.typography.bodyMedium, 
                         fontWeight = FontWeight.Bold
                     )

@@ -67,6 +67,8 @@ object RemoteConfigManager {
                     latestVersionCode = json.optInt("latestVersionCode", BuildConfig.VERSION_CODE),
                     updateUrl = json.optString("updateUrl", ""),
                     isKillSwitchOn = json.optBoolean("isKillSwitchOn", false),
+                    isForce = json.optBoolean("isForce", false),
+                    updateMessage = json.optString("updateMessage", ""),
                     noticeMessage = json.optString("noticeMessage", "")
                 )
                 
@@ -74,6 +76,8 @@ object RemoteConfigManager {
                 Log.d(TAG, "   - latestVersionCode: ${config.latestVersionCode}")
                 Log.d(TAG, "   - updateUrl: ${config.updateUrl}")
                 Log.d(TAG, "   - isKillSwitchOn: ${config.isKillSwitchOn}")
+                Log.d(TAG, "   - isForce: ${config.isForce}")
+                Log.d(TAG, "   - updateMessage: ${config.updateMessage}")
                 Log.d(TAG, "   - noticeMessage: ${config.noticeMessage}")
                 Log.d(TAG, "   - 当前版本: ${BuildConfig.VERSION_CODE}")
                 Log.d(TAG, "═══════════════════════════════════════════")
@@ -99,33 +103,62 @@ object RemoteConfigManager {
      * 检查是否需要更新或锁定
      * 在 IO 线程执行，不阻塞主线程
      * 宝贝如果网络失败会抛出异常喵~
-     * 
+     *
      * @param context Context
-     * @return Triple(是否KillSwitch, 是否显示公告, 公告内容)
+     * @return UpdateStatus 更新状态
      * @throws NetworkException 网络失败或超时时抛出
      */
-    suspend fun checkStatus(): Triple<Boolean, Boolean, String> {
+    suspend fun checkStatus(): UpdateStatus {
         val config = fetchConfig()
         
         return when {
             config.isKillSwitchOn -> {
                 Log.w(TAG, "🚨 KillSwitch 开启! 应用即将退出")
                 // KillSwitch 开启，显示"程序异常"并退出
-                Triple(true, false, "程序异常")
-            }
-            config.noticeMessage.isNotEmpty() -> {
-                Log.i(TAG, "📢 收到公告: ${config.noticeMessage}")
-                // 有公告，显示公告
-                Triple(false, true, config.noticeMessage)
+                UpdateStatus(
+                    isKillSwitch = true,
+                    showDialog = false,
+                    message = "",
+                    isForce = false,
+                    updateUrl = "",
+                    noticeMessage = "程序异常"
+                )
             }
             config.latestVersionCode > BuildConfig.VERSION_CODE -> {
                 Log.i(TAG, "📢 发现新版本: ${config.latestVersionCode} (当前: ${BuildConfig.VERSION_CODE})")
-                // 有新版本，但不强制退出
-                Triple(false, true, "发现新版本: ${config.latestVersionCode}")
+                Log.d(TAG, "📢 updateMessage: '${config.updateMessage}', updateUrl: '${config.updateUrl}'")
+                // 有新版本，显示更新弹窗，消息使用云端返回的 updateMessage
+                UpdateStatus(
+                    isKillSwitch = false,
+                    showDialog = true,
+                    message = config.updateMessage.ifEmpty { "发现新版本: ${config.latestVersionCode}" },
+                    isForce = config.isForce,
+                    updateUrl = config.updateUrl,
+                    noticeMessage = ""
+                )
+            }
+            config.noticeMessage.isNotEmpty() -> {
+                Log.i(TAG, "📢 收到公告: ${config.noticeMessage}")
+                // 有公告，只显示 Toast，不弹窗
+                UpdateStatus(
+                    isKillSwitch = false,
+                    showDialog = false,
+                    message = "",
+                    isForce = false,
+                    updateUrl = "",
+                    noticeMessage = config.noticeMessage
+                )
             }
             else -> {
                 Log.d(TAG, "✅ 已是最新版本，无需更新")
-                Triple(false, false, "")
+                UpdateStatus(
+                    isKillSwitch = false,
+                    showDialog = false,
+                    message = "",
+                    isForce = false,
+                    updateUrl = "",
+                    noticeMessage = ""
+                )
             }
         }
     }

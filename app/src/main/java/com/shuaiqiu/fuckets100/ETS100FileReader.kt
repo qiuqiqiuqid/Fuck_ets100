@@ -134,9 +134,11 @@ object ETS100FileReader {
                 val items = parseLsOutput(lsResult ?: "")
                 
                 items.map { item ->
-                    if (!item.isDirectory && item.name.isNotEmpty()) {
+                    if (item.name.isNotEmpty()) {
+                        // 喵~ 为所有文件/目录获取 lastModified 时间戳！
                         val filePath = "$path/${item.name}"
-                        val statResult = execShizukuCommand("stat -c \"%Y\" \"$filePath\" 2>/dev/null")
+                        val sanitizedPath = filePath.replace("\"", "\\\"")
+                        val statResult = execShizukuCommand("stat -c %Y \"$sanitizedPath\" 2>/dev/null")
                         val timestamp = statResult?.trim()?.toLongOrNull() ?: 0L
                         item.copy(lastModified = timestamp)
                     } else {
@@ -178,10 +180,110 @@ object ETS100FileReader {
         
         override fun getFileModifiedTime(path: String): Long {
             return try {
-                val result = execShizukuCommand("stat -c %Y \"$path\"")
-                result?.trim()?.toLongOrNull() ?: 0L
+                // 宝贝需要先转义路径中的引号喵~ 参考 EAuxiliary 的实现
+                val sanitizedPath = path.replace("\"", "\\\"")
+                
+                Log.d(TAG, "╔═══ Shizuku 时间获取调试 ═══")
+                Log.d(TAG, "║ 原始路径: $path")
+                Log.d(TAG, "║ 转义路径: $sanitizedPath")
+                
+                // 方式1：使用 stat -c %Y 获取 Unix 时间戳（秒级）
+                val statCmd = "stat -c %Y \"$sanitizedPath\""
+                Log.d(TAG, "║ 执行命令1: $statCmd")
+                val statResult = execShizukuCommand(statCmd)
+                Log.d(TAG, "║ stat -c %Y 结果: '$statResult'")
+                var timestamp = statResult?.trim()?.toLongOrNull() ?: 0L
+                Log.d(TAG, "║ 解析时间戳(秒): $timestamp")
+                
+                // 方式2：如果 stat 失败，尝试 ls -ld 备选方案
+                if (timestamp == 0L) {
+                    val lsCmd = "ls -ld \"$sanitizedPath\""
+                    Log.d(TAG, "║ 执行命令2 (备选): $lsCmd")
+                    val lsResult = execShizukuCommand(lsCmd)
+                    Log.d(TAG, "║ ls -ld 结果: $lsResult")
+                    
+                    // 解析 ls -ld 输出中的时间
+                    // 格式: drwxrwxr-x 3 u0_a263 u0_a263 4096 2024-12-01 15:30 path
+                    lsResult?.let { output ->
+                        val lines = output.trim().split("\n")
+                        if (lines.isNotEmpty()) {
+                            val line = lines[0].trim()
+                            val parts = line.split("\\s+".toRegex())
+                            Log.d(TAG, "║ ls -ld 解析 parts 数: ${parts.size}")
+                            if (parts.size >= 8) {
+                                // parts[5]=月份, parts[6]=日期, parts[7]=时间或年份
+                                val monthStr = parts[5]
+                                val dayStr = parts[6]
+                                val timeStr = parts[7]
+                                Log.d(TAG, "║ 月份: $monthStr, 日期: $dayStr, 时间: $timeStr")
+                                
+                                val month = parseMonth(monthStr)
+                                val day = dayStr.toIntOrNull() ?: 1
+                                
+                                var year = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR)
+                                val hour: Int
+                                val minute: Int
+                                
+                                if (timeStr.contains(":")) {
+                                    // 格式是时间 (HH:MM)，表示当前年份
+                                    val timeParts = timeStr.split(":")
+                                    hour = timeParts[0].toIntOrNull() ?: 0
+                                    minute = timeParts[1].toIntOrNull() ?: 0
+                                } else {
+                                    // 格式是年份
+                                    year = timeStr.toIntOrNull() ?: year
+                                    hour = 0
+                                    minute = 0
+                                }
+                                
+                                Log.d(TAG, "║ 解析后: 年=$year, 月=$month, 日=$day, 时=$hour, 分=$minute")
+                                
+                                try {
+                                    val calendar = java.util.Calendar.getInstance()
+                                    calendar.set(year, month - 1, day, hour, minute, 0)
+                                    // ls -ld 返回的时间已经是可读的，不需要除以 1000
+                                    timestamp = calendar.timeInMillis / 1000
+                                    Log.d(TAG, "║ 计算时间戳(秒): $timestamp")
+                                } catch (e: Exception) {
+                                    Log.e(TAG, "║ 解析 ls -ld 时间失败", e)
+                                }
+                            } else {
+                                Log.d(TAG, "║ parts 数量不足，无法解析时间")
+                            }
+                        }
+                    }
+                }
+                
+                // 重要：转换为毫秒级，与 Java File.lastModified() 保持一致！
+                val timestampMs = timestamp * 1000
+                Log.d(TAG, "║ 最终时间戳(毫秒): $timestampMs")
+                Log.d(TAG, "╚═══ 时间获取结束 ═══")
+                return timestampMs
             } catch (e: Exception) {
+                Log.e(TAG, "getFileModifiedTime failed: path=$path", e)
                 0L
+            }
+        }
+        
+        /**
+         * 解析月份字符串为数字
+         * 宝贝这是备选方案喵~
+         */
+        private fun parseMonth(monthStr: String): Int {
+            return when (monthStr.lowercase()) {
+                "Jan" -> 1
+                "Feb" -> 2
+                "Mar" -> 3
+                "Apr" -> 4
+                "May" -> 5
+                "Jun" -> 6
+                "Jul" -> 7
+                "Aug" -> 8
+                "Sep" -> 9
+                "Oct" -> 10
+                "Nov" -> 11
+                "Dec" -> 12
+                else -> 1
             }
         }
         
@@ -255,9 +357,11 @@ object ETS100FileReader {
                 val items = parseLsOutput(lsResult ?: "")
                 
                 items.map { item ->
-                    if (!item.isDirectory && item.name.isNotEmpty()) {
+                    if (item.name.isNotEmpty()) {
+                        // 喵~ 为所有文件/目录获取 lastModified 时间戳！
                         val filePath = "$path/${item.name}"
-                        val statResult = RootManager.execAsRoot("stat -c \"%Y\" \"$filePath\" 2>/dev/null")
+                        val sanitizedPath = filePath.replace("\"", "\\\"")
+                        val statResult = RootManager.execAsRoot("stat -c %Y \"$sanitizedPath\" 2>/dev/null")
                         val timestamp = statResult?.trim()?.toLongOrNull() ?: 0L
                         item.copy(lastModified = timestamp)
                     } else {
@@ -298,8 +402,11 @@ object ETS100FileReader {
         
         override fun getFileModifiedTime(path: String): Long {
             return try {
-                val result = RootManager.execAsRoot("stat -c %Y \"$path\"")
-                result?.trim()?.toLongOrNull() ?: 0L
+                val sanitizedPath = path.replace("\"", "\\\"")
+                val result = RootManager.execAsRoot("stat -c %Y \"$sanitizedPath\"")
+                val timestamp = result?.trim()?.toLongOrNull() ?: 0L
+                // 重要：转换为毫秒级，与 Java File.lastModified() 保持一致！
+                timestamp * 1000
             } catch (e: Exception) {
                 0L
             }
@@ -741,9 +848,15 @@ object ETS100FileReader {
 
     /**
      * 检查指定模式是否可用
+     * @param forceReadMode 如果为 true，在 DIRECT_READ 模式下跳过权限检查
      */
-    fun isModeAvailable(mode: ActivationMode, context: Context? = null): Boolean {
+    fun isModeAvailable(mode: ActivationMode, context: Context? = null, forceReadMode: Boolean = false): Boolean {
         return try {
+            // 强执读取模式：跳过权限检查，直接认为模式可用
+            if (forceReadMode && mode == ActivationMode.DIRECT_READ) {
+                Log.d(TAG, "isModeAvailable: 强执模式，跳过权限检查")
+                return true
+            }
             getReader(mode, context).isAvailable()
         } catch (e: Exception) {
             false
