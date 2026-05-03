@@ -137,5 +137,6 @@ Fuck ets100 的诞生离不开这些"小伙伴"的帮助 💕
 
 **有问题？找作者：**
 - GitHub: [issues 页面](https://github.com/qiuqiqiuqid/Fe/issues)
+- 抖音:[抖音主页](https://v.douyin.com/P0GrWYTqi4s/)
 
 祝你使用愉快 🎉
