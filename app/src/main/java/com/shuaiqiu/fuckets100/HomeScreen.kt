@@ -335,6 +335,11 @@ fun DeviceCard(activeColor: Color, etsAppInfo: Pair<Boolean, String>?) {
     ) {
         Column(modifier = Modifier.padding(24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             // 第一行：设备名称和系统版本
+            val deviceModel = android.os.Build.BRAND // 品牌，在我小米显示的是Xiaomi
+//            val deviceModel = android.os.Build.MANUFACTURER // 制造商名，在我小米显示的是Xiaomi
+//            val deviceModel = android.os.Build.MODEL // 设备型号名，在我小米13u显示的是ishtar
+//            val deviceModel = android.os.Build.DEVICE // 设备名，在我小米13u显示的是ishtar
+            val androidVersion = android.os.Build.VERSION.RELEASE
             Row(
                 modifier = Modifier.fillMaxWidth(), 
                 horizontalArrangement = Arrangement.SpaceBetween, 
@@ -350,7 +355,7 @@ fun DeviceCard(activeColor: Color, etsAppInfo: Pair<Boolean, String>?) {
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Text(
-                            "OnePlus", 
+                            deviceModel, 
                             style = MaterialTheme.typography.bodyMedium, 
                             fontWeight = FontWeight.Bold
                         )
@@ -363,7 +368,7 @@ fun DeviceCard(activeColor: Color, etsAppInfo: Pair<Boolean, String>?) {
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
-                        "Android 16", 
+                        "Android $androidVersion", 
                         style = MaterialTheme.typography.bodyMedium, 
                         fontWeight = FontWeight.Bold
                     )

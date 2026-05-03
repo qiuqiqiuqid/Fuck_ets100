@@ -53,20 +53,31 @@ object ETS100AnswerReader {
      * 题目数据类
      */
     data class Question(
-        val order: Int,                // 题目序号从1开始计数
-        val sectionOrder: Int,          // 当前 section 下的题目序号
-        val sectionCaption: String,     // 当前 section 的标题
-        val typeName: String,           // 题目类型名称
-        val questionText: String,       // 题目文本
-        val answers: List<String>,      // 答案列表
-        val originalText: String?,      // 原始文本内容
-        val category: String = "",       // category 分类
-        val content: AnswerContent = AnswerContent.Reading("")  // 用于UI显示
+        val order: Int,
+        val sectionOrder: Int,
+        val sectionCaption: String,
+        val typeName: String,
+        val questionText: String,
+        val answers: List<String>,
+        val originalText: String?,
+        val category: String = "",
+        val content: AnswerContent = AnswerContent.Reading("")
     ) {
-        // 兼容性别名 - ReadScreen 使用 question.question
         val question: String get() = questionText
-        val answer: String get() = answers.firstOrNull() ?: ""
+        val answer: String get() = shortestAnswer
         val answerList: List<String> get() = answers
+
+        val shortestAnswer: String
+            get() {
+                if (answers.isEmpty()) return ""
+                var shortest = answers[0]
+                for (a in answers) {
+                    if (a.length < shortest.length) {
+                        shortest = a
+                    }
+                }
+                return shortest
+            }
     }
 
     /**
@@ -499,5 +510,55 @@ object ETS100AnswerReader {
             result.addAll(section.questions)
         }
         return result
+    }
+
+    fun generateExportText(paper: Paper, displayMode: AnswerDisplayMode): String {
+        val sep = "=".repeat(60)
+        val timeStr = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault())
+            .format(java.util.Date())
+
+        val typeCounts = mutableMapOf<String, Int>()
+        for (section in paper.sections) {
+            val count = section.questions.count { it.answerList.isNotEmpty() }
+            if (count > 0) {
+                typeCounts[section.typeName] = typeCounts.getOrDefault(section.typeName, 0) + count
+            }
+        }
+        val totalAnswered = typeCounts.values.sum()
+        val distribution = typeCounts.entries.joinToString("、") { "${it.key}(${it.value}题)" }
+
+        val sb = StringBuilder()
+        sb.appendLine("E听说答案提取报告")
+        sb.appendLine(sep)
+        sb.appendLine("生成时间: $timeStr")
+        sb.appendLine("试卷: ${paper.title} (ID: ${paper.paperId})")
+        sb.appendLine("总题数: $totalAnswered")
+        sb.appendLine("题型分布: $distribution")
+        sb.appendLine(sep)
+        sb.appendLine()
+
+        var questionNum = 0
+        for (section in paper.sections) {
+            for (q in section.questions) {
+                if (q.answerList.isEmpty()) continue
+                questionNum++
+
+                val answer = when (displayMode) {
+                    AnswerDisplayMode.SHORTEST -> q.shortestAnswer
+                    AnswerDisplayMode.ALL -> q.answerList.joinToString("\n") { "    - $it" }
+                }
+
+                sb.appendLine("【第${questionNum}题】${section.typeName} (${section.caption})")
+                sb.appendLine("问题: ${q.questionText}")
+                sb.appendLine("答案: $answer")
+                sb.appendLine()
+            }
+        }
+
+        sb.appendLine(sep)
+        sb.appendLine("报告结束 - 感谢使用FE")
+        sb.appendLine(sep)
+
+        return sb.toString().trimEnd()
     }
 }
