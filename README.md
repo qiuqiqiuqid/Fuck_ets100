@@ -133,6 +133,7 @@ Fuck ets100 的诞生离不开这些"小伙伴"的帮助 💕
 - [Shizuku](https://shizuku.rikka.app/) - 让你不用 Root 也能管理文件
 - [Jetpack Compose](https://developer.android.com/compose) - 让界面开发更简单
 - [hicccc77](https://github.com/hicccc77) - 提供了全新的读取逻辑([WeFlow](https://github.com/hicccc77/WeFlow)作者)
+- [leitianshuo1337](https://github.com/code-leitianshuo) - 提供了全新api读取逻辑
 
 **AI 贡献者：**
 - **Google Gemini 3.1 Pro** - 设计师担当，负责前端设计和大体框架搭建，让界面美观又好用
