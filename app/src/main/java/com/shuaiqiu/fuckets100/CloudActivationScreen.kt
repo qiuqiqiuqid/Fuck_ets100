@@ -67,16 +67,22 @@ fun CloudActivationScreen(
                 Log.d("CloudActivationScreen", "使用机器码: ${deviceCode.take(8)}...")
                 
                 // 调用登录 API
+                Log.d("CloudActivationScreen", "===== 开始登录 =====")
+                Log.d("CloudActivationScreen", "手机号: ${phone}")
+                Log.d("CloudActivationScreen", "机器码: ${deviceCode}")
+                
                 val loginResult = ETS100ApiClient.login(phone, password, deviceCode)
                 
                 loginResult.onSuccess { loginResponse ->
-                    Log.d("CloudActivationScreen", "登录成功，获取 token: ${loginResponse.token.take(8)}...")
+                    Log.i("CloudActivationScreen", "✓ 登录成功！")
+                    Log.d("CloudActivationScreen", "Token: ${loginResponse.token}")
                     
                     // 获取父账户 ID
+                    Log.d("CloudActivationScreen", "----- 获取父账户ID -----")
                     val ecardResult = ETS100ApiClient.getEcardList(loginResponse.token)
                     
                     ecardResult.onSuccess { parentAccountId ->
-                        Log.d("CloudActivationScreen", "获取父账户ID成功: $parentAccountId")
+                        Log.i("CloudActivationScreen", "✓ 获取父账户ID成功: $parentAccountId")
                         
                         // 保存登录信息
                         ETS100AuthManager.saveLoginInfo(context, phone, loginResponse.token, parentAccountId)
@@ -86,19 +92,29 @@ fun CloudActivationScreen(
                             onLoginSuccess()
                         }
                     }.onFailure { e ->
-                        Log.e("CloudActivationScreen", "获取父账户ID失败", e)
+                        Log.e("CloudActivationScreen", "✗ 获取父账户ID失败")
+                        Log.e("CloudActivationScreen", "错误信息: ${e.message}")
+                        e.stackTrace.forEach { Log.e("CloudActivationScreen", "  at ${it}") }
                         withContext(Dispatchers.Main) {
                             Toast.makeText(context, "获取账户信息失败: ${e.message}", Toast.LENGTH_LONG).show()
                         }
                     }
                 }.onFailure { e ->
-                    Log.e("CloudActivationScreen", "登录失败", e)
+                    Log.e("CloudActivationScreen", "✗ 登录失败！")
+                    Log.e("CloudActivationScreen", "错误类型: ${e::class.java.simpleName}")
+                    Log.e("CloudActivationScreen", "错误信息: ${e.message}")
+                    e.stackTrace.forEach { Log.e("CloudActivationScreen", "  at ${it}") }
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, "登录失败: ${e.message}", Toast.LENGTH_LONG).show()
                     }
                 }
+                
+                Log.d("CloudActivationScreen", "===== 登录流程结束 =====")
             } catch (e: Exception) {
-                Log.e("CloudActivationScreen", "登录异常", e)
+                Log.e("CloudActivationScreen", "✗ 登录过程发生异常！")
+                Log.e("CloudActivationScreen", "异常类型: ${e::class.java.simpleName}")
+                Log.e("CloudActivationScreen", "异常信息: ${e.message}")
+                e.stackTrace.forEach { Log.e("CloudActivationScreen", "  at ${it}") }
                 withContext(Dispatchers.Main) {
                     Toast.makeText(context, "登录异常: ${e.message}", Toast.LENGTH_LONG).show()
                 }
