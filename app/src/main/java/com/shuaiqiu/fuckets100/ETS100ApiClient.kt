@@ -238,18 +238,41 @@ object ETS100ApiClient {
         )
 
         return postRequest(Endpoints.ECARD_LIST, bodyData).mapCatching { responseBody ->
-            Log.d(TAG, "ecard_list response: $responseBody")
+            Log.d(TAG, "===== 父账户 API 响应 =====")
+            Log.d(TAG, "原始响应: $responseBody")
             
             val json = responseBody.parseJson()
             val bodyObj = json.optJSONObject("body")
             
+            Log.d(TAG, "body 对象: $bodyObj")
+            Log.d(TAG, "body 长度: ${bodyObj?.length() ?: "null"}")
+            
             // 获取第一个账户的 parent_id
             // body 格式: {"0": {"parent_id": "123456"}}
             if (bodyObj != null && bodyObj.length() > 0) {
-                val firstKey = bodyObj.keys().next()
+                Log.d(TAG, "----- 遍历 body 字段 -----")
+                val keys = mutableListOf<String>()
+                bodyObj.keys().forEach { key -> keys.add(key) }
+                Log.d(TAG, "找到 ${keys.size} 个账户")
+                
+                val firstKey = keys.first()
+                Log.d(TAG, "使用第一个账户 key: $firstKey")
+                
                 val firstAccount = bodyObj.optJSONObject(firstKey)
-                firstAccount?.optString("parent_id") ?: throw Exception("未找到账户信息")
+                Log.d(TAG, "第一个账户内容: $firstAccount")
+                
+                val parentId = firstAccount?.optString("parent_id") ?: ""
+                Log.d(TAG, "parent_id: $parentId")
+                
+                if (parentId.isEmpty()) {
+                    Log.e(TAG, "parent_id 为空！")
+                    throw Exception("未找到账户信息")
+                }
+                
+                Log.i(TAG, "✓ 获取父账户ID成功: $parentId")
+                parentId
             } else {
+                Log.e(TAG, "bodyObj 为空或长度为0")
                 throw Exception("未找到账户信息")
             }
         }
