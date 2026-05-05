@@ -216,6 +216,9 @@ fun ActivationSettingsScreen(
                                     ActivationMode.DIRECT_READ -> {
                                         FeDirectReadActivationPanel(hasFilesPerm && hasOverlayPerm && hasAppListPerm)
                                     }
+                                    ActivationMode.CLOUD -> {
+                                        FeCloudActivationPanel(context, navController)
+                                    }
                                     else -> {
                                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                                             Text("需要手动确认以完成激活", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -271,6 +274,10 @@ fun FeModeStatusCard(
         ActivationMode.ROOT -> if (hasAllBasicPermissions && isRootAvailable) Color(0xFF4ADE80) else errorRedColor
         ActivationMode.DIRECT_READ -> if (hasAllBasicPermissions && isDirectReadAvailable) Color(0xFF4ADE80) else errorRedColor
         ActivationMode.SAF -> if (hasAllBasicPermissions && isSafConfigured && isSafCorrectDirectory) Color(0xFF4ADE80) else errorRedColor
+        ActivationMode.CLOUD -> {
+            val isCloudLoggedIn = ETS100AuthManager.isLoggedIn(context)
+            if (isCloudLoggedIn) Color(0xFF4ADE80) else MaterialTheme.colorScheme.outline
+        }
     }
     
     val isActive = statusColor == Color(0xFF4ADE80)
@@ -317,6 +324,13 @@ fun FeModeStatusCard(
                 !isSafCorrectDirectory -> "选择的目录不正确"
                 else -> "一切准备就绪"
             }
+            Triple(title, desc, null)
+        }
+        ActivationMode.CLOUD -> {
+            val isLoggedIn = ETS100AuthManager.isLoggedIn(context)
+            val phone = ETS100AuthManager.getPhone(context)
+            val title = if (isLoggedIn) "云端模式" else "云端模式"
+            val desc = if (isLoggedIn) "已登录: $phone" else "需要登录 ETS100 账号"
             Triple(title, desc, null)
         }
     }
@@ -886,6 +900,136 @@ fun FeSafActivationPanel(
                         color = safBlue
                     )
                 }
+            }
+        }
+    }
+}
+
+/**
+ * 云端模式激活面板
+ * 喵~ 用于显示登录状态和跳转到登录页面喵！
+ */
+@Composable
+fun FeCloudActivationPanel(
+    context: android.content.Context,
+    navController: NavHostController
+) {
+    val cloudColor = Color(0xFF60A5FA)
+    val successColor = Color(0xFF4ADE80)
+    
+    val isLoggedIn = remember { ETS100AuthManager.isLoggedIn(context) }
+    val phone = remember { ETS100AuthManager.getPhone(context) }
+    
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                // 刷新登录状态
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+    
+    Column {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = when {
+                    isLoggedIn -> "已登录: $phone"
+                    else -> "需要登录 ETS100 账号"
+                },
+                style = MaterialTheme.typography.labelSmall,
+                color = if (isLoggedIn) successColor else MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+        
+        Spacer(Modifier.height(16.dp))
+        
+        if (isLoggedIn) {
+            // 已登录，显示进入云端首页按钮
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                OutlinedButton(
+                    onClick = {
+                        // 登出
+                        ETS100AuthManager.logout(context)
+                        Toast.makeText(context, "已退出登录", Toast.LENGTH_SHORT).show()
+                    },
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.5f)),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
+                    modifier = Modifier.weight(1f).height(40.dp)
+                ) {
+                    Icon(Icons.Default.Logout, null, modifier = Modifier.size(18.dp))
+                    Spacer(Modifier.width(8.dp))
+                    Text("退出登录", fontWeight = FontWeight.Bold)
+                }
+                
+                Button(
+                    onClick = {
+                        // 进入云端首页
+                        navController.navigate(Screen.CloudHome.route)
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = cloudColor, contentColor = Color.White),
+                    modifier = Modifier.weight(1f).height(40.dp)
+                ) {
+                    Icon(Icons.Default.Cloud, null, modifier = Modifier.size(18.dp))
+                    Spacer(Modifier.width(8.dp))
+                    Text("进入云端", fontWeight = FontWeight.Bold)
+                }
+            }
+        } else {
+            // 未登录，显示登录按钮
+            Button(
+                onClick = {
+                    // 跳转到登录页面
+                    navController.navigate(Screen.CloudActivation.route)
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = cloudColor, contentColor = Color.White),
+                modifier = Modifier.fillMaxWidth().height(40.dp)
+            ) {
+                Icon(Icons.Default.Login, null, modifier = Modifier.size(18.dp))
+                Spacer(Modifier.width(8.dp))
+                Text("登录 ETS100 账号", fontWeight = FontWeight.Bold)
+            }
+        }
+        
+        if (!isLoggedIn) {
+            Spacer(Modifier.height(8.dp))
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        cloudColor.copy(alpha = 0.1f),
+                        RoundedCornerShape(8.dp)
+                    )
+                    .padding(8.dp)
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Default.Cloud,
+                        contentDescription = null,
+                        tint = cloudColor,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        text = "云端模式说明",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = cloudColor
+                    )
+                }
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    text = "通过 ETS100 云端 API 在线获取作业列表和答案，无需本地文件",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
+                )
             }
         }
     }

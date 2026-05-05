@@ -106,12 +106,23 @@ enum class ActivationMode(
     
     // SAF 模式 - 存储访问框架
     SAF(
-        "SAF 已激活", 
-        "使用 Android 存储访问框架 (SAF) 授权访问应用数据目录", 
-        "SYS_READY", 
-        "SAF", 
-        Icons.Default.FolderShared, 
-        Color(0xFF60A5FA), 
+        "SAF 已激活",
+        "使用 Android 存储访问框架 (SAF) 授权访问应用数据目录",
+        "SYS_READY",
+        "SAF",
+        Icons.Default.FolderShared,
+        Color(0xFF60A5FA),
+        false
+    ),
+    
+    // 云端模式 - 在线获取作业和答案
+    CLOUD(
+        "云端模式",
+        "通过 ETS100 云端 API 在线获取作业列表和答案",
+        "SYS_READY",
+        "Cloud",
+        Icons.Default.Cloud,
+        Color(0xFF60A5FA),
         false
     )
 }
@@ -129,6 +140,8 @@ sealed class Screen(val route: String, val icon: ImageVector, val label: String)
     object ThemeSettings : Screen("theme_settings", Icons.Default.Palette, "主题")
     object Debug : Screen("debug", Icons.Default.BugReport, "调试")
     object Share : Screen("share", Icons.Default.Share, "分享")
+    object CloudActivation : Screen("cloud_activation", Icons.Default.Cloud, "云端激活")
+    object CloudHome : Screen("cloud_home", Icons.Default.CloudQueue, "云端首页")
 }
 
 // ============================================================================
@@ -366,6 +379,38 @@ fun FeAppMain() {
                             navController.popBackStack()
                         }
                     }
+                }
+                
+                // 云端激活页面
+                composable(
+                    route = Screen.CloudActivation.route,
+                    enterTransition = { slideInHorizontally(initialOffsetX = { it }, animationSpec = tween(300)) },
+                    exitTransition = { slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween(300)) }
+                ) {
+                    CloudActivationScreen(
+                        navController = navController,
+                        onLoginSuccess = {
+                            navController.navigate(Screen.CloudHome.route) {
+                                popUpTo(Screen.CloudActivation.route) { inclusive = true }
+                            }
+                        }
+                    )
+                }
+                
+                // 云端首页
+                composable(
+                    route = Screen.CloudHome.route,
+                    enterTransition = { slideInHorizontally(initialOffsetX = { it }, animationSpec = tween(300)) },
+                    exitTransition = { slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween(300)) }
+                ) {
+                    CloudHomeScreen(
+                        navController = navController,
+                        onShowAnswer = { paper ->
+                            // 显示答案（复用 ReadScreen）
+                            FeApplication.sharePaper = paper
+                            navController.navigate(Screen.Read.route)
+                        }
+                    )
                 }
             }
         }
