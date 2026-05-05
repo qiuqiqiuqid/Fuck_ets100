@@ -184,18 +184,33 @@ object ETS100ApiClient {
         )
 
         return postRequest(Endpoints.LOGIN, bodyData).mapCatching { responseBody ->
-            Log.d(TAG, "login response: $responseBody")
+            Log.d(TAG, "===== 登录 API 响应 =====")
+            Log.d(TAG, "原始响应: $responseBody")
             
             // 解析响应
             val json = responseBody.parseJson()
             val bodyObj = json.optJSONObject("body")
+            
+            Log.d(TAG, "body 对象: $bodyObj")
+            Log.d(TAG, "body 长度: ${bodyObj?.length() ?: "null"}")
+            
             val token = bodyObj?.optString("token") ?: ""
+            Log.d(TAG, "解析到的 token: ${if (token.isEmpty()) "(空)" else token.take(20) + "..."}")
             
             if (token.isEmpty()) {
                 val errorMsg = bodyObj?.optString("msg") ?: "登录失败"
+                Log.e(TAG, "登录失败原因: $errorMsg")
+                // 打印整个 body 的所有 key-value
+                bodyObj?.let { obj ->
+                    Log.d(TAG, "----- body 所有字段 -----")
+                    obj.keys().forEach { key ->
+                        Log.d(TAG, "  $key = ${obj.opt(key)}")
+                    }
+                }
                 throw Exception(errorMsg)
             }
             
+            Log.i(TAG, "✓ 登录成功！")
             LoginResponse(token = token)
         }
     }
