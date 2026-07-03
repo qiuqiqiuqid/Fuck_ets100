@@ -322,6 +322,36 @@ private fun fallbackAnswerCategoryStyle(accent: Color): AnswerCategoryColor {
     )
 }
 
+private fun displayAnswerList(
+    question: ETS100AnswerReader.Question,
+    compactAnswerDisplay: Boolean
+): List<String> {
+    if (!compactAnswerDisplay) return question.answerList
+
+    val isZhuanShu = question.typeName.contains("转述") || question.category == "topic"
+    return question.answerList.take(if (isZhuanShu) 1 else 2)
+}
+
+private fun formatAnswerForDisplay(
+    question: ETS100AnswerReader.Question,
+    compactAnswerDisplay: Boolean
+): String {
+    if (!compactAnswerDisplay) return question.formattedAnswer
+
+    val isZhuanShu = question.typeName.contains("转述") || question.category == "topic"
+    val cleaned = displayAnswerList(question, compactAnswerDisplay).map { answer ->
+        ETS100AnswerReader.cleanAnswerText(answer).lines()
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
+    }
+
+    return if (isZhuanShu) {
+        cleaned.flatten().joinToString(" ")
+    } else {
+        cleaned.joinToString("\n") { it.joinToString(" ") }
+    }
+}
+
 /**
  * 阅读界面 - 显示ETS 100答案的阅读界面
  * 支持多种激活模式（Shizuku、Root、SAF等）
@@ -330,7 +360,8 @@ private fun fallbackAnswerCategoryStyle(accent: Color): AnswerCategoryColor {
 @Composable
 fun ReadScreen(
     currentMode: ActivationMode,
-    onNavigateToActivation: () -> Unit
+    onNavigateToActivation: () -> Unit,
+    compactAnswerDisplay: Boolean = SettingsManager.getCompactAnswerDisplay()
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -1406,6 +1437,7 @@ fun ReadScreen(
                                     selectedPaper = null
                                 },
                                 categoryColors = categoryColors,
+                                compactAnswerDisplay = compactAnswerDisplay,
                                 onCopyText = {
                                     copyPaperText(paper)
                                 }
@@ -1518,6 +1550,7 @@ fun ReadScreen(
                                     selectedPaper = null
                                 },
                                 categoryColors = categoryColors,
+                                compactAnswerDisplay = compactAnswerDisplay,
                                 onCopyText = {
                                     copyPaperText(paper)
                                 }
@@ -2810,7 +2843,8 @@ private fun SectionDetailItem(
 private fun QuestionDetailItem(
     question: ETS100AnswerReader.Question,
     questionIndex: Int,
-    categoryStyle: AnswerCategoryColor
+    categoryStyle: AnswerCategoryColor,
+    compactAnswerDisplay: Boolean = SettingsManager.getCompactAnswerDisplay()
 ) {
     var expanded by remember { mutableStateOf(false) }
     val hasAnswer = question.answer.isNotEmpty()
@@ -2916,7 +2950,7 @@ private fun QuestionDetailItem(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = question.formattedAnswer,
+                            text = formatAnswerForDisplay(question, compactAnswerDisplay),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurface,
                             fontWeight = FontWeight.Bold
@@ -2994,7 +3028,8 @@ private fun QuestionBlock(
     question: ETS100AnswerReader.Question,
     categoryColor: Color,
     defaultOriginalExpanded: Boolean = false,
-    defaultAnswerExpanded: Boolean = false  // 宝贝答案默认折叠喵~
+    defaultAnswerExpanded: Boolean = false,  // 宝贝答案默认折叠喵~
+    compactAnswerDisplay: Boolean = SettingsManager.getCompactAnswerDisplay()
 ) {
     val categoryStyle = fallbackAnswerCategoryStyle(categoryColor)
 
@@ -3077,8 +3112,8 @@ private fun QuestionBlock(
             if (question.answerList.isNotEmpty()) {
                 CollapsibleItem(
                     title = "答案",
-                    content = question.formattedAnswer,
-                    defaultExpanded = defaultAnswerExpanded
+                    content = formatAnswerForDisplay(question, compactAnswerDisplay),
+                    defaultExpanded = defaultAnswerExpanded || compactAnswerDisplay
                 )
             }
         }
@@ -3096,6 +3131,7 @@ fun PaperDetailScreen(
     paper: ETS100AnswerReader.Paper,
     onBack: () -> Unit,
     categoryColors: Map<String, Color>,
+    compactAnswerDisplay: Boolean = SettingsManager.getCompactAnswerDisplay(),
     onCopyText: () -> Unit = {}
 ) {
     var showMenu by remember { mutableStateOf(false) }
@@ -3240,7 +3276,8 @@ fun PaperDetailScreen(
                             MergedQuestionBlock(
                                 sectionTitle = section.title,
                                 questions = questionsInGroup,
-                                categoryStyle = categoryStyle
+                                categoryStyle = categoryStyle,
+                                compactAnswerDisplay = compactAnswerDisplay
                             )
                         }
                     }
@@ -3254,7 +3291,8 @@ fun PaperDetailScreen(
 private fun MergedQuestionBlock(
     sectionTitle: String,
     questions: List<ETS100AnswerReader.Question>,
-    categoryStyle: AnswerCategoryColor
+    categoryStyle: AnswerCategoryColor,
+    compactAnswerDisplay: Boolean
 ) {
     FeOutlinedCard(
         modifier = Modifier.fillMaxWidth(),
@@ -3340,7 +3378,8 @@ private fun MergedQuestionBlock(
                 QuestionItemSimple(
                     questionIndex = index,
                     question = question,
-                    categoryStyle = categoryStyle
+                    categoryStyle = categoryStyle,
+                    compactAnswerDisplay = compactAnswerDisplay
                 )
             }
         }
@@ -3355,7 +3394,8 @@ private fun MergedQuestionBlock(
 private fun QuestionItemSimple(
     questionIndex: Int,
     question: ETS100AnswerReader.Question,
-    categoryStyle: AnswerCategoryColor
+    categoryStyle: AnswerCategoryColor,
+    compactAnswerDisplay: Boolean
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         // 题目编号和题目内容
@@ -3397,8 +3437,8 @@ private fun QuestionItemSimple(
         if (question.answerList.isNotEmpty()) {
             CollapsibleItem(
                 title = "✅ 答案",
-                content = question.formattedAnswer,
-                defaultExpanded = false
+                content = formatAnswerForDisplay(question, compactAnswerDisplay),
+                defaultExpanded = compactAnswerDisplay
             )
         } else {
             // 模仿朗读类型显示特殊提示喵~

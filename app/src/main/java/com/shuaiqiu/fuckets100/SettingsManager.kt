@@ -19,6 +19,7 @@ object SettingsManager {
     private const val KEY_AOSP_PREDICTIVE_BACK = "aosp_predictive_back"
     private const val KEY_PREDICTIVE_BACK_MODE = "predictive_back_mode"
     private const val KEY_LOCAL_VERIFICATION_CODE = "local_verification_code"
+    private const val KEY_COMPACT_ANSWER_DISPLAY = "compact_answer_display"
     
     private lateinit var prefs: SharedPreferences
     
@@ -113,6 +114,16 @@ object SettingsManager {
      */
     fun getHideDebugButton(): Boolean {
         return prefs.getBoolean(KEY_HIDE_DEBUG_BUTTON, true)
+    }
+
+    fun saveCompactAnswerDisplay(enabled: Boolean) {
+        prefs.edit {
+            putBoolean(KEY_COMPACT_ANSWER_DISPLAY, enabled)
+        }
+    }
+
+    fun getCompactAnswerDisplay(): Boolean {
+        return prefs.getBoolean(KEY_COMPACT_ANSWER_DISPLAY, false)
     }
 
     fun saveLegalAccepted(accepted: Boolean) {

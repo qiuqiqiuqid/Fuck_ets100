@@ -1,0 +1,57 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Gradle: assembleDebug",
+      "type": "shell",
+      "command": "${workspaceFolder}/gradlew",
+      "args": ["assembleDebug", "--console=plain"],
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "ANDROID_HOME": "/home/shuaiqiu/Android/Sdk",
+          "ANDROID_SDK_ROOT": "/home/shuaiqiu/Android/Sdk",
+          "JAVA_HOME": "/opt/android-studio/jbr",
+          "PATH": "/opt/android-studio/jbr/bin:/home/shuaiqiu/Android/Sdk/platform-tools:${env:PATH}"
+        }
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Gradle: installDebug",
+      "type": "shell",
+      "command": "${workspaceFolder}/gradlew",
+      "args": ["installDebug", "--console=plain"],
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "ANDROID_HOME": "/home/shuaiqiu/Android/Sdk",
+          "ANDROID_SDK_ROOT": "/home/shuaiqiu/Android/Sdk",
+          "JAVA_HOME": "/opt/android-studio/jbr",
+          "PATH": "/opt/android-studio/jbr/bin:/home/shuaiqiu/Android/Sdk/platform-tools:${env:PATH}"
+        }
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Gradle: clean",
+      "type": "shell",
+      "command": "${workspaceFolder}/gradlew",
+      "args": ["clean", "--console=plain"],
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "ANDROID_HOME": "/home/shuaiqiu/Android/Sdk",
+          "ANDROID_SDK_ROOT": "/home/shuaiqiu/Android/Sdk",
+          "JAVA_HOME": "/opt/android-studio/jbr",
+          "PATH": "/opt/android-studio/jbr/bin:/home/shuaiqiu/Android/Sdk/platform-tools:${env:PATH}"
+        }
+      },
+      "problemMatcher": []
+    }
+  ]
+}
