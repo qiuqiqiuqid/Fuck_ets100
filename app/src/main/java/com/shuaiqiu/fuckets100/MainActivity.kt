@@ -287,6 +287,7 @@ fun FeAppMain() {
     var previousRouteForRootAnimation by remember { mutableStateOf<String?>(null) }
     val predictiveBackState = rememberAospPredictiveBackState()
     var predictiveBackMode by remember { mutableStateOf(SettingsManager.getPredictiveBackMode()) }
+    var compactAnswerDisplay by remember { mutableStateOf(SettingsManager.getCompactAnswerDisplay()) }
 
     val shizukuState = rememberShizukuState()
     
@@ -337,6 +338,7 @@ fun FeAppMain() {
                 isAutoDarkMode = ThemeManager.getSavedAutoDarkMode()
                 useDynamicColor = ThemeManager.getSavedDynamicColor()
                 predictiveBackMode = SettingsManager.getPredictiveBackMode()
+                compactAnswerDisplay = SettingsManager.getCompactAnswerDisplay()
                 MainActivity.pendingTargetRoute?.let { route ->
                     MainActivity.pendingTargetRoute = null
                     navController.navigateRootTab(route)
@@ -490,7 +492,8 @@ fun FeAppMain() {
                             currentMode = currentMode,
                             onNavigateToActivation = {
                                 context.startActivity(ActivationActivity.createIntent(context))
-                            }
+                            },
+                            compactAnswerDisplay = compactAnswerDisplay
                         )
                     }
                     

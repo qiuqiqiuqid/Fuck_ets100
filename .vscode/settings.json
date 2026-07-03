@@ -1,0 +1,13 @@
+{
+  "java.home": "/opt/android-studio/jbr",
+  "java.jdt.ls.java.home": "/opt/android-studio/jbr",
+  "gradle.java.home": "/opt/android-studio/jbr",
+  "java.import.gradle.java.home": "/opt/android-studio/jbr",
+  "android.sdkLocation": "/home/shuaiqiu/Android/Sdk",
+  "android-ide-extension.gradleJavaHome": "/opt/android-studio/jbr",
+  "android-ide-extension.installTask": "installDebug",
+  "android-ide-extension.buildTask": "assembleDebug",
+  "android-ide-extension.defaultGradleModule": "app",
+  "android-ide-extension.emulatorLaunchArgs": [],
+  "android-ide-extension.gradleExtraArgs": "--console=plain"
+}

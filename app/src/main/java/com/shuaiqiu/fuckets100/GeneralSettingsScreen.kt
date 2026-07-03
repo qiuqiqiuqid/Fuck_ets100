@@ -10,6 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ShortText
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -31,6 +32,7 @@ fun GeneralSettingsScreen(onBack: () -> Unit) {
     var debugModeEnabled by remember { mutableStateOf(SettingsManager.getDebugMode()) }
     var forceReadModeEnabled by remember { mutableStateOf(SettingsManager.getForceReadMode()) }
     var hideDebugButton by remember { mutableStateOf(SettingsManager.getHideDebugButton()) }
+    var compactAnswerDisplay by remember { mutableStateOf(SettingsManager.getCompactAnswerDisplay()) }
     
     Scaffold(
         topBar = {
@@ -101,6 +103,20 @@ fun GeneralSettingsScreen(onBack: () -> Unit) {
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
             ) {
                 Column {
+                    GeneralSettingsSwitchRow(
+                        icon = Icons.AutoMirrored.Filled.ShortText,
+                        title = "精简答案",
+                        sub = "开启后按题型只显示最常用的 1-2 个参考答案",
+                        checked = compactAnswerDisplay,
+                        onCheckedChange = { enabled ->
+                            compactAnswerDisplay = enabled
+                            SettingsManager.saveCompactAnswerDisplay(enabled)
+                        }
+                    )
+                    HorizontalDivider(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f)
+                    )
                     // 语言设置
                     GeneralSettingsRow(
                         icon = Icons.Default.Language, 
