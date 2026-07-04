@@ -267,6 +267,46 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      # ========== 新增：安装 sshpass（用于密码认证的 SFTP） ==========
+      - name: 安装 sshpass
+        run: sudo apt-get update && sudo apt-get install -y sshpass
+
+      # ========== 新增：上传到服务器 A（密码验证） ==========
+      - name: 上传 APK 到服务器 A (SFTP 密码验证)
+        env:
+          SFTP_HOST_A: ${{ secrets.SFTP_HOST_A }}
+          SFTP_USER_A: ${{ secrets.SFTP_USER_A }}
+          SFTP_PASSWORD_A: ${{ secrets.SFTP_PASSWORD_A }}
+          SFTP_TARGET_DIR_A: ${{ vars.SFTP_TARGET_DIR_A || '/path/to/release' }}
+        run: |
+          set -euo pipefail
+          sshpass -p "$SFTP_PASSWORD_A" sftp -o StrictHostKeyChecking=no -P 22 "$SFTP_USER_A@$SFTP_HOST_A" <<EOF
+          put "${{ steps.artifact.outputs.apk_path }}" "$SFTP_TARGET_DIR_A/${{ needs.build.outputs.apk_name }}"
+          bye
+          EOF
+
+      # ========== 新增：上传到服务器 B（密钥验证） ==========
+      - name: 上传 APK 到服务器 B (SFTP 密钥验证)
+        env:
+          SFTP_HOST_B: ${{ secrets.SFTP_HOST_B }}
+          SFTP_USER_B: ${{ secrets.SFTP_USER_B }}
+          SFTP_PRIVATE_KEY_B: ${{ secrets.SFTP_PRIVATE_KEY_B }}
+          SFTP_TARGET_DIR_B: ${{ vars.SFTP_TARGET_DIR_B || '/path/to/release' }}
+        run: |
+          set -euo pipefail
+          # 写入私钥文件
+          mkdir -p ~/.ssh
+          echo "$SFTP_PRIVATE_KEY_B" > ~/.ssh/id_rsa_b
+          chmod 600 ~/.ssh/id_rsa_b
+          sftp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa_b -P 22 "$SFTP_USER_B@$SFTP_HOST_B" <<EOF
+          put "${{ steps.artifact.outputs.apk_path }}" "$SFTP_TARGET_DIR_B/${{ needs.build.outputs.apk_name }}"
+          bye
+          EOF
+          # 清理私钥
+          rm -f ~/.ssh/id_rsa_b
+
+      # ====================================================
+
       - name: 同步远程配置仓库
         shell: bash
         run: |
