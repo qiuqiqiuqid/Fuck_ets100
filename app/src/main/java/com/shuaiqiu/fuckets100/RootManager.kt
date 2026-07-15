@@ -4,6 +4,8 @@ import android.util.Log
 import java.io.BufferedReader
 import java.io.DataOutputStream
 import java.io.InputStreamReader
+import java.io.FilterInputStream
+import java.io.InputStream
 
 /**
  * Root 权限管理器
@@ -78,6 +80,26 @@ object RootManager {
             execCommand(command)
         } catch (e: Exception) {
             Log.e(TAG, "执行 Root 命令失败: ${e.message}", e)
+            null
+        }
+    }
+
+    fun openInputStreamAsRoot(command: String): InputStream? {
+        return try {
+            val process = Runtime.getRuntime().exec(arrayOf("su", "-c", "$command 2>/dev/null"))
+            object : FilterInputStream(process.inputStream) {
+                override fun close() {
+                    try {
+                        super.close()
+                        process.errorStream.close()
+                        process.waitFor()
+                    } finally {
+                        process.destroy()
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "打开 Root 文件流失败: ${e.message}", e)
             null
         }
     }

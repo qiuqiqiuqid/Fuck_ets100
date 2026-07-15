@@ -20,6 +20,8 @@ import kotlinx.coroutines.withContext
 import rikka.shizuku.Shizuku
 import rikka.shizuku.ShizukuRemoteProcess
 import java.io.BufferedReader
+import java.io.FilterInputStream
+import java.io.InputStream
 import java.io.InputStreamReader
 import java.lang.reflect.Method
 
@@ -246,7 +248,7 @@ object ShizukuManager {
             @Suppress("UNCHECKED_CAST")
             val process = newProcessMethod.invoke(
                 null,
-                arrayOf("sh", "-c", command),
+                arrayOf("sh", "-c", "$command 2>/dev/null"),
                 null,
                 null  // dir 参数为 null
             ) as ShizukuRemoteProcess
@@ -286,6 +288,41 @@ object ShizukuManager {
             Log.e(TAG, "execCommand failed: ${e.message}", e)
             // 打印完整的异常堆栈帮助调试
             e.printStackTrace()
+            null
+        }
+    }
+
+    fun openCommandInputStream(command: String): InputStream? {
+        return try {
+            if (!isShizukuRunning() || checkSelfPermission() != PackageManager.PERMISSION_GRANTED) {
+                return null
+            }
+            val newProcessMethod: Method = Shizuku::class.java.getDeclaredMethod(
+                "newProcess",
+                Array<String>::class.java,
+                Array<String>::class.java,
+                String::class.java
+            )
+            newProcessMethod.isAccessible = true
+            val process = newProcessMethod.invoke(
+                null,
+                arrayOf("sh", "-c", command),
+                null,
+                null
+            ) as ShizukuRemoteProcess
+            object : FilterInputStream(process.inputStream) {
+                override fun close() {
+                    try {
+                        super.close()
+                        process.errorStream.close()
+                        process.waitFor()
+                    } finally {
+                        process.destroy()
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "openCommandInputStream failed: ${e.message}", e)
             null
         }
     }

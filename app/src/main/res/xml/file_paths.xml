@@ -4,4 +4,5 @@
     <cache-path name="shared_images" path="." />
     <!-- 外部存储图片目录 -->
     <external-files-path name="pictures" path="Pictures/" />
+    <external-path name="downloads" path="Download/Fe/" />
 </paths>

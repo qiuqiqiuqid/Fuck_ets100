@@ -3,6 +3,8 @@ package com.shuaiqiu.fuckets100
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.Manifest
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color as AndroidColor
@@ -17,6 +19,8 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -42,6 +46,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.CancellationException
@@ -373,11 +380,15 @@ fun ReadScreen(
             if (CloudHomeworkState.homeworkListsByStatus.isEmpty() &&
                 CloudHomeworkState.downloadedPapers.isEmpty()
             ) {
+                val validDownloadedPapers = snapshot.downloadedPapers.filterValues { papers ->
+                    papers.isNotEmpty() && papers.all { it.source is PaperSource.Cloud }
+                }
                 CloudHomeworkState.selectedStatus = snapshot.selectedStatus
                 CloudHomeworkState.homeworkListsByStatus = snapshot.homeworkListsByStatus
                 CloudHomeworkState.cloudBaseUrl = snapshot.cloudBaseUrl
-                CloudHomeworkState.downloadedPapers = snapshot.downloadedPapers
-                CloudHomeworkState.downloadedHomeworkNames = snapshot.downloadedHomeworkNames
+                CloudHomeworkState.downloadedPapers = validDownloadedPapers
+                CloudHomeworkState.downloadedHomeworkNames =
+                    snapshot.downloadedHomeworkNames.intersect(validDownloadedPapers.keys)
                 CloudHomeworkState.failedCloudHomeworks = snapshot.failedCloudHomeworks
             }
         }
@@ -767,8 +778,13 @@ fun ReadScreen(
         )
 
         try {
-            val cacheDir = File(context.cacheDir, "cloud_homework")
-            cacheDir.mkdirs()
+            val cacheDir = PaperSourceExporter.cloudCacheDirectory(
+                context,
+                status,
+                cloudHomeworkIdentity(homeworkInfo),
+                cloudBaseUrl,
+                homeworkInfo.contents.map { CloudContent(it.groupName, it.url) }
+            ).apply { mkdirs() }
             val allSections = mutableListOf<ETS100AnswerReader.Section>()
             var questionIndex = 0
 
@@ -796,8 +812,8 @@ fun ReadScreen(
                         "group=${content.groupName}, url=${content.url}, zip=$zipFileName"
                 )
 
-                val zipFile = File(cacheDir, zipFileName)
-                if (zipFile.exists() && zipFile.length() > 0) {
+                val zipFile = PaperSourceExporter.cloudCachedFile(cacheDir, content.url, zipFileName)
+                if (PaperSourceExporter.isUsableZip(zipFile)) {
                     addLog(LogLevel.INFO, LogCategory.SYSTEM, "📦 文件已存在，跳过下载: ${zipFileName}")
                     updateCloudDownloadProgress(
                         cacheKey,
@@ -808,7 +824,8 @@ fun ReadScreen(
                         )
                     )
                 } else {
-                    val downloadResult = ETS100ApiClient.downloadFile(zipUrl, zipFile) { downloadedBytes, totalBytes ->
+                    val temporaryFile = File(cacheDir, "${zipFile.name}.part").also { it.delete() }
+                    val downloadResult = ETS100ApiClient.downloadFile(zipUrl, temporaryFile) { downloadedBytes, totalBytes ->
                         withContext(Dispatchers.Main) {
                             updateCloudDownloadProgress(
                                 cacheKey,
@@ -824,8 +841,18 @@ fun ReadScreen(
                         addLog(LogLevel.ERROR, LogCategory.SYSTEM, "✗ 下载失败 ${content.groupName}: ${e.message}")
                     }
                     if (downloadResult.isFailure) {
+                        temporaryFile.delete()
                         addLog(LogLevel.WARN, LogCategory.SYSTEM, "⏭️ 跳过失败的下载: ${content.groupName}")
                         continue
+                    }
+                    if (!PaperSourceExporter.isUsableZip(temporaryFile)) {
+                        temporaryFile.delete()
+                        addLog(LogLevel.ERROR, LogCategory.SYSTEM, "✗ 下载结果不是完整 ZIP: $zipFileName")
+                        continue
+                    }
+                    if (!temporaryFile.renameTo(zipFile)) {
+                        temporaryFile.copyTo(zipFile, overwrite = true)
+                        temporaryFile.delete()
                     }
                     addLog(LogLevel.INFO, LogCategory.SYSTEM, "✅ 下载完成: ${zipFile.length()} bytes")
                 }
@@ -963,7 +990,13 @@ fun ReadScreen(
                 title = homeworkInfo.name,
                 dataFileName = cacheKey,
                 fileSize = 0L,
-                sections = normalizedSections
+                sections = normalizedSections,
+                source = PaperSource.Cloud(
+                    status = status,
+                    homeworkIdentity = cloudHomeworkIdentity(homeworkInfo),
+                    baseUrl = cloudBaseUrl,
+                    contents = homeworkInfo.contents.map { CloudContent(it.groupName, it.url) }
+                )
             )
             downloadedPapers = downloadedPapers + (cacheKey to listOf(paper))
             downloadedHomeworkNames = downloadedHomeworkNames + cacheKey
@@ -3135,11 +3168,93 @@ fun PaperDetailScreen(
     onCopyText: () -> Unit = {}
 ) {
     var showMenu by remember { mutableStateOf(false) }
+    var showSourceConfirm by remember { mutableStateOf(false) }
+    var sourceInspection by remember { mutableStateOf<PaperSourceExporter.Inspection?>(null) }
+    var isExportingSource by remember { mutableStateOf(false) }
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     val defaultPrimaryColor = MaterialTheme.colorScheme.primary
     val categoryPalette = answerCategoryPalette()
     val fallbackCategoryStyle = fallbackAnswerCategoryStyle(defaultPrimaryColor)
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+
+    fun shareExport(result: PaperSourceExporter.ExportResult) {
+        Toast.makeText(context, "已保存到 下载/Fe/${result.fileName}", Toast.LENGTH_LONG).show()
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            type = "application/zip"
+            putExtra(Intent.EXTRA_STREAM, result.uri)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        runCatching { context.startActivity(Intent.createChooser(intent, "分享答案源文件")) }
+            .onFailure { Toast.makeText(context, "文件已保存，但没有可用的分享应用", Toast.LENGTH_LONG).show() }
+    }
+
+    fun exportSource(allowPartial: Boolean) {
+        if (isExportingSource) return
+        sourceInspection = null
+        isExportingSource = true
+        scope.launch {
+            runCatching { PaperSourceExporter.export(context, paper, allowPartial) }
+                .onSuccess(::shareExport)
+                .onFailure { error ->
+                    if (error is CancellationException) throw error
+                    Log.e(TAG, "源文件导出失败", error)
+                    Toast.makeText(context, "导出失败：${error.message ?: "未知错误"}", Toast.LENGTH_LONG).show()
+                }
+            isExportingSource = false
+        }
+    }
+
+    fun inspectAndExport() {
+        val source = paper.source
+        if (source == null) {
+            Toast.makeText(context, "来源信息已失效，请重新读取该试卷", Toast.LENGTH_LONG).show()
+            return
+        }
+        isExportingSource = true
+        scope.launch {
+            runCatching { PaperSourceExporter.inspect(context, source) }
+                .onSuccess { inspection ->
+                    if (inspection.isComplete) {
+                        runCatching { PaperSourceExporter.export(context, paper, false) }
+                            .onSuccess(::shareExport)
+                            .onFailure { error ->
+                                if (error is CancellationException) throw error
+                                Toast.makeText(context, "导出失败：${error.message}", Toast.LENGTH_LONG).show()
+                            }
+                    } else {
+                        sourceInspection = inspection
+                    }
+                }
+                .onFailure { error ->
+                    if (error is CancellationException) throw error
+                    Toast.makeText(context, "无法核验源文件：${error.message}", Toast.LENGTH_LONG).show()
+                }
+            isExportingSource = false
+        }
+    }
+
+    val storagePermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) inspectAndExport()
+        else Toast.makeText(context, "需要存储权限才能写入下载文件夹", Toast.LENGTH_LONG).show()
+    }
+
+    fun beginSourceExport() {
+        showSourceConfirm = false
+        if (paper.isLocalAnswerLoading()) {
+            Toast.makeText(context, "答案源文件仍在解析，请稍后再导出", Toast.LENGTH_LONG).show()
+            return
+        }
+        if (android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.P &&
+            ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+        ) {
+            storagePermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        } else {
+            inspectAndExport()
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -3208,6 +3323,16 @@ fun PaperDetailScreen(
                             },
                             leadingIcon = {
                                 Icon(Icons.Default.Image, contentDescription = null)
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("源文件导出") },
+                            onClick = {
+                                showMenu = false
+                                showSourceConfirm = true
+                            },
+                            leadingIcon = {
+                                Icon(Icons.Default.Archive, contentDescription = null)
                             }
                         )
                     }
@@ -3280,6 +3405,89 @@ fun PaperDetailScreen(
                                 compactAnswerDisplay = compactAnswerDisplay
                             )
                         }
+                    }
+                }
+            }
+        }
+    }
+
+    if (showSourceConfirm) {
+        AlertDialog(
+            onDismissRequest = { showSourceConfirm = false },
+            icon = { Icon(Icons.Default.Archive, contentDescription = null) },
+            title = { Text("导出答案源文件？") },
+            text = {
+                Text("源文件用于提交给作者适配新题型，不适合作为常规答案分享。\n\n应用将只打包当前整套试卷关联的源文件，并保存到 下载/Fe。")
+            },
+            confirmButton = { TextButton(onClick = ::beginSourceExport) { Text("确认导出") } },
+            dismissButton = { TextButton(onClick = { showSourceConfirm = false }) { Text("取消") } }
+        )
+    }
+
+    sourceInspection?.let { inspection ->
+        AlertDialog(
+            onDismissRequest = { sourceInspection = null },
+            icon = {
+                Icon(
+                    Icons.Default.Warning,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.error
+                )
+            },
+            title = { Text("源文件不完整") },
+            text = {
+                Column(
+                    modifier = Modifier.heightIn(max = 320.dp).verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text("缺少或冲突的源文件：")
+                    (inspection.missing + inspection.conflicts).distinct().forEach { Text("• $it") }
+                    Text("仍然导出时，导出说明中会记录以上缺失项。")
+                }
+            },
+            confirmButton = {
+                if (paper.source is PaperSource.Cloud) {
+                    TextButton(onClick = {
+                        sourceInspection = null
+                        isExportingSource = true
+                        scope.launch {
+                            val updated = runCatching {
+                                PaperSourceExporter.downloadMissingCloudFiles(context, paper.source)
+                            }.getOrElse {
+                                if (it is CancellationException) throw it
+                                Toast.makeText(context, "下载缺失文件失败：${it.message}", Toast.LENGTH_LONG).show()
+                                PaperSourceExporter.inspect(context, paper.source)
+                            }
+                            isExportingSource = false
+                            if (updated.isComplete) exportSource(false) else sourceInspection = updated
+                        }
+                    }) { Text("下载缺失文件") }
+                }
+            },
+            dismissButton = {
+                Row {
+                    TextButton(onClick = { sourceInspection = null }) { Text("取消") }
+                    TextButton(onClick = { exportSource(true) }) { Text("仍然导出") }
+                }
+            }
+        )
+    }
+
+    if (isExportingSource) {
+        Dialog(onDismissRequest = {}) {
+            Surface(
+                shape = RoundedCornerShape(28.dp),
+                color = MaterialTheme.colorScheme.surfaceContainerHigh
+            ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 24.dp, vertical = 20.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    CircularProgressIndicator(modifier = Modifier.size(28.dp), strokeWidth = 3.dp)
+                    Column {
+                        Text("正在准备源文件", style = MaterialTheme.typography.titleMedium)
+                        Text("请勿关闭页面", style = MaterialTheme.typography.bodyMedium)
                     }
                 }
             }
