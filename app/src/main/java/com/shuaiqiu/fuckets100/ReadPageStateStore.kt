@@ -143,6 +143,7 @@ object ReadPageStateStore {
         .put("downloadTime", downloadTime)
         .put("regionLabel", regionLabel)
         .put("paperName", paperName)
+        .put("source", source?.toJson())
 
     private fun parsePapers(array: JSONArray?): List<ETS100AnswerReader.Paper> {
         if (array == null) return emptyList()
@@ -160,8 +161,70 @@ object ReadPageStateStore {
             sections = parseSections(json.optJSONArray("sections")),
             downloadTime = json.optLong("downloadTime"),
             regionLabel = json.optString("regionLabel", "未知"),
-            paperName = json.optNullableString("paperName")
+            paperName = json.optNullableString("paperName"),
+            source = parsePaperSource(json.optJSONObject("source"))
         )
+
+    private fun PaperSource.toJson(): JSONObject = when (this) {
+        is PaperSource.Local -> JSONObject()
+            .put("type", "local")
+            .put("mode", mode.name)
+            .put("resourceDirectoryNames", JSONArray(resourceDirectoryNames))
+            .put("resourceModifiedTimes", JSONObject().also { times ->
+                resourceModifiedTimes.forEach { (name, value) -> times.put(name, value) }
+            })
+
+        is PaperSource.Cloud -> JSONObject()
+            .put("type", "cloud")
+            .put("status", status)
+            .put("homeworkIdentity", homeworkIdentity)
+            .put("baseUrl", baseUrl)
+            .put("contents", JSONArray().also { array ->
+                contents.forEach { content ->
+                    array.put(
+                        JSONObject()
+                            .put("groupName", content.groupName)
+                            .put("url", content.url)
+                    )
+                }
+            })
+    }
+
+    private fun parsePaperSource(json: JSONObject?): PaperSource? {
+        if (json == null) return null
+        return when (json.optString("type")) {
+            "local" -> {
+                val mode = ActivationMode.entries.firstOrNull { it.name == json.optString("mode") }
+                    ?: return null
+                val modifiedTimes = mutableMapOf<String, Long>()
+                json.optJSONObject("resourceModifiedTimes")?.let { times ->
+                    val keys = times.keys()
+                    while (keys.hasNext()) {
+                        val key = keys.next()
+                        modifiedTimes[key] = times.optLong(key)
+                    }
+                }
+                PaperSource.Local(
+                    mode = mode,
+                    resourceDirectoryNames = parseStringList(json.optJSONArray("resourceDirectoryNames")),
+                    resourceModifiedTimes = modifiedTimes
+                )
+            }
+            "cloud" -> PaperSource.Cloud(
+                status = json.optString("status"),
+                homeworkIdentity = json.optString("homeworkIdentity"),
+                baseUrl = json.optString("baseUrl"),
+                contents = json.optJSONArray("contents")?.let { array ->
+                    (0 until array.length()).mapNotNull { index ->
+                        array.optJSONObject(index)?.let { content ->
+                            CloudContent(content.optString("groupName"), content.optString("url"))
+                        }
+                    }
+                }.orEmpty()
+            )
+            else -> null
+        }
+    }
 
     private fun List<ETS100AnswerReader.Section>.toSectionJsonArray(): JSONArray {
         val array = JSONArray()

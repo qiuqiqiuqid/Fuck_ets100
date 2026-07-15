@@ -74,6 +74,12 @@ object ZipPasswordGenerator {
         }
     }
 
+    fun hasValidEtsFooter(file: File): Boolean {
+        if (!file.isFile || file.length() < FOOTER_SIZE) return false
+        val footer = readFooter(file) ?: return false
+        return hasValidSignature(footer)
+    }
+
     /**
      * 从尾部数据生成密码
      */
@@ -81,10 +87,7 @@ object ZipPasswordGenerator {
         // 验证文件签名
         // 签名位置1: footer[0:8] == b'MSTCHINA'
         // 签名位置2: footer[144:149] == b'EPLAT'
-        val signature1Valid = footer.sliceArray(0..7).contentEquals("MSTCHINA".toByteArray())
-        val signature2Valid = footer.sliceArray(144..148).contentEquals("EPLAT".toByteArray())
-        
-        if (!signature1Valid && !signature2Valid) {
+        if (!hasValidSignature(footer)) {
             Log.e(TAG, "无效的文件签名")
             return null
         }
@@ -106,6 +109,13 @@ object ZipPasswordGenerator {
 
         // 拼接最终密码 (64字符)
         return firstMd5Upper + secondMd5.uppercase()
+    }
+
+    private fun hasValidSignature(footer: ByteArray): Boolean {
+        if (footer.size < FOOTER_SIZE) return false
+        val signature1Valid = footer.sliceArray(0..7).contentEquals("MSTCHINA".toByteArray())
+        val signature2Valid = footer.sliceArray(144..148).contentEquals("EPLAT".toByteArray())
+        return signature1Valid || signature2Valid
     }
 
     /**

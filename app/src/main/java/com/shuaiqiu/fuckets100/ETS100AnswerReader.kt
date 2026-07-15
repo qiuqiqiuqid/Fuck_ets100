@@ -130,7 +130,8 @@ object ETS100AnswerReader {
         val sections: List<Section>,
         val downloadTime: Long = 0L,  // 宝贝添加了下载时间喵~
         val regionLabel: String = "未知",  // 喵~ 添加地区标签：初中/高中/未知
-        val paperName: String? = null  // 喵~ 添加试卷名称（来自resource索引）
+        val paperName: String? = null,  // 喵~ 添加试卷名称（来自resource索引）
+        val source: PaperSource? = null
     )
 
     /**
@@ -474,9 +475,9 @@ object ETS100AnswerReader {
         return groupedFolders.mapIndexed { groupIndex, folderGroup ->
             val orderedFolderGroup = orderResourceFoldersByPaperStructure(folderGroup, resourceOrderMap)
             if (isPrivilegedMode) {
-                createFastPaperSummary(orderedFolderGroup, groupIndex, groupedFolders.size)
+                createFastPaperSummary(orderedFolderGroup, groupIndex, groupedFolders.size, mode)
             } else {
-                createPaperSummary(reader, orderedFolderGroup, groupIndex, groupedFolders.size)
+                createPaperSummary(reader, orderedFolderGroup, groupIndex, groupedFolders.size, mode)
             }
         }
     }
@@ -642,7 +643,8 @@ object ETS100AnswerReader {
         reader: ETS100FileReader.Reader,
         folders: List<ETS100FileReader.FileItem>,
         groupIndex: Int,
-        totalGroups: Int
+        totalGroups: Int,
+        mode: ActivationMode
     ): Paper {
         val template = detectResourceGroupTemplate(reader, folders)
         val firstFolder = folders.firstOrNull()
@@ -663,14 +665,16 @@ object ETS100AnswerReader {
             ),
             downloadTime = firstFolder?.lastModified ?: 0L,
             regionLabel = template.regionLabel,
-            paperName = null
+            paperName = null,
+            source = localPaperSource(mode, folders)
         )
     }
 
     private fun createFastPaperSummary(
         folders: List<ETS100FileReader.FileItem>,
         groupIndex: Int,
-        totalGroups: Int
+        totalGroups: Int,
+        mode: ActivationMode
     ): Paper {
         val firstFolder = folders.firstOrNull()
         val displayNumber = localPaperDisplayNumber(groupIndex, totalGroups)
@@ -690,9 +694,19 @@ object ETS100AnswerReader {
             ),
             downloadTime = firstFolder?.lastModified ?: 0L,
             regionLabel = "解析中",
-            paperName = null
+            paperName = null,
+            source = localPaperSource(mode, folders)
         )
     }
+
+    private fun localPaperSource(
+        mode: ActivationMode,
+        folders: List<ETS100FileReader.FileItem>
+    ): PaperSource.Local = PaperSource.Local(
+        mode = mode,
+        resourceDirectoryNames = folders.map { it.name }.distinct(),
+        resourceModifiedTimes = folders.associate { it.name to it.lastModified }
+    )
 
     private fun buildLocalPaperId(
         folders: List<ETS100FileReader.FileItem>,
@@ -1193,7 +1207,8 @@ object ETS100AnswerReader {
                 sections = orderedSections,
                 downloadTime = folders.first().lastModified,
                 regionLabel = kind.regionLabel,
-                paperName = null
+                paperName = null,
+                source = localPaperSource(reader.getMode(), folders)
             )
         )
     }

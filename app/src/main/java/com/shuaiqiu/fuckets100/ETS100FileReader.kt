@@ -10,6 +10,9 @@ import java.io.DataOutputStream
 import java.io.InputStreamReader
 import java.io.File
 import java.security.MessageDigest
+import java.io.FileInputStream
+import java.io.InputStream
+import java.nio.file.Files
 
 /**
  * ETS100 文件读取管理器
@@ -175,6 +178,10 @@ object ETS100FileReader {
          * 读取文件内容
          */
         fun readFile(path: String): String?
+
+        fun openInputStream(path: String): InputStream?
+
+        fun isSymbolicLink(path: String): Boolean
         
         /**
          * 检查文件是否存在
@@ -245,6 +252,12 @@ object ETS100FileReader {
                 null
             }
         }
+
+        override fun openInputStream(path: String): InputStream? =
+            ShizukuManager.openCommandInputStream("cat ${shellQuote(path)}")
+
+        override fun isSymbolicLink(path: String): Boolean =
+            execShizukuCommand("test -L ${shellQuote(path)} && echo link")?.trim() == "link"
         
         override fun exists(path: String): Boolean {
             return try {
@@ -462,6 +475,12 @@ object ETS100FileReader {
                 null
             }
         }
+
+        override fun openInputStream(path: String): InputStream? =
+            RootManager.openInputStreamAsRoot("cat ${shellQuote(path)}")
+
+        override fun isSymbolicLink(path: String): Boolean =
+            RootManager.execAsRoot("test -L ${shellQuote(path)} && echo link")?.trim() == "link"
         
         override fun exists(path: String): Boolean {
             return try {
@@ -602,6 +621,15 @@ object ETS100FileReader {
                 null
             }
         }
+
+        override fun openInputStream(path: String): InputStream? {
+            return runCatching { FileInputStream(toZWCPath(path)) }
+                .onFailure { Log.e(TAG, "DirectRead openInputStream failed: $path", it) }
+                .getOrNull()
+        }
+
+        override fun isSymbolicLink(path: String): Boolean =
+            runCatching { Files.isSymbolicLink(File(toZWCPath(path)).toPath()) }.getOrDefault(false)
         
         override fun exists(path: String): Boolean {
             // 宝贝这里先把路径转换成 ZWC 绕过路径喵~
