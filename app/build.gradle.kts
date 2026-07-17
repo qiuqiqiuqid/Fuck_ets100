@@ -24,8 +24,8 @@ android {
         applicationId = "com.shuaiqiu.fuckets100"
         minSdk = 26
         targetSdk = 37
-        versionCode = 16
-        versionName = "1.3.10"
+        versionCode = 17
+        versionName = "1.3.11"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
