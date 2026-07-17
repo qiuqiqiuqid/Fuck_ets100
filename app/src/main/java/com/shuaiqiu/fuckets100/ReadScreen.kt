@@ -440,6 +440,7 @@ fun ReadScreen(
     var isParsingLocalAnswers by remember { mutableStateOf(false) }
     var isDeleting by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
+    var sourceExportPaper by remember { mutableStateOf<ETS100AnswerReader.Paper?>(null) }
     var reloadTrigger by remember { mutableIntStateOf(0) }  // 宝贝添加了重新加载触发器喵~
     var showDeleteConfirmDialog by remember { mutableStateOf(false) }  // 宝贝添加了删除确认对话框状态喵~
     
@@ -1504,6 +1505,7 @@ fun ReadScreen(
                                     val isFailed = failedCloudHomeworks.contains(homeworkKey)
                                     val downloadProgress = cloudDownloadProgress[homeworkKey]
                                     val paper = createCloudHomeworkPlaceholder(homeworkInfo)
+                                    val downloadedPaper = downloadedPapers[homeworkKey]?.firstOrNull()
                                     PaperListItem(
                                         paper = paper,
                                         paperIndex = paperIndex,
@@ -1525,7 +1527,10 @@ fun ReadScreen(
                                         isFailed = isFailed,
                                         isDownloaded = isDownloaded,
                                         downloadProgress = downloadProgress,
-                                        isCloudMode = true
+                                        isCloudMode = true,
+                                        onExportSource = downloadedPaper?.let { downloaded ->
+                                            { sourceExportPaper = downloaded }
+                                        }
                                     )
                                 }
                             }
@@ -1619,7 +1624,8 @@ fun ReadScreen(
                                         },
                                         categoryColors = categoryColors,
                                         isLoading = isLocalAnswerLoading,
-                                        isClickEnabled = !isLocalAnswerLoading
+                                        isClickEnabled = !isLocalAnswerLoading,
+                                        onExportSource = paper.source?.let { { sourceExportPaper = paper } }
                                     )
                                 }
                             }
@@ -1705,6 +1711,11 @@ fun ReadScreen(
             }
         }
     }
+
+    SourceExportDialogHost(
+        paper = sourceExportPaper,
+        onDismissRequest = { sourceExportPaper = null }
+    )
 }
 
 @Composable
@@ -3168,93 +3179,12 @@ fun PaperDetailScreen(
     onCopyText: () -> Unit = {}
 ) {
     var showMenu by remember { mutableStateOf(false) }
-    var showSourceConfirm by remember { mutableStateOf(false) }
-    var sourceInspection by remember { mutableStateOf<PaperSourceExporter.Inspection?>(null) }
-    var isExportingSource by remember { mutableStateOf(false) }
+    var sourceExportPaper by remember { mutableStateOf<ETS100AnswerReader.Paper?>(null) }
     val context = LocalContext.current
-    val scope = rememberCoroutineScope()
     val defaultPrimaryColor = MaterialTheme.colorScheme.primary
     val categoryPalette = answerCategoryPalette()
     val fallbackCategoryStyle = fallbackAnswerCategoryStyle(defaultPrimaryColor)
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-
-    fun shareExport(result: PaperSourceExporter.ExportResult) {
-        Toast.makeText(context, "已保存到 下载/Fe/${result.fileName}", Toast.LENGTH_LONG).show()
-        val intent = Intent(Intent.ACTION_SEND).apply {
-            type = "application/zip"
-            putExtra(Intent.EXTRA_STREAM, result.uri)
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        }
-        runCatching { context.startActivity(Intent.createChooser(intent, "分享答案源文件")) }
-            .onFailure { Toast.makeText(context, "文件已保存，但没有可用的分享应用", Toast.LENGTH_LONG).show() }
-    }
-
-    fun exportSource(allowPartial: Boolean) {
-        if (isExportingSource) return
-        sourceInspection = null
-        isExportingSource = true
-        scope.launch {
-            runCatching { PaperSourceExporter.export(context, paper, allowPartial) }
-                .onSuccess(::shareExport)
-                .onFailure { error ->
-                    if (error is CancellationException) throw error
-                    Log.e(TAG, "源文件导出失败", error)
-                    Toast.makeText(context, "导出失败：${error.message ?: "未知错误"}", Toast.LENGTH_LONG).show()
-                }
-            isExportingSource = false
-        }
-    }
-
-    fun inspectAndExport() {
-        val source = paper.source
-        if (source == null) {
-            Toast.makeText(context, "来源信息已失效，请重新读取该试卷", Toast.LENGTH_LONG).show()
-            return
-        }
-        isExportingSource = true
-        scope.launch {
-            runCatching { PaperSourceExporter.inspect(context, source) }
-                .onSuccess { inspection ->
-                    if (inspection.isComplete) {
-                        runCatching { PaperSourceExporter.export(context, paper, false) }
-                            .onSuccess(::shareExport)
-                            .onFailure { error ->
-                                if (error is CancellationException) throw error
-                                Toast.makeText(context, "导出失败：${error.message}", Toast.LENGTH_LONG).show()
-                            }
-                    } else {
-                        sourceInspection = inspection
-                    }
-                }
-                .onFailure { error ->
-                    if (error is CancellationException) throw error
-                    Toast.makeText(context, "无法核验源文件：${error.message}", Toast.LENGTH_LONG).show()
-                }
-            isExportingSource = false
-        }
-    }
-
-    val storagePermissionLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { granted ->
-        if (granted) inspectAndExport()
-        else Toast.makeText(context, "需要存储权限才能写入下载文件夹", Toast.LENGTH_LONG).show()
-    }
-
-    fun beginSourceExport() {
-        showSourceConfirm = false
-        if (paper.isLocalAnswerLoading()) {
-            Toast.makeText(context, "答案源文件仍在解析，请稍后再导出", Toast.LENGTH_LONG).show()
-            return
-        }
-        if (android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.P &&
-            ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-        ) {
-            storagePermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        } else {
-            inspectAndExport()
-        }
-    }
 
     Column(
         modifier = Modifier
@@ -3329,7 +3259,7 @@ fun PaperDetailScreen(
                             text = { Text("源文件导出") },
                             onClick = {
                                 showMenu = false
-                                showSourceConfirm = true
+                                sourceExportPaper = paper
                             },
                             leadingIcon = {
                                 Icon(Icons.Default.Archive, contentDescription = null)
@@ -3411,22 +3341,119 @@ fun PaperDetailScreen(
         }
     }
 
-    if (showSourceConfirm) {
+    SourceExportDialogHost(
+        paper = sourceExportPaper,
+        onDismissRequest = { sourceExportPaper = null }
+    )
+}
+
+@Composable
+private fun SourceExportDialogHost(
+    paper: ETS100AnswerReader.Paper?,
+    onDismissRequest: () -> Unit
+) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    var showConfirmation by remember(paper) { mutableStateOf(paper != null) }
+    var sourceInspection by remember(paper) { mutableStateOf<PaperSourceExporter.Inspection?>(null) }
+    var isExportingSource by remember(paper) { mutableStateOf(false) }
+
+    fun shareExport(result: PaperSourceExporter.ExportResult) {
+        Toast.makeText(context, "已保存到 下载/Fe/${result.fileName}", Toast.LENGTH_LONG).show()
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            type = "application/zip"
+            putExtra(Intent.EXTRA_STREAM, result.uri)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        runCatching { context.startActivity(Intent.createChooser(intent, "分享答案源文件")) }
+            .onFailure { Toast.makeText(context, "文件已保存，但没有可用的分享应用", Toast.LENGTH_LONG).show() }
+    }
+
+    fun exportSource(allowPartial: Boolean) {
+        val currentPaper = paper ?: return
+        if (isExportingSource) return
+        sourceInspection = null
+        isExportingSource = true
+        scope.launch {
+            runCatching { PaperSourceExporter.export(context, currentPaper, allowPartial) }
+                .onSuccess(::shareExport)
+                .onFailure { error ->
+                    if (error is CancellationException) throw error
+                    Log.e(TAG, "源文件导出失败", error)
+                    Toast.makeText(context, "导出失败：${error.message ?: "未知错误"}", Toast.LENGTH_LONG).show()
+                }
+            isExportingSource = false
+            onDismissRequest()
+        }
+    }
+
+    fun inspectAndExport() {
+        val currentPaper = paper ?: return
+        val source = currentPaper.source
+        if (source == null) {
+            Toast.makeText(context, "来源信息已失效，请重新读取该试卷", Toast.LENGTH_LONG).show()
+            onDismissRequest()
+            return
+        }
+        isExportingSource = true
+        scope.launch {
+            runCatching { PaperSourceExporter.inspect(context, source) }
+                .onSuccess { inspection ->
+                    if (inspection.isComplete) {
+                        runCatching { PaperSourceExporter.export(context, currentPaper, false) }
+                            .onSuccess(::shareExport)
+                            .onFailure { error ->
+                                if (error is CancellationException) throw error
+                                Toast.makeText(context, "导出失败：${error.message}", Toast.LENGTH_LONG).show()
+                            }
+                        onDismissRequest()
+                    } else {
+                        sourceInspection = inspection
+                    }
+                }
+                .onFailure { error ->
+                    if (error is CancellationException) throw error
+                    Toast.makeText(context, "无法核验源文件：${error.message}", Toast.LENGTH_LONG).show()
+                    onDismissRequest()
+                }
+            isExportingSource = false
+        }
+    }
+
+    val storagePermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) inspectAndExport()
+        else Toast.makeText(context, "需要存储权限才能写入下载文件夹", Toast.LENGTH_LONG).show()
+    }
+
+    fun beginSourceExport() {
+        showConfirmation = false
+        if (android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.P &&
+            ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+        ) {
+            storagePermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        } else {
+            inspectAndExport()
+        }
+    }
+
+    if (paper != null && showConfirmation) {
         AlertDialog(
-            onDismissRequest = { showSourceConfirm = false },
+            onDismissRequest = onDismissRequest,
             icon = { Icon(Icons.Default.Archive, contentDescription = null) },
             title = { Text("导出答案源文件？") },
             text = {
                 Text("源文件用于提交给作者适配新题型，不适合作为常规答案分享。\n\n应用将只打包当前整套试卷关联的源文件，并保存到 下载/Fe。")
             },
             confirmButton = { TextButton(onClick = ::beginSourceExport) { Text("确认导出") } },
-            dismissButton = { TextButton(onClick = { showSourceConfirm = false }) { Text("取消") } }
+            dismissButton = { TextButton(onClick = onDismissRequest) { Text("取消") } }
         )
     }
 
     sourceInspection?.let { inspection ->
         AlertDialog(
-            onDismissRequest = { sourceInspection = null },
+            onDismissRequest = onDismissRequest,
             icon = {
                 Icon(
                     Icons.Default.Warning,
@@ -3446,17 +3473,18 @@ fun PaperDetailScreen(
                 }
             },
             confirmButton = {
-                if (paper.source is PaperSource.Cloud) {
+                val source = paper?.source
+                if (source is PaperSource.Cloud) {
                     TextButton(onClick = {
                         sourceInspection = null
                         isExportingSource = true
                         scope.launch {
                             val updated = runCatching {
-                                PaperSourceExporter.downloadMissingCloudFiles(context, paper.source)
+                                PaperSourceExporter.downloadMissingCloudFiles(context, source)
                             }.getOrElse {
                                 if (it is CancellationException) throw it
                                 Toast.makeText(context, "下载缺失文件失败：${it.message}", Toast.LENGTH_LONG).show()
-                                PaperSourceExporter.inspect(context, paper.source)
+                                PaperSourceExporter.inspect(context, source)
                             }
                             isExportingSource = false
                             if (updated.isComplete) exportSource(false) else sourceInspection = updated
@@ -3466,7 +3494,7 @@ fun PaperDetailScreen(
             },
             dismissButton = {
                 Row {
-                    TextButton(onClick = { sourceInspection = null }) { Text("取消") }
+                    TextButton(onClick = onDismissRequest) { Text("取消") }
                     TextButton(onClick = { exportSource(true) }) { Text("仍然导出") }
                 }
             }
@@ -3751,10 +3779,12 @@ private fun PaperListItem(
     isDownloaded: Boolean = false,  // 宝贝标记是否已下载喵~
     isClickEnabled: Boolean = true,
     downloadProgress: CloudHomeworkState.DownloadProgress? = null,
-    isCloudMode: Boolean = false
+    isCloudMode: Boolean = false,
+    onExportSource: (() -> Unit)? = null
 ) {
     val primaryColor = MaterialTheme.colorScheme.primary
     val localPreviewText = remember(paper) { paper.firstQuestionPreviewText() }
+    var showMenu by remember { mutableStateOf(false) }
     val listNumber = if (isCloudMode) {
         paperIndex + 1
     } else {
@@ -3959,8 +3989,32 @@ private fun PaperListItem(
                 }
             }
 
-            // 宝贝只在非加载/非失败状态显示箭头图标喵~
-            if (!isLoading && !isFailed) {
+            if (onExportSource != null) {
+                Box {
+                    IconButton(onClick = { showMenu = true }) {
+                        Icon(
+                            Icons.Default.MoreVert,
+                            contentDescription = "更多操作",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    DropdownMenu(
+                        expanded = showMenu,
+                        onDismissRequest = { showMenu = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("源文件导出") },
+                            onClick = {
+                                showMenu = false
+                                onExportSource()
+                            },
+                            leadingIcon = {
+                                Icon(Icons.Default.Archive, contentDescription = null)
+                            }
+                        )
+                    }
+                }
+            } else if (!isLoading && !isFailed) {
                 Icon(
                     Icons.Default.ChevronRight,
                     contentDescription = "进入",
