@@ -87,6 +87,7 @@ stitch_fe_material_3_interface/
 
 # AI development tool directories
 .kilo/
+.kilocode/
 .kotlin/
 .roo/
 
@@ -98,8 +99,7 @@ app/build/
 
 # Debug APK
 app/build/outputs/apk/
-.codegraph/.gitignore
+.codegraph/
 pwd.json
 config/__pycache__/sync_manual_config.cpython-313.pyc
 scripts/release/__pycache__/upload_lanzou.cpython-313.pyc
-.codegraph/
