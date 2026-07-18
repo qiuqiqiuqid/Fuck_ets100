@@ -20,6 +20,59 @@ class PaperSourceExporterTest {
     }
 
     @Test
+    fun localDirectoryExportFileNameUsesDedicatedPrefix() {
+        val name = PaperSourceExporter.buildLocalDirectoryExportFileName(0L)
+
+        assertEquals("Fe_Local_Files_19700101_000000_000.zip", name)
+    }
+
+    @Test
+    fun localDirectoryExportBlocksEmptyOversizedAndMultipleParsedPapers() {
+        assertEquals(
+            PaperSourceExporter.LocalDirectoryExportBlockReason.EMPTY,
+            PaperSourceExporter.localDirectoryExportBlockReason(0, 0L, 0)
+        )
+        assertEquals(
+            PaperSourceExporter.LocalDirectoryExportBlockReason.TOO_MANY_PARSED_PAPERS,
+            PaperSourceExporter.localDirectoryExportBlockReason(1, 1L, 3)
+        )
+        assertEquals(
+            PaperSourceExporter.LocalDirectoryExportBlockReason.TOO_LARGE,
+            PaperSourceExporter.localDirectoryExportBlockReason(1, 150L * 1024L * 1024L + 1L, 0)
+        )
+        assertEquals(null, PaperSourceExporter.localDirectoryExportBlockReason(1, 150L * 1024L * 1024L, 2))
+    }
+
+    @Test
+    fun localDirectoryReadmeListsFilesAndEmptyParseResult() {
+        val inspection = PaperSourceExporter.LocalDirectoryInspection(
+            mode = ActivationMode.DIRECT_READ,
+            files = listOf(
+                PaperSourceExporter.LocalDirectoryFile(
+                    sourcePath = "/source/data/index.json",
+                    archivePath = "data/index.json",
+                    size = 42L
+                ),
+                PaperSourceExporter.LocalDirectoryFile(
+                    sourcePath = "/source/resource/item/content.json",
+                    archivePath = "resource/item/content.json",
+                    size = 84L
+                )
+            ),
+            skipped = listOf("resource/link（符号链接，已跳过）"),
+            totalBytes = 126L,
+            parsedPapers = emptyList()
+        )
+
+        val readme = PaperSourceExporter.buildLocalDirectoryReadme(inspection)
+
+        assertTrue(readme.contains("data/index.json"))
+        assertTrue(readme.contains("resource/item/content.json"))
+        assertTrue(readme.contains("未识别到可解析试卷"))
+        assertTrue(readme.contains("resource/link（符号链接，已跳过）"))
+    }
+
+    @Test
     fun cloudUrlUsesHttpsAndPreservesAbsoluteUrls() {
         assertEquals(
             "https://cdn.example.com/base/paper.zip",
