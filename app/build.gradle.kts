@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.shuaiqiu.fuckets100"
-    compileSdk = 37
+    compileSdk = 35
 
     val releaseKeystorePath = System.getenv("ANDROID_KEYSTORE_PATH")
     val releaseKeystorePassword = System.getenv("ANDROID_KEYSTORE_PASSWORD")

@@ -1,8 +1,8 @@
 {
-  "java.jdt.ls.java.home": "/usr/lib/jvm/java-17-openjdk-arm64",
-  "gradle.java.home": "/usr/lib/jvm/java-17-openjdk-arm64",
-  "java.import.gradle.java.home": "/usr/lib/jvm/java-17-openjdk-arm64",
-  "android-ide-extension.gradleJavaHome": "/usr/lib/jvm/java-17-openjdk-arm64",
+  "java.jdt.ls.java.home": "/usr/lib/jvm/java-21-openjdk-arm64",
+  "gradle.java.home": "/usr/lib/jvm/java-21-openjdk-arm64",
+  "java.import.gradle.java.home": "/usr/lib/jvm/java-21-openjdk-arm64",
+  "android-ide-extension.gradleJavaHome": "/usr/lib/jvm/java-21-openjdk-arm64",
   "android-ide-extension.installTask": "installDebug",
   "android-ide-extension.buildTask": "assembleDebug",
   "android-ide-extension.defaultGradleModule": "app",

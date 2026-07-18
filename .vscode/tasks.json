@@ -11,8 +11,8 @@
         "env": {
           "ANDROID_HOME": "/home/shuaiqiu/Android/Sdk",
           "ANDROID_SDK_ROOT": "/home/shuaiqiu/Android/Sdk",
-          "JAVA_HOME": "/usr/lib/jvm/java-17-openjdk-arm64",
-          "PATH": "/usr/lib/jvm/java-17-openjdk-arm64/bin:/home/shuaiqiu/Android/Sdk/platform-tools:${env:PATH}"
+          "JAVA_HOME": "/usr/lib/jvm/java-21-openjdk-arm64",
+          "PATH": "/usr/lib/jvm/java-21-openjdk-arm64/bin:/home/shuaiqiu/Android/Sdk/platform-tools:${env:PATH}"
         }
       },
       "group": {
@@ -31,8 +31,8 @@
         "env": {
           "ANDROID_HOME": "/home/shuaiqiu/Android/Sdk",
           "ANDROID_SDK_ROOT": "/home/shuaiqiu/Android/Sdk",
-          "JAVA_HOME": "/usr/lib/jvm/java-17-openjdk-arm64",
-          "PATH": "/usr/lib/jvm/java-17-openjdk-arm64/bin:/home/shuaiqiu/Android/Sdk/platform-tools:${env:PATH}"
+          "JAVA_HOME": "/usr/lib/jvm/java-21-openjdk-arm64",
+          "PATH": "/usr/lib/jvm/java-21-openjdk-arm64/bin:/home/shuaiqiu/Android/Sdk/platform-tools:${env:PATH}"
         }
       },
       "problemMatcher": []
@@ -47,8 +47,8 @@
         "env": {
           "ANDROID_HOME": "/home/shuaiqiu/Android/Sdk",
           "ANDROID_SDK_ROOT": "/home/shuaiqiu/Android/Sdk",
-          "JAVA_HOME": "/usr/lib/jvm/java-17-openjdk-arm64",
-          "PATH": "/usr/lib/jvm/java-17-openjdk-arm64/bin:/home/shuaiqiu/Android/Sdk/platform-tools:${env:PATH}"
+          "JAVA_HOME": "/usr/lib/jvm/java-21-openjdk-arm64",
+          "PATH": "/usr/lib/jvm/java-21-openjdk-arm64/bin:/home/shuaiqiu/Android/Sdk/platform-tools:${env:PATH}"
         }
       },
       "problemMatcher": []
