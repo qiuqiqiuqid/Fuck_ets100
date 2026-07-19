@@ -1733,6 +1733,8 @@ fun ReadScreen(
     if (showLocalDirectoryExport) {
         LocalDirectoryExportDialogHost(
             mode = currentMode,
+            currentPapers = papers,
+            isParsingInProgress = isParsingLocalAnswers,
             onDismissRequest = { showLocalDirectoryExport = false }
         )
     }
@@ -1741,6 +1743,8 @@ fun ReadScreen(
 @Composable
 private fun LocalDirectoryExportDialogHost(
     mode: ActivationMode,
+    currentPapers: List<ETS100AnswerReader.Paper>,
+    isParsingInProgress: Boolean,
     onDismissRequest: () -> Unit
 ) {
     val context = LocalContext.current
@@ -1768,8 +1772,17 @@ private fun LocalDirectoryExportDialogHost(
         inspection = null
         inspectionError = null
         isPreparing = true
+        val papersSnapshot = currentPapers.toList()
+        val parsingInProgressSnapshot = isParsingInProgress
         scope.launch {
-            runCatching { PaperSourceExporter.inspectLocalDirectoryExport(context, mode) }
+            runCatching {
+                PaperSourceExporter.inspectLocalDirectoryExport(
+                    context = context,
+                    mode = mode,
+                    currentPapers = papersSnapshot,
+                    isParsingInProgress = parsingInProgressSnapshot
+                )
+            }
                 .onSuccess { result ->
                     inspection = result
                     if (result.canExport) {
@@ -1820,7 +1833,8 @@ private fun LocalDirectoryExportDialogHost(
             text = {
                 Text(
                     "将导出当前本地目录中 data 和 resource 的全部文件，并附上文件对应关系及可解析题目结构。\n\n" +
-                        "请确认目录内只保留需要提交给作者处理的内容；不需要的试卷请先删除，之后可重新下载。"
+                        "请确认目录内只保留需要提交给作者处理的内容；不需要的试卷请先删除，之后可重新下载。\n\n" +
+                        "导出时间可能较长，请耐心等待。"
                 )
             },
             confirmButton = { TextButton(onClick = ::beginExport) { Text("确认导出") } },
@@ -1850,11 +1864,14 @@ private fun LocalDirectoryExportDialogHost(
                     else -> buildString {
                         append("检测到")
                         if (result.hasTooManyParsedPapers) {
-                            append(" ${result.parsedPaperCount} 套可解析试卷")
+                            append("当前已解析的 ${result.parsedPaperCount} 套试卷")
                         }
                         if (result.hasTooManyParsedPapers && result.exceedsSizeLimit) append("，且")
                         if (result.exceedsSizeLimit) {
                             append(" 本地文件总大小超过 150 MiB")
+                        }
+                        if (result.isParsingInProgress && result.hasTooManyParsedPapers) {
+                            append("；后台解析仍在进行，以上数量不是最终结果")
                         }
                         append("。\n\n仅保留需要答案或无法解析的内容。已可解析且不需要额外处理的试卷请不要导出；文件过多请分批处理。整理方法：全部删除后，手动完整下载需要提交给作者的无法解析试卷。")
                     }
@@ -1888,7 +1905,7 @@ private fun LocalDirectoryExportDialogHost(
                 ) {
                     CircularProgressIndicator(modifier = Modifier.size(28.dp), strokeWidth = 3.dp)
                     Column {
-                        Text(if (isExporting) "正在导出本地文件" else "正在检查本地目录", style = MaterialTheme.typography.titleMedium)
+                        Text(if (isExporting) "正在打包题目文件" else "正在检查本地目录", style = MaterialTheme.typography.titleMedium)
                         Text("请勿关闭页面", style = MaterialTheme.typography.bodyMedium)
                     }
                 }

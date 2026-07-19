@@ -68,6 +68,28 @@ object ETS100FileReader {
         """.trimIndent()
     }
 
+    private fun buildDirectorySizeCommand(path: String): String {
+        val quotedPath = shellQuote(path)
+        return "[ -d $quotedPath ] && du -sk $quotedPath 2>/dev/null | cut -f1 || echo 0"
+    }
+
+    internal fun parseDirectorySizeKib(output: String?): Long = output
+        ?.lineSequence()
+        ?.firstOrNull()
+        ?.trim()
+        ?.substringBeforeAnyWhitespace()
+        ?.toLongOrNull()
+        ?.coerceAtLeast(0L)
+        ?.coerceAtMost(Long.MAX_VALUE / 1024L)
+        ?.times(1024L)
+        ?: 0L
+
+    private fun String.substringBeforeAnyWhitespace(): String =
+        indexOfFirst { it.isWhitespace() }
+            .takeIf { it >= 0 }
+            ?.let { substring(0, it) }
+            ?: this
+
     private fun parseFastListOutput(output: String): List<FileItem> {
         return output.lineSequence()
             .map { it.trimEnd() }
@@ -192,6 +214,12 @@ object ETS100FileReader {
          * 获取文件大小
          */
         fun getFileSize(path: String): Long
+
+        /**
+         * 获取目录中全部文件的总字节数。
+         * 目录不存在或无法读取时返回 0。
+         */
+        fun getDirectorySize(path: String): Long
         
         /**
          * 获取文件修改时间(Unix timestamp)
@@ -274,6 +302,13 @@ object ETS100FileReader {
             } catch (e: Exception) {
                 0L
             }
+        }
+
+        override fun getDirectorySize(path: String): Long = try {
+            parseDirectorySizeKib(execShizukuCommand(buildDirectorySizeCommand(path)))
+        } catch (e: Exception) {
+            Log.e(TAG, "Shizuku getDirectorySize failed", e)
+            0L
         }
         
         override fun getFileModifiedTime(path: String): Long {
@@ -498,6 +533,13 @@ object ETS100FileReader {
                 0L
             }
         }
+
+        override fun getDirectorySize(path: String): Long = try {
+            parseDirectorySizeKib(RootManager.execAsRoot(buildDirectorySizeCommand(path)))
+        } catch (e: Exception) {
+            Log.e(TAG, "Root getDirectorySize failed", e)
+            0L
+        }
         
         override fun getFileModifiedTime(path: String): Long {
             return try {
@@ -645,6 +687,15 @@ object ETS100FileReader {
             } catch (e: Exception) {
                 0L
             }
+        }
+
+        override fun getDirectorySize(path: String): Long = try {
+            File(toZWCPath(path)).walkTopDown()
+                .filter { it.isFile }
+                .sumOf { it.length().coerceAtLeast(0L) }
+        } catch (e: Exception) {
+            Log.e(TAG, "DirectRead getDirectorySize failed", e)
+            0L
         }
         
         override fun getFileModifiedTime(path: String): Long {
