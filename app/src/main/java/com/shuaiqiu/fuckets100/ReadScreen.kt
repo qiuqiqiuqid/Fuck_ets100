@@ -1367,7 +1367,12 @@ fun ReadScreen(
                         reloadTrigger++
                     }
                 },
-                onExportClick = if (currentMode != ActivationMode.CLOUD) {
+                onExportClick = if (currentMode in setOf(
+                        ActivationMode.ROOT,
+                        ActivationMode.SHIZUKU,
+                        ActivationMode.DIRECT_READ
+                    )
+                ) {
                     {
                         isFabExpanded = false
                         showLocalDirectoryExport = true
@@ -2117,7 +2122,7 @@ private fun cloudHomeworkSegmentedButtonColors(): SegmentedButtonColors {
 
 /**
  * 可展开的圆形十字按钮组件
- * 右下角悬浮，点击向上展开3个子按钮（调试、删除、读取）
+ * 右下角悬浮，点击向上展开本地或云端可用的操作按钮。
  * 喵~ 这个按钮会旋转和缩放动画哦！
  */
 @Composable
