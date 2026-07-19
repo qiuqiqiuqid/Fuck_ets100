@@ -52,6 +52,7 @@ fun ThemeSettingsScreen(
     val colorThemes = ThemeManager.getColorThemes()
     
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.surface,
         topBar = {
             CenterAlignedTopAppBar(
                 title = { Text("主题设置", style = MaterialTheme.typography.titleMedium) },
@@ -102,34 +103,43 @@ fun ThemeSettingsScreen(
                 }
             }
 
-            ListItem(
-                headlineContent = { Text("从壁纸提取主题色") },
-                supportingContent = {
-                    Text(
-                        if (dynamicColorAvailable) {
-                            "使用系统 Material You 动态配色"
-                        } else {
-                            "需要 Android 12 或更高版本"
-                        }
-                    )
-                },
-                leadingContent = {
-                    Icon(Icons.Default.Wallpaper, contentDescription = null)
-                },
-                trailingContent = {
-                    Switch(
-                        checked = useDynamicColor && dynamicColorAvailable,
-                        enabled = dynamicColorAvailable,
-                        onCheckedChange = { checked ->
-                            useDynamicColor = checked
-                            ThemeManager.saveDynamicColor(checked)
-                            onDynamicColorChanged?.invoke(checked)
-                        }
-                    )
-                },
-                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                modifier = Modifier.padding(horizontal = 16.dp)
-            )
+            Surface(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                shape = RoundedCornerShape(16.dp),
+                color = MaterialTheme.colorScheme.surfaceContainer
+            ) {
+                ListItem(
+                    headlineContent = { Text("从壁纸提取主题色") },
+                    supportingContent = {
+                        Text(
+                            if (dynamicColorAvailable) {
+                                "使用系统 Material You 动态配色"
+                            } else {
+                                "需要 Android 12 或更高版本"
+                            }
+                        )
+                    },
+                    leadingContent = {
+                        Icon(
+                            Icons.Default.Wallpaper,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    },
+                    trailingContent = {
+                        Switch(
+                            checked = useDynamicColor && dynamicColorAvailable,
+                            enabled = dynamicColorAvailable,
+                            onCheckedChange = { checked ->
+                                useDynamicColor = checked
+                                ThemeManager.saveDynamicColor(checked)
+                                onDynamicColorChanged?.invoke(checked)
+                            }
+                        )
+                    },
+                    colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                )
+            }
             
             Spacer(Modifier.height(24.dp))
             
@@ -146,57 +156,68 @@ fun ThemeSettingsScreen(
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
             )
 
-            ListItem(
-                headlineContent = { Text("跟随系统") },
-                supportingContent = { Text(if (systemDarkMode) "当前系统为夜间模式" else "当前系统为日间模式") },
-                leadingContent = {
-                    Icon(Icons.Default.Sync, contentDescription = null)
-                },
-                trailingContent = {
-                    Switch(
-                        checked = isAutoDarkMode,
-                        onCheckedChange = { checked ->
-                            isAutoDarkMode = checked
-                            ThemeManager.saveAutoDarkMode(checked)
-                            onAutoDarkModeChanged?.invoke(checked)
-                        }
-                    )
-                },
-                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                modifier = Modifier.padding(horizontal = 16.dp)
-            )
-
-            SingleChoiceSegmentedButtonRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 12.dp)
+            Surface(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                shape = RoundedCornerShape(16.dp),
+                color = MaterialTheme.colorScheme.surfaceContainer
             ) {
-                SegmentedButton(
-                    selected = !isDarkMode,
-                    enabled = !isAutoDarkMode,
-                    onClick = {
-                        isDarkMode = false
-                        ThemeManager.saveDarkMode(false)
-                        onDarkModeChanged?.invoke(false)
-                    },
-                    shape = SegmentedButtonDefaults.itemShape(index = 0, count = 2),
-                    colors = themeModeSegmentedButtonColors(),
-                    icon = { Icon(Icons.Default.LightMode, contentDescription = null) },
-                    label = { Text("日间") }
-                )
-                SegmentedButton(
-                    selected = isDarkMode,
-                    enabled = !isAutoDarkMode,
-                    onClick = {
-                        isDarkMode = true
-                        ThemeManager.saveDarkMode(true)
-                        onDarkModeChanged?.invoke(true)
-                    },
-                    shape = SegmentedButtonDefaults.itemShape(index = 1, count = 2),
-                    colors = themeModeSegmentedButtonColors(),
-                    icon = { Icon(Icons.Default.DarkMode, contentDescription = null) },
-                    label = { Text("夜间") }
-                )
+                Column {
+                    ListItem(
+                        headlineContent = { Text("跟随系统") },
+                        supportingContent = { Text(if (systemDarkMode) "当前系统为夜间模式" else "当前系统为日间模式") },
+                        leadingContent = {
+                            Icon(
+                                Icons.Default.Sync,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        },
+                        trailingContent = {
+                            Switch(
+                                checked = isAutoDarkMode,
+                                onCheckedChange = { checked ->
+                                    isAutoDarkMode = checked
+                                    ThemeManager.saveAutoDarkMode(checked)
+                                    onAutoDarkModeChanged?.invoke(checked)
+                                }
+                            )
+                        },
+                        colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                    )
+
+                    SingleChoiceSegmentedButtonRow(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 12.dp)
+                    ) {
+                        SegmentedButton(
+                            selected = !isDarkMode,
+                            enabled = !isAutoDarkMode,
+                            onClick = {
+                                isDarkMode = false
+                                ThemeManager.saveDarkMode(false)
+                                onDarkModeChanged?.invoke(false)
+                            },
+                            shape = SegmentedButtonDefaults.itemShape(index = 0, count = 2),
+                            colors = themeModeSegmentedButtonColors(),
+                            icon = { Icon(Icons.Default.LightMode, contentDescription = null) },
+                            label = { Text("日间") }
+                        )
+                        SegmentedButton(
+                            selected = isDarkMode,
+                            enabled = !isAutoDarkMode,
+                            onClick = {
+                                isDarkMode = true
+                                ThemeManager.saveDarkMode(true)
+                                onDarkModeChanged?.invoke(true)
+                            },
+                            shape = SegmentedButtonDefaults.itemShape(index = 1, count = 2),
+                            colors = themeModeSegmentedButtonColors(),
+                            icon = { Icon(Icons.Default.DarkMode, contentDescription = null) },
+                            label = { Text("夜间") }
+                        )
+                    }
+                }
             }
 
             Spacer(Modifier.height(24.dp))
@@ -214,26 +235,35 @@ fun ThemeSettingsScreen(
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
             )
 
-            ListItem(
-                headlineContent = { Text("预见性返回动画") },
-                supportingContent = {
-                    Text("${predictiveBackMode.label} · ${predictiveBackMode.description}")
-                },
-                leadingContent = {
-                    Icon(Icons.Default.Sync, contentDescription = null)
-                },
-                trailingContent = {
-                    Text(
-                        predictiveBackMode.label,
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                },
-                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+            Surface(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
-                    .clickable { showPredictiveBackDialog = true }
-            )
+                    .clickable { showPredictiveBackDialog = true },
+                shape = RoundedCornerShape(16.dp),
+                color = MaterialTheme.colorScheme.surfaceContainer
+            ) {
+                ListItem(
+                    headlineContent = { Text("预见性返回动画") },
+                    supportingContent = {
+                        Text("${predictiveBackMode.label} · ${predictiveBackMode.description}")
+                    },
+                    leadingContent = {
+                        Icon(
+                            Icons.Default.Sync,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    },
+                    trailingContent = {
+                        Text(
+                            predictiveBackMode.label,
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    },
+                    colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                )
+            }
             
             Spacer(Modifier.height(88.dp))
         }
@@ -293,7 +323,7 @@ fun ThemeCard(
             containerColor = if (isSelected) {
                 MaterialTheme.colorScheme.primaryContainer
             } else {
-                MaterialTheme.colorScheme.surfaceContainerLow
+                MaterialTheme.colorScheme.surfaceContainer
             }
         )
     ) {
@@ -340,11 +370,11 @@ private fun themeModeSegmentedButtonColors(): SegmentedButtonColors {
     return SegmentedButtonDefaults.colors(
         activeContainerColor = MaterialTheme.colorScheme.primaryContainer,
         activeContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-        inactiveContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+        inactiveContainerColor = MaterialTheme.colorScheme.surface,
         inactiveContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
         disabledActiveContainerColor = MaterialTheme.colorScheme.primaryContainer,
         disabledActiveContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-        disabledInactiveContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+        disabledInactiveContainerColor = MaterialTheme.colorScheme.surface,
         disabledInactiveContentColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.58f)
     )
 }

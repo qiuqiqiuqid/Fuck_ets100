@@ -18,6 +18,8 @@ import android.widget.Toast
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -1338,6 +1340,7 @@ fun ReadScreen(
     }
     
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.surface,
         topBar = {
             FeTopAppBar(title = "Fe")
         },
@@ -1387,7 +1390,7 @@ fun ReadScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .background(MaterialTheme.colorScheme.background)
+                .background(MaterialTheme.colorScheme.surface)
         ) {
             when {
                 // 1. 加载中（本地模式 isLoading 或 云端模式 isLoadingCloudHomework）喵~
@@ -1917,8 +1920,8 @@ private fun LocalDirectoryExportDialogHost(
 @Composable
 private fun DeletingOverlay() {
     Dialog(onDismissRequest = {}) {
-        FeOutlinedCard(
-            containerColor = MaterialTheme.colorScheme.surface
+        FeFilledCard(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
         ) {
             Column(
                 modifier = Modifier.padding(24.dp),
@@ -1984,7 +1987,7 @@ private fun LocalAnswerParsingCard(
     val containerColor = if (isFailed) {
         MaterialTheme.colorScheme.errorContainer
     } else {
-        MaterialTheme.colorScheme.surface
+        MaterialTheme.colorScheme.surfaceContainer
     }
     val textColor = if (isFailed) {
         MaterialTheme.colorScheme.onErrorContainer
@@ -1992,7 +1995,7 @@ private fun LocalAnswerParsingCard(
         MaterialTheme.colorScheme.onSurfaceVariant
     }
 
-    FeOutlinedCard(
+    FeFilledCard(
         modifier = Modifier.fillMaxWidth(),
         containerColor = containerColor,
         borderColor = if (isFailed) MaterialTheme.colorScheme.error else Color.Transparent
@@ -2068,9 +2071,9 @@ private fun LocalAnswerParsingCard(
 
 @Composable
 private fun EmptyCloudHomeworkCard(label: String) {
-    FeOutlinedCard(
+    FeFilledCard(
         modifier = Modifier.fillMaxWidth(),
-        containerColor = MaterialTheme.colorScheme.surface
+        containerColor = MaterialTheme.colorScheme.surfaceContainer
     ) {
         Row(
             modifier = Modifier
@@ -2128,11 +2131,11 @@ private fun cloudHomeworkSegmentedButtonColors(): SegmentedButtonColors {
     return SegmentedButtonDefaults.colors(
         activeContainerColor = MaterialTheme.colorScheme.primaryContainer,
         activeContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-        inactiveContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+        inactiveContainerColor = MaterialTheme.colorScheme.surface,
         inactiveContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
         disabledActiveContainerColor = MaterialTheme.colorScheme.primaryContainer,
         disabledActiveContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-        disabledInactiveContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+        disabledInactiveContainerColor = MaterialTheme.colorScheme.surface,
         disabledInactiveContentColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.58f)
     )
 }
@@ -2323,9 +2326,9 @@ private fun PaperCard(
     searchQuery: String,
     showOnlyAnswered: Boolean
 ) {
-    FeOutlinedCard(
+    FeFilledCard(
         modifier = Modifier.fillMaxWidth(),
-        containerColor = MaterialTheme.colorScheme.surface
+        containerColor = MaterialTheme.colorScheme.surfaceContainer
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
@@ -2414,9 +2417,9 @@ private fun SectionItem(
         expanded = isExpanded
     }
     
-    FeOutlinedCard(
+    FeFilledCard(
         modifier = Modifier.fillMaxWidth(),
-        containerColor = MaterialTheme.colorScheme.surface
+        containerColor = MaterialTheme.colorScheme.surfaceContainerLow
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
             Row(
@@ -2496,7 +2499,7 @@ private fun QuestionItem(
     onClick: () -> Unit,
     categoryStyle: AnswerCategoryColor
 ) {
-    FeOutlinedCard(
+    FeFilledCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp),
@@ -2508,7 +2511,7 @@ private fun QuestionItem(
         borderColor = if (isSelected) {
             MaterialTheme.colorScheme.primary.copy(alpha = 0.18f)
         } else {
-            Color.Transparent
+            MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.32f)
         },
         onClick = onClick
     ) {
@@ -2569,7 +2572,7 @@ private fun DebugPanel(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(MaterialTheme.colorScheme.surface)
             .padding(16.dp)
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
@@ -2667,7 +2670,7 @@ private fun LogViewerPanel(debugLog: List<LogEntry>) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.surfaceContainerLow, RoundedCornerShape(16.dp))
+                    .background(MaterialTheme.colorScheme.surfaceContainer, RoundedCornerShape(16.dp))
                     .padding(8.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
@@ -2690,7 +2693,7 @@ private fun LogViewerPanel(debugLog: List<LogEntry>) {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.surfaceContainerLow, RoundedCornerShape(16.dp))
+                    .background(MaterialTheme.colorScheme.surfaceContainer, RoundedCornerShape(16.dp))
                     .padding(12.dp),
                 verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
@@ -2825,7 +2828,7 @@ private fun DataDetailsPanel(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp))
+                .background(MaterialTheme.colorScheme.surfaceContainer, RoundedCornerShape(16.dp))
                 .clickable(onClick = onToggleDataDetails)
                 .padding(12.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -2869,7 +2872,7 @@ private fun DataDetailsPanel(
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.surfaceContainerLow, RoundedCornerShape(16.dp))
+                    .background(MaterialTheme.colorScheme.surfaceContainer, RoundedCornerShape(16.dp))
                     .padding(12.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
@@ -2879,8 +2882,8 @@ private fun DataDetailsPanel(
                     val totalQuestions = papers.sumOf { it.sections.sumOf { s -> s.questions.size } }
                     val answeredQuestions = papers.sumOf { it.sections.sumOf { s -> s.questions.count { q -> q.answer.isNotEmpty() } } }
                     
-                    FeOutlinedCard(
-                        containerColor = MaterialTheme.colorScheme.surface
+                    FeFilledCard(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainerLow
                     ) {
                         Column(modifier = Modifier.padding(12.dp)) {
                             Text(
@@ -2944,7 +2947,7 @@ private fun PaperDetailCard(
 ) {
     var expanded by remember { mutableStateOf(false) }
     
-    FeOutlinedCard(containerColor = MaterialTheme.colorScheme.surface) {
+    FeFilledCard(containerColor = MaterialTheme.colorScheme.surfaceContainer) {
         Column(modifier = Modifier.padding(12.dp)) {
             // 试卷标题行
             Row(
@@ -3019,7 +3022,9 @@ private fun SectionDetailItem(
     
     val categoryStyle = answerCategoryStyle(section.category, MaterialTheme.colorScheme.secondary)
     
-    FeOutlinedCard(containerColor = MaterialTheme.colorScheme.surface) {
+    FeFilledCard(
+        containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+    ) {
         Column(modifier = Modifier.padding(10.dp)) {
             Row(
                 modifier = Modifier
@@ -3100,9 +3105,9 @@ private fun QuestionDetailItem(
     var expanded by remember { mutableStateOf(false) }
     val hasAnswer = question.answer.isNotEmpty()
     
-    FeOutlinedCard(
+    FeFilledCard(
         modifier = Modifier.clickable { expanded = !expanded },
-        containerColor = MaterialTheme.colorScheme.surface
+        containerColor = MaterialTheme.colorScheme.surfaceContainerLow
     ) {
         Column(modifier = Modifier.padding(8.dp)) {
             Row(
@@ -3189,7 +3194,7 @@ private fun QuestionDetailItem(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(MaterialTheme.colorScheme.surfaceContainerLow, RoundedCornerShape(16.dp))
+                            .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp))
                             .padding(8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -3225,11 +3230,11 @@ private fun CollapsibleItem(
 ) {
     var expanded by remember { mutableStateOf(defaultExpanded) }
     
-    FeOutlinedCard(
+    FeFilledCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp),
-        containerColor = MaterialTheme.colorScheme.surface
+        containerColor = MaterialTheme.colorScheme.surfaceContainerLow
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
             Row(
@@ -3284,9 +3289,9 @@ private fun QuestionBlock(
 ) {
     val categoryStyle = fallbackAnswerCategoryStyle(categoryColor)
 
-    FeOutlinedCard(
+    FeFilledCard(
         modifier = Modifier.fillMaxWidth(),
-        containerColor = MaterialTheme.colorScheme.surface
+        containerColor = MaterialTheme.colorScheme.surfaceContainer
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             // 题目头部
@@ -3337,7 +3342,7 @@ private fun QuestionBlock(
             
             // 题目内容
             Surface(
-                color = MaterialTheme.colorScheme.surfaceContainer,
+                color = MaterialTheme.colorScheme.surfaceContainerLow,
                 shape = RoundedCornerShape(8.dp)
             ) {
                 Text(
@@ -3396,7 +3401,7 @@ fun PaperDetailScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(MaterialTheme.colorScheme.surface)
             .nestedScroll(scrollBehavior.nestedScrollConnection)
             .windowInsetsPadding(
                 WindowInsets.safeDrawing.only(
@@ -3476,7 +3481,7 @@ fun PaperDetailScreen(
                 }
             },
             colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = MaterialTheme.colorScheme.background,
+                containerColor = MaterialTheme.colorScheme.surface,
                 scrolledContainerColor = MaterialTheme.colorScheme.surface
             ),
             scrollBehavior = scrollBehavior
@@ -3737,9 +3742,9 @@ private fun MergedQuestionBlock(
     categoryStyle: AnswerCategoryColor,
     compactAnswerDisplay: Boolean
 ) {
-    FeOutlinedCard(
+    FeFilledCard(
         modifier = Modifier.fillMaxWidth(),
-        containerColor = MaterialTheme.colorScheme.surface
+        containerColor = MaterialTheme.colorScheme.surfaceContainer
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             // 块头部 - 显示原文和题目数量
@@ -3793,7 +3798,7 @@ private fun MergedQuestionBlock(
                 
                 // 原文内容
                 Surface(
-                    color = MaterialTheme.colorScheme.surfaceContainer,
+                    color = MaterialTheme.colorScheme.surfaceContainerLow,
                     shape = RoundedCornerShape(8.dp)
                 ) {
                     Text(
@@ -3863,8 +3868,9 @@ private fun QuestionItemSimple(
         
         // 题目内容
         Surface(
-            color = MaterialTheme.colorScheme.surfaceContainerLow,
-            shape = RoundedCornerShape(16.dp)
+            color = MaterialTheme.colorScheme.surface,
+            shape = RoundedCornerShape(16.dp),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.32f))
         ) {
             Text(
                 text = question.question,
@@ -3998,14 +4004,14 @@ private fun PaperListItem(
         paper.localDisplayNumberFromTitle() ?: (paperIndex + 1)
     }
     
-    FeOutlinedCard(
+    FeFilledCard(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(
                 enabled = isClickEnabled,
                 onClick = onClick
             ),
-        containerColor = MaterialTheme.colorScheme.surface,
+        containerColor = MaterialTheme.colorScheme.surfaceContainer,
         borderColor = if (isFailed) MaterialTheme.colorScheme.error else Color.Transparent
     ) {
         Row(
@@ -4027,7 +4033,7 @@ private fun PaperListItem(
                             when {
                                 isLoading -> MaterialTheme.colorScheme.primaryContainer
                                 isFailed -> MaterialTheme.colorScheme.errorContainer
-                                else -> MaterialTheme.colorScheme.surfaceContainer
+                                else -> MaterialTheme.colorScheme.primaryContainer
                             },
                             RoundedCornerShape(12.dp)
                         ),
@@ -4054,7 +4060,7 @@ private fun PaperListItem(
                                 text = "$listNumber",
                                 style = MaterialTheme.typography.titleLarge,
                                 fontWeight = FontWeight.Bold,
-                                color = primaryColor
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
                             )
                         }
                     }
@@ -4242,9 +4248,9 @@ private fun CloudModeInfoCard(
     onStatusChange: (String) -> Unit
 ) {
     val isHistory = selectedStatus == CloudHomeworkState.STATUS_HISTORY
-    FeOutlinedCard(
+    FeFilledCard(
         modifier = Modifier.fillMaxWidth(),
-        containerColor = MaterialTheme.colorScheme.surface
+        containerColor = MaterialTheme.colorScheme.surfaceContainer
     ) {
         Row(
             modifier = Modifier
@@ -4252,9 +4258,8 @@ private fun CloudModeInfoCard(
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            FeIconContainer(
+            FeTonalIconContainer(
                 icon = Icons.Default.Cloud,
-                tint = MaterialTheme.colorScheme.primary,
                 containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.54f),
                 size = 44.dp,
                 iconSize = 24.dp

@@ -388,6 +388,7 @@ fun FeAppMain() {
         useDynamicColor = useDynamicColor
     ) {
         Scaffold(
+            containerColor = MaterialTheme.colorScheme.surface,
             bottomBar = {
                 if (currentRoute in listOf(
                 Screen.Home.route,
@@ -635,13 +636,13 @@ private fun buildFeColorScheme(
             onTertiary = Color.White,
             tertiaryContainer = Color(0xFFF0E7F5),
             onTertiaryContainer = Color(0xFF2D2434),
-            background = Color(0xFFF8F8FF),
+            background = Color(0xFFFFFFFF),
             onBackground = Color(0xFF1D1F24),
             surface = Color(0xFFFFFFFF),
             onSurface = Color(0xFF1D1F24),
             surfaceVariant = Color(0xFFE8EDF7),
             onSurfaceVariant = Color(0xFF535B67),
-            surfaceContainerLow = Color(0xFFFFFFFF),
+            surfaceContainerLow = Color(0xFFF7F9FD),
             surfaceContainer = Color(0xFFEFF2FB),
             surfaceContainerHigh = Color(0xFFE8EDF7),
             surfaceContainerHighest = Color(0xFFE1E7F2),
@@ -707,14 +708,12 @@ fun SettingsListItem(
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Box(
-            modifier = Modifier
-                .size(40.dp)
-                .background(MaterialTheme.colorScheme.surfaceContainer, CircleShape),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(icon, null, tint = iconTint, modifier = Modifier.size(20.dp))
-        }
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = iconTint,
+            modifier = Modifier.size(24.dp)
+        )
         Column(modifier = Modifier.weight(1f).padding(start = 16.dp)) {
             Text(title, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
             if (sub.isNotEmpty()) {

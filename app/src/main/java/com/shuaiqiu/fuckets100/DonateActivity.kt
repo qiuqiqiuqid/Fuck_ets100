@@ -85,6 +85,7 @@ open class DonateActivity : ComponentActivity() {
 @Composable
 private fun DonateScreen(onBack: () -> Unit) {
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.surface,
         topBar = {
             CenterAlignedTopAppBar(
                 title = { Text("捐赠支持", style = MaterialTheme.typography.titleMedium) },
@@ -175,7 +176,7 @@ private fun DonateQrCard(
         modifier = modifier,
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.elevatedCardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
         )
     ) {
         Column(

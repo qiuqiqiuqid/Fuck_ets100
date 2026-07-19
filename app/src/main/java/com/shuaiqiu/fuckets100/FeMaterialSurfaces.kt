@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -23,11 +24,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun FeOutlinedCard(
+fun FeFilledCard(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
     shape: Shape = RoundedCornerShape(24.dp),
-    containerColor: Color = MaterialTheme.colorScheme.surface,
+    containerColor: Color = MaterialTheme.colorScheme.surfaceContainer,
     borderColor: Color = Color.Transparent,
     content: @Composable () -> Unit
 ) {
@@ -82,37 +83,50 @@ fun FeThinDivider(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun FeIconContainer(
+fun FeTonalIconContainer(
     icon: ImageVector,
-    tint: Color = MaterialTheme.colorScheme.primary,
+    tint: Color = MaterialTheme.colorScheme.onPrimaryContainer,
     modifier: Modifier = Modifier,
     size: Dp = 40.dp,
     iconSize: Dp = 20.dp,
-    containerColor: Color = MaterialTheme.colorScheme.surfaceContainer
+    containerColor: Color = MaterialTheme.colorScheme.primaryContainer
 ) {
-    Box(
-        modifier = modifier
-            .size(size)
-            .background(containerColor, CircleShape),
-        contentAlignment = Alignment.Center
+    Surface(
+        modifier = modifier.size(size),
+        shape = CircleShape,
+        color = containerColor,
+        tonalElevation = 0.dp,
+        shadowElevation = 0.dp
     ) {
-        androidx.compose.material3.Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(iconSize))
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            androidx.compose.material3.Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(iconSize))
+        }
     }
 }
 
 @Composable
 fun FeInfoSurface(
     modifier: Modifier = Modifier,
-    containerColor: Color = MaterialTheme.colorScheme.surfaceContainer,
+    containerColor: Color = MaterialTheme.colorScheme.surfaceContainerLow,
+    borderColor: Color = Color.Transparent,
     content: @Composable () -> Unit
 ) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(containerColor, RoundedCornerShape(12.dp))
-            .padding(12.dp),
-        verticalAlignment = Alignment.CenterVertically
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        color = containerColor,
+        border = borderColor.takeUnless { it == Color.Transparent }?.let { BorderStroke(1.dp, it) },
+        tonalElevation = 0.dp,
+        shadowElevation = 0.dp
     ) {
-        content()
+        Row(
+            modifier = Modifier.padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            content()
+        }
     }
 }

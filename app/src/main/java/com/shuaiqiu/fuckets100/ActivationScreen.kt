@@ -93,6 +93,7 @@ fun ActivationSettingsScreen(
     val hasLocalBasicPermissions = hasFilesPerm && hasAppListPerm
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.surface,
         topBar = {
             CenterAlignedTopAppBar(
                 title = { Text("运行授权与权限", style = MaterialTheme.typography.titleMedium) },
@@ -123,7 +124,7 @@ fun ActivationSettingsScreen(
             item {
                 Text("系统基础权限", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
                 Spacer(Modifier.height(8.dp))
-                FeOutlinedCard(modifier = Modifier.fillMaxWidth()) {
+                FeFilledCard(modifier = Modifier.fillMaxWidth()) {
                     Column {
                         // 权限 1：全文件访问
                         SettingsListItem(
@@ -171,14 +172,14 @@ fun ActivationSettingsScreen(
                 val mode = ActivationMode.values().filter { it != ActivationMode.DEFAULT }[index]
                 val isSelected = currentMode == mode
 
-                FeOutlinedCard(
+                FeFilledCard(
                     onClick = { onModeSelected(mode) },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(20.dp),
                     containerColor = if (isSelected) {
                         MaterialTheme.colorScheme.primaryContainer
                     } else {
-                        MaterialTheme.colorScheme.surface
+                        MaterialTheme.colorScheme.surfaceContainer
                     },
                     borderColor = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent
                 ) {
@@ -300,10 +301,10 @@ private fun ActivationDeviceCard(etsAppInfo: Pair<Boolean, String>?) {
     val successColor = MaterialTheme.colorScheme.primary
     val errorColor = MaterialTheme.colorScheme.error
 
-    FeOutlinedCard(
+    FeFilledCard(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        containerColor = MaterialTheme.colorScheme.surface
+        containerColor = MaterialTheme.colorScheme.surfaceContainer
     ) {
         Column(
             modifier = Modifier.padding(24.dp),
@@ -471,10 +472,10 @@ fun FeModeStatusCard(
         }
     }
     
-    FeOutlinedCard(
+    FeFilledCard(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        containerColor = MaterialTheme.colorScheme.surface
+        containerColor = MaterialTheme.colorScheme.surfaceContainer
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
             Row(modifier = Modifier.padding(20.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -618,7 +619,11 @@ fun FeDirectReadActivationPanel(hasAllBasicPermissions: Boolean) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(
-                            if (isZWCAvailable) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainer,
+                            if (isZWCAvailable) {
+                                MaterialTheme.colorScheme.primaryContainer
+                            } else {
+                                MaterialTheme.colorScheme.surfaceContainerLow
+                            },
                             RoundedCornerShape(8.dp)
                         )
                         .padding(8.dp),
@@ -650,10 +655,6 @@ fun FeDirectReadActivationPanel(hasAllBasicPermissions: Boolean) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(
-                    MaterialTheme.colorScheme.surfaceContainer,
-                    RoundedCornerShape(8.dp)
-                )
                 .padding(8.dp)
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -685,10 +686,10 @@ fun FeShizukuStatusCard(shizukuState: ShizukuState, context: android.content.Con
     val isRunning = shizukuState.isRunning
     val animatedColor by animateColorAsState(if (isRunning) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error, tween(800))
 
-    FeOutlinedCard(
+    FeFilledCard(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        containerColor = MaterialTheme.colorScheme.surface
+        containerColor = MaterialTheme.colorScheme.surfaceContainer
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
             Row(modifier = Modifier.padding(20.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -990,10 +991,6 @@ fun FeCloudActivationPanel(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(
-                        MaterialTheme.colorScheme.surfaceContainer,
-                        RoundedCornerShape(8.dp)
-                    )
                     .padding(8.dp)
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {

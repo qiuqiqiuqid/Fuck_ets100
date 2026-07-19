@@ -1,6 +1,5 @@
 package com.shuaiqiu.fuckets100
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -35,6 +34,7 @@ fun GeneralSettingsScreen(onBack: () -> Unit) {
     var compactAnswerDisplay by remember { mutableStateOf(SettingsManager.getCompactAnswerDisplay()) }
     
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.surface,
         topBar = {
             CenterAlignedTopAppBar(
                 title = { Text("通用设置", style = MaterialTheme.typography.titleMedium) },
@@ -58,10 +58,12 @@ fun GeneralSettingsScreen(onBack: () -> Unit) {
             if (debugModeEnabled) {
                 Text("调试设置", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
                 
-                OutlinedCard(
+                Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp),
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainer
+                    )
                 ) {
                     Column {
                         // 隐藏调试按钮开关（保留，因为 ReadScreen 还在用）
@@ -97,10 +99,12 @@ fun GeneralSettingsScreen(onBack: () -> Unit) {
             // 通用设置分组标题
             Text("通用设置", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
 
-            OutlinedCard(
+            Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainer
+                )
             ) {
                 Column {
                     GeneralSettingsSwitchRow(
@@ -168,19 +172,12 @@ private fun GeneralSettingsRow(
         verticalAlignment = Alignment.CenterVertically
     ) {
         // 图标容器
-        Box(
-            modifier = Modifier
-                .size(40.dp)
-                .background(MaterialTheme.colorScheme.surfaceContainer, CircleShape),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                icon, 
-                null, 
-                tint = MaterialTheme.colorScheme.primary, 
-                modifier = Modifier.size(20.dp)
-            )
-        }
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(24.dp)
+        )
         
         // 标题和副标题
         Column(
@@ -230,19 +227,12 @@ private fun GeneralSettingsSwitchRow(
         verticalAlignment = Alignment.CenterVertically
     ) {
         // 图标容器
-        Box(
-            modifier = Modifier
-                .size(40.dp)
-                .background(MaterialTheme.colorScheme.surfaceContainer, CircleShape),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                icon, 
-                null, 
-                tint = MaterialTheme.colorScheme.primary, 
-                modifier = Modifier.size(20.dp)
-            )
-        }
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(24.dp)
+        )
         
         // 标题和副标题
         Column(

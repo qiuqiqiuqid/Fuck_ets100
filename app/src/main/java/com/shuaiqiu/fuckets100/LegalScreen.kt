@@ -1,6 +1,5 @@
 package com.shuaiqiu.fuckets100
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,6 +20,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun LegalScreen(onBack: () -> Unit) {
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.surface,
         topBar = {
             CenterAlignedTopAppBar(
                 title = { Text("法律信息与使用守则", style = MaterialTheme.typography.titleMedium) },
@@ -101,7 +101,7 @@ fun LegalContent(showHeader: Boolean) {
         if (showHeader) {
             ElevatedCard(
                 colors = CardDefaults.elevatedCardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+                    containerColor = MaterialTheme.colorScheme.surfaceContainer
                 ),
                 shape = RoundedCornerShape(16.dp)
             ) {
@@ -167,12 +167,11 @@ private fun LegalSection(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     content: String
 ) {
-    OutlinedCard(
+    Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.25f)),
-        colors = CardDefaults.outlinedCardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
         )
     ) {
         Column(modifier = Modifier.padding(16.dp)) {

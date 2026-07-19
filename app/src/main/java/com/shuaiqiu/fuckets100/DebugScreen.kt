@@ -30,6 +30,7 @@ import androidx.navigation.NavHostController
 @Composable
 fun DebugScreen(navController: NavHostController) {
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.surface,
         topBar = {
             CenterAlignedTopAppBar(
                 title = { Text("调试页面", style = MaterialTheme.typography.titleMedium) },
@@ -115,7 +116,10 @@ private fun DebugSection(
 ) {
     ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp)
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
+        )
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(

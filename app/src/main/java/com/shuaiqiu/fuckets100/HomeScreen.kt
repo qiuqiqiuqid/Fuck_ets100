@@ -140,7 +140,8 @@ fun HomeScreen(
     val activeColor = if (isTrulyActivated) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
 
     Scaffold(
-        topBar = { FeTopAppBar(title = "Fe") }
+        topBar = { FeTopAppBar(title = "Fe") },
+        containerColor = MaterialTheme.colorScheme.surface
     ) { paddingValues ->
         Column(
             Modifier
@@ -403,30 +404,23 @@ private fun RemoteOverviewCard(
     meta: String? = null,
     onClick: () -> Unit
 ) {
-    FeOutlinedCard(
+    FeFilledCard(
         modifier = Modifier
             .fillMaxWidth(),
         onClick = onClick,
         shape = RoundedCornerShape(14.dp),
-        containerColor = MaterialTheme.colorScheme.surface
+        containerColor = MaterialTheme.colorScheme.surfaceContainer
     ) {
         Column(
             modifier = Modifier.padding(18.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    modifier = Modifier
-                        .size(42.dp)
-                        .background(MaterialTheme.colorScheme.primaryContainer, CircleShape),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        Icons.Default.Campaign,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                }
+                FeTonalIconContainer(
+                    icon = Icons.Default.Campaign,
+                    size = 42.dp,
+                    iconSize = 22.dp
+                )
                 Spacer(Modifier.width(14.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
@@ -493,29 +487,22 @@ private fun CompactDonateCard(
     title: String,
     onClick: () -> Unit
 ) {
-    FeOutlinedCard(
+    FeFilledCard(
         modifier = Modifier
             .fillMaxWidth(),
         onClick = onClick,
         shape = RoundedCornerShape(12.dp),
-        containerColor = MaterialTheme.colorScheme.surface
+        containerColor = MaterialTheme.colorScheme.surfaceContainer
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
-                modifier = Modifier
-                    .size(34.dp)
-                    .background(MaterialTheme.colorScheme.primaryContainer, CircleShape),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    icon,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            }
+            FeTonalIconContainer(
+                icon = icon,
+                size = 34.dp,
+                iconSize = 20.dp
+            )
             Spacer(Modifier.width(12.dp))
             Text(
                 title,

@@ -33,7 +33,8 @@ fun SettingsScreen(navController: NavHostController) {
     var showAboutDialog by remember { mutableStateOf(false) }
     
     Scaffold(
-        topBar = { FeTopAppBar(title = "Fe") }
+        topBar = { FeTopAppBar(title = "Fe") },
+        containerColor = MaterialTheme.colorScheme.surface
     ) { p ->
         Column(
             Modifier
@@ -48,7 +49,7 @@ fun SettingsScreen(navController: NavHostController) {
             Spacer(Modifier.height(24.dp))
 
             // 运行授权设置
-            FeOutlinedCard(modifier = Modifier.fillMaxWidth()) {
+            FeFilledCard(modifier = Modifier.fillMaxWidth()) {
                 Column {
                     SettingsListItem(Icons.Default.Build, "运行授权", "配置 Shizuku、Root 或其他模式") {
                         context.startActivity(ActivationActivity.createIntent(context))
@@ -69,7 +70,7 @@ fun SettingsScreen(navController: NavHostController) {
             Spacer(Modifier.height(24.dp))
 
             // 其他选项
-            FeOutlinedCard(modifier = Modifier.fillMaxWidth()) {
+            FeFilledCard(modifier = Modifier.fillMaxWidth()) {
                 Column {
                     SettingsListItem(Icons.Default.Info, "关于 Fe", "应用信息与致谢", hideChevron = true) {
                         showAboutDialog = true
@@ -101,10 +102,10 @@ fun AboutDialog(onDismiss: () -> Unit) {
     val context = LocalContext.current
 
     Dialog(onDismissRequest = onDismiss) {
-        FeOutlinedCard(
+        FeFilledCard(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(24.dp),
-            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
         ) {
             Column(
                 modifier = Modifier.padding(24.dp),
@@ -141,13 +142,12 @@ fun AboutDialog(onDismiss: () -> Unit) {
                 
                 Spacer(Modifier.height(24.dp))
                 
-                // 宝贝分为两个卡片喵~
-                // 软件信息卡片
-                FeOutlinedCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    containerColor = MaterialTheme.colorScheme.surface
+                // 软件信息
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp)
                 ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
                                 Icons.Default.Info,
@@ -219,17 +219,18 @@ fun AboutDialog(onDismiss: () -> Unit) {
                                 modifier = Modifier.size(18.dp)
                             )
                         }
-                    }
                 }
                 
                 Spacer(Modifier.height(16.dp))
+                FeThinDivider()
+                Spacer(Modifier.height(16.dp))
                 
-                // 关于作者卡片
-                FeOutlinedCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    containerColor = MaterialTheme.colorScheme.surface
+                // 关于作者
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp)
                 ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
                                 Icons.Default.Person,
@@ -300,7 +301,6 @@ fun AboutDialog(onDismiss: () -> Unit) {
                                 modifier = Modifier.size(20.dp)
                             )
                         }
-                    }
                 }
                 
                 Spacer(Modifier.height(24.dp))
