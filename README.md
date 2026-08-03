@@ -1,5 +1,7 @@
 # Fuck ets100 - e听说答案提取器 📱
 
+> 本仓库现作为公开文档、教程、问题反馈与 Release 下载入口维护。项目源码已转为私有维护，后续版本仍会在本仓库的 Releases 页面发布。
+
 [![GPL-3.0 License](https://img.shields.io/badge/License-GPL%203.0-blue.svg)](LICENSE)
 [![Kotlin](https://img.shields.io/badge/kotlin-2.3.21-7F52FF)](https://kotlinlang.org/)
 [![Compose Multiplatform](https://img.shields.io/badge/compose-1.10.3-4285F4)](https://www.jetbrains.com/compose-multiplatform)
@@ -34,7 +36,7 @@ Fuck ets100 是一款专门为 e听说（ETS 100）用户打造的答案提取�
 
 ### 第一步：先装上
 
-1. 打开 [releases 页面](https://github.com/qiuqiqiuqid/Fuck_ets100/releases)或[云盘](https://oplist.lastudio.cc/Fe_release)
+1. 打开 [Releases 页面](https://github.com/laststudio/Fuck_ets100/releases) 或 [云盘](https://oplist.lastudio.cc/Fe_release)
 2. 下载最新版本的 APK
 3. 安装到你的手机上
 4. 打开 Fuck ets100 App
@@ -172,7 +174,7 @@ Fuck ets100 还会继续更新迭代，以下是一些计划中的功能 💡
 - 📊 显示更多统计信息，比如正确率等
 - 🌐 支持更多 e听说 以外的平台
 
-如果你有什么好的建议或想法，欢迎在 [issues](https://github.com/qiuqiqiuqid/Fe/issues) 里提出来 ~
+如果你有什么好的建议或想法，欢迎在 [Issues](https://github.com/laststudio/Fuck_ets100/issues) 里提出来 ~
 
 ---
 
@@ -219,7 +221,7 @@ Fuck ets100 的诞生离不开这些"小伙伴"的帮助 💕
 ---
 
 **有问题？找作者：**
-- GitHub: [issues 页面](https://github.com/qiuqiqiuqid/Fe/issues)
+- GitHub: [Issues 页面](https://github.com/laststudio/Fuck_ets100/issues)
 - 抖音:[抖音主页](https://v.douyin.com/P0GrWYTqi4s/)
 - b站:[b站主页](https://space.bilibili.com/2116040615h)
 
@@ -237,4 +239,4 @@ Fuck ets100 的诞生离不开这些"小伙伴"的帮助 💕
 |:---:|:---:|
 | ![支付宝](./donate/alipay.png) | ![微信](./donate/wechat.png) |
 
-> 💖 每一份捐赠都是对开源精神的肯定，感谢你的支持！
+> 💖 感谢每一份对项目持续维护的支持！
